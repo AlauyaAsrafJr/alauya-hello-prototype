@@ -1,0 +1,10 @@
+html, body, #root { height: 100%; }
+body { margin: 0; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-neutral-300); }
+a { color: var(--color-accent); }
+a:hover { color: var(--color-accent-700); }
+
+.sidebar-nav-btn:hover { background: rgba(255, 255, 255, 0.08) !important; }
+.sidebar-logout-btn:hover { color: #fff !important; }
+.menu-item:hover { background: var(--color-neutral-100); }
