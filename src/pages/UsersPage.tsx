@@ -85,6 +85,7 @@ export function UsersPage({
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
         <table className="table">
           <thead>
             <tr>
@@ -119,6 +120,7 @@ export function UsersPage({
             ))}
           </tbody>
         </table>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '2px solid var(--color-divider)' }}>
           <span style={{ fontSize: 12.5, opacity: 0.6 }}>{pageLabel}</span>
           <div style={{ display: 'flex', gap: 6 }}>

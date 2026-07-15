@@ -33,7 +33,7 @@ interface DashboardProps {
 export function Dashboard({ statCards, chartBars, recentReports, onGoReports }: DashboardProps) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
+      <div className="stat-grid">
         {statCards.map((c) => (
           <div key={c.label} className="card elev-sm" style={{ padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -60,7 +60,7 @@ export function Dashboard({ statCards, chartBars, recentReports, onGoReports }: 
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 20 }}>
+      <div className="dashboard-main-grid">
         <div className="card elev-sm" style={{ padding: 20 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
             <div className="card-title">Weekly activity &amp; attendance</div>

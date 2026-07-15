@@ -40,6 +40,7 @@ export function ArchivePage({
         </div>
       </div>
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
         <table className="table">
           <thead>
             <tr>
@@ -72,6 +73,7 @@ export function ArchivePage({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );

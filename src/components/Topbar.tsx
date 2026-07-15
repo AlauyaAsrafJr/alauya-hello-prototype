@@ -1,4 +1,4 @@
-import { BellIcon, ChevronDownIcon } from '../icons';
+import { BellIcon, ChevronDownIcon, MenuIcon } from '../icons';
 
 interface TopbarProps {
   pageTitle: string;
@@ -9,6 +9,7 @@ interface TopbarProps {
   onToggleProfile: (e: React.MouseEvent) => void;
   onAccountSettings: () => void;
   onLogout: () => void;
+  onToggleMenu: () => void;
 }
 
 export function Topbar({
@@ -20,6 +21,7 @@ export function Topbar({
   onToggleProfile,
   onAccountSettings,
   onLogout,
+  onToggleMenu,
 }: TopbarProps) {
   return (
     <header
@@ -36,9 +38,28 @@ export function Topbar({
         flex: 'none',
       }}
     >
+      <button
+        type="button"
+        onClick={onToggleMenu}
+        aria-label="Toggle menu"
+        className="menu-toggle-btn"
+        style={{
+          width: 38,
+          height: 38,
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-divider)',
+          cursor: 'pointer',
+          flex: 'none',
+        }}
+      >
+        <MenuIcon />
+      </button>
+
       <div style={{ flex: 1, minWidth: 0 }}>
         <h1 style={{ fontSize: 22, margin: 0 }}>{pageTitle}</h1>
-        <div style={{ fontSize: 12, color: 'var(--color-text)', opacity: 0.55, marginTop: 2 }}>{pageSubtitle}</div>
+        <div className="topbar-subtitle" style={{ fontSize: 12, color: 'var(--color-text)', opacity: 0.55, marginTop: 2 }}>{pageSubtitle}</div>
       </div>
 
       <div style={{ position: 'relative' }}>
@@ -128,7 +149,7 @@ export function Topbar({
           >
             DW
           </div>
-          <div style={{ textAlign: 'left' }}>
+          <div className="topbar-profile-text" style={{ textAlign: 'left' }}>
             <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2 }}>Dana Whitfield</div>
             <div style={{ fontSize: 11, opacity: 0.55, lineHeight: 1.2 }}>Head Administrator</div>
           </div>

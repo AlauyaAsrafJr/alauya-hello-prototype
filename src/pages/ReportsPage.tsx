@@ -48,6 +48,7 @@ export function ReportsPage({
         </button>
       </div>
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
         <table className="table">
           <thead>
             <tr>
@@ -77,6 +78,7 @@ export function ReportsPage({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );

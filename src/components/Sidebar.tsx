@@ -23,13 +23,15 @@ const NAV_ITEMS: { key: Page; label: string; icon: (props: { size?: number }) =>
 
 interface SidebarProps {
   page: Page;
+  open: boolean;
   onNavigate: (page: Page) => void;
   onLogout: () => void;
 }
 
-export function Sidebar({ page, onNavigate, onLogout }: SidebarProps) {
+export function Sidebar({ page, open, onNavigate, onLogout }: SidebarProps) {
   return (
     <aside
+      className={`app-sidebar${open ? ' open' : ''}`}
       style={{
         width: 248,
         flex: 'none',

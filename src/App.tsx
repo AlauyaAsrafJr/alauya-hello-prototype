@@ -69,6 +69,7 @@ export default function App() {
   const [page, setPageState] = useState<Page>('dashboard');
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [users, setUsers] = useState(makeUsers);
   const [players, setPlayers] = useState(makePlayers);
@@ -119,6 +120,7 @@ export default function App() {
     setPageState(p);
     setProfileOpen(false);
     setNotifOpen(false);
+    setSidebarOpen(false);
   }
 
   function closeMenus() {
@@ -336,7 +338,11 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: 'var(--color-bg)', fontFamily: 'var(--font-body)', color: 'var(--color-text)' }}>
-      <Sidebar page={page} onNavigate={setPage} onLogout={logout} />
+      <Sidebar page={page} open={sidebarOpen} onNavigate={setPage} onLogout={logout} />
+      <div
+        className={`sidebar-backdrop${sidebarOpen ? ' open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%', overflowY: 'auto' }}>
         <Topbar
@@ -344,6 +350,7 @@ export default function App() {
           pageSubtitle={pageSubtitle}
           notifOpen={notifOpen}
           profileOpen={profileOpen}
+          onToggleMenu={() => setSidebarOpen((v) => !v)}
           onToggleNotif={(e) => {
             e.stopPropagation();
             setNotifOpen((v) => !v);

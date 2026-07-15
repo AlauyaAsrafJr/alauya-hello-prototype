@@ -46,6 +46,7 @@ export function AttendancePage({
         </div>
       </div>
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
         <table className="table">
           <thead>
             <tr>
@@ -70,6 +71,7 @@ export function AttendancePage({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );
