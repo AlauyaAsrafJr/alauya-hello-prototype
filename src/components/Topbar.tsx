@@ -3,19 +3,32 @@ import { BellIcon, ChevronDownIcon } from '../icons';
 interface TopbarProps {
   pageTitle: string;
   pageSubtitle: string;
+  displayName: string;
+  roleLabel: string;
   notifOpen: boolean;
   profileOpen: boolean;
+  notifCount?: number;
+  notifMessage?: string;
   onToggleNotif: (e: React.MouseEvent) => void;
   onToggleProfile: (e: React.MouseEvent) => void;
   onAccountSettings: () => void;
   onLogout: () => void;
 }
 
+function initialsOf(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return parts.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '').join('') || '?';
+}
+
 export function Topbar({
   pageTitle,
   pageSubtitle,
+  displayName,
+  roleLabel,
   notifOpen,
   profileOpen,
+  notifCount = 0,
+  notifMessage,
   onToggleNotif,
   onToggleProfile,
   onAccountSettings,
@@ -59,17 +72,19 @@ export function Topbar({
           }}
         >
           <BellIcon />
-          <span
-            style={{
-              position: 'absolute',
-              top: 7,
-              right: 7,
-              width: 8,
-              height: 8,
-              background: 'var(--color-accent)',
-              border: '1.5px solid var(--color-bg)',
-            }}
-          />
+          {notifCount > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: 7,
+                right: 7,
+                width: 8,
+                height: 8,
+                background: 'var(--color-accent)',
+                border: '1.5px solid var(--color-bg)',
+              }}
+            />
+          )}
         </button>
         {notifOpen && (
           <div
@@ -77,7 +92,7 @@ export function Topbar({
               position: 'absolute',
               right: 0,
               top: 44,
-              width: 300,
+              width: 280,
               background: 'var(--color-surface)',
               border: '1px solid var(--color-divider)',
               boxShadow: 'var(--shadow-lg)',
@@ -95,13 +110,9 @@ export function Topbar({
             >
               Notifications
             </div>
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-divider)', fontSize: 13 }}>
-              3 attendance sessions pending review for Track &amp; Field.
+            <div style={{ padding: '12px 14px', fontSize: 13, opacity: notifCount > 0 ? 1 : 0.6 }}>
+              {notifMessage || "You're all caught up."}
             </div>
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-divider)', fontSize: 13 }}>
-              Monthly engagement report finished generating.
-            </div>
-            <div style={{ padding: '12px 14px', fontSize: 13 }}>2 new coach accounts awaiting approval.</div>
           </div>
         )}
       </div>
@@ -126,11 +137,11 @@ export function Topbar({
               fontSize: 13,
             }}
           >
-            DW
+            {initialsOf(displayName)}
           </div>
           <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2 }}>Dana Whitfield</div>
-            <div style={{ fontSize: 11, opacity: 0.55, lineHeight: 1.2 }}>Head Administrator</div>
+            <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2 }}>{displayName}</div>
+            <div style={{ fontSize: 11, opacity: 0.55, lineHeight: 1.2 }}>{roleLabel}</div>
           </div>
           <ChevronDownIcon />
         </button>
