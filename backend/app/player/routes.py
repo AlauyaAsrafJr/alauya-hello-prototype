@@ -1,4 +1,7 @@
-from flask import Blueprint, request, jsonify
+import os
+import uuid
+
+from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 
 from app.decorators import roles_required
@@ -14,6 +17,8 @@ from app.models import (
 )
 
 player_bp = Blueprint("player", __name__)
+
+ALLOWED_PHOTO_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
 def _current_player():
@@ -42,6 +47,29 @@ def update_profile():
     for field in editable_fields:
         if field in data:
             setattr(player, field, data[field])
+    db.session.commit()
+    return jsonify(player.to_dict())
+
+
+@player_bp.post("/profile/photo")
+@roles_required("player")
+def upload_profile_photo():
+    player = _current_player()
+    if not player:
+        return jsonify({"error": "Player profile not found"}), 404
+    file = request.files.get("photo")
+    if not file or not file.filename:
+        return jsonify({"error": "No photo file provided"}), 400
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_PHOTO_EXTENSIONS:
+        return jsonify({"error": "Unsupported image type. Use JPG, PNG, WEBP, or GIF."}), 400
+
+    upload_dir = os.path.join(current_app.config["UPLOAD_FOLDER"], "players")
+    os.makedirs(upload_dir, exist_ok=True)
+    filename = f"player_{player.player_id}_{uuid.uuid4().hex[:8]}{ext}"
+    file.save(os.path.join(upload_dir, filename))
+
+    player.profile_photo = f"/api/uploads/players/{filename}"
     db.session.commit()
     return jsonify(player.to_dict())
 

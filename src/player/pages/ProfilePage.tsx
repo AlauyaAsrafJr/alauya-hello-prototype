@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
+import { useEffect, useRef, useState } from 'react';
+import { api, ApiError, mediaUrl } from '../../api/client';
 import type { PlayerHealthRecord, PlayerProfile, PlayerStatistics } from '../../api/domain';
 import { useAuth } from '../../auth/AuthContext';
 import { StatCard } from '../../components/StatCard';
@@ -16,6 +16,10 @@ function healthTag(status: string) {
   return 'tag tag-danger';
 }
 
+function initialsOf(first: string, last: string) {
+  return `${first[0] ?? ''}${last[0] ?? ''}`.toUpperCase() || '?';
+}
+
 export function ProfilePage({ showToast }: ProfilePageProps) {
   const { refreshUser } = useAuth();
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
@@ -24,6 +28,8 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
   const [editing, setEditing] = useState(false);
   const [contactNumber, setContactNumber] = useState('');
   const [loading, setLoading] = useState(true);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function load() {
     setLoading(true);
@@ -51,6 +57,25 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
     refreshUser();
   }
 
+  async function handlePhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('photo', file);
+    setUploadingPhoto(true);
+    try {
+      const updated = await api.upload<PlayerProfile>('/player/profile/photo', formData);
+      setProfile(updated);
+      showToast('Profile photo updated');
+      refreshUser();
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to upload photo');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  }
+
   if (loading || !profile) return <div className="card-body">Loading profile…</div>;
 
   const statCards = stats
@@ -70,10 +95,46 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
         ))}
       </div>
 
-      <div className="card elev-sm" style={{ padding: 24, maxWidth: 560 }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div className="card elev-sm" style={{ padding: 24, flex: '1 1 480px', maxWidth: 560 }}>
         <div className="card-kicker">Player profile</div>
-        <div className="card-title" style={{ marginBottom: 14 }}>
-          {profile.first_name} {profile.last_name}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
+          <div style={{ position: 'relative', width: 72, height: 72, flex: 'none' }}>
+            {profile.profile_photo ? (
+              <img
+                src={mediaUrl(profile.profile_photo) || undefined}
+                alt=""
+                style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
+              <div
+                className="avatar-chip"
+                style={{ width: 72, height: 72, borderRadius: '50%', fontSize: 22, background: 'var(--color-accent-100)', color: 'var(--color-accent-400)' }}
+              >
+                {initialsOf(profile.first_name, profile.last_name)}
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="card-title">{profile.first_name} {profile.last_name}</div>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              style={{ fontSize: 12, marginTop: 4, padding: '4px 0' }}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingPhoto}
+            >
+              {uploadingPhoto ? 'Uploading…' : profile.profile_photo ? 'Change photo' : 'Upload photo'}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              style={{ display: 'none' }}
+              onChange={handlePhotoSelected}
+            />
+          </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -121,7 +182,7 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
       </div>
 
       {healthHistory && healthHistory.length > 0 && (
-        <div className="card elev-sm" style={{ padding: 24, maxWidth: 560, marginTop: 20 }}>
+        <div className="card elev-sm" style={{ padding: 24, flex: '1 1 360px', maxWidth: 420 }}>
           <div className="card-kicker">Health history</div>
           <div className="card-title" style={{ marginBottom: 12 }}>Logged by your coach</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -141,6 +202,7 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
           </div>
         </div>
       )}
+      </div>
     </>
   );
 }

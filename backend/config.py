@@ -14,3 +14,5 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=12)
     JWT_TOKEN_LOCATION = ["headers"]
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",")
+    UPLOAD_FOLDER = os.path.join(basedir, "uploads")
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
