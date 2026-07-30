@@ -15,6 +15,7 @@ from app.models import (
     Attendance,
     TrainingActivity,
     PerformanceFeedback,
+    PlayerHealthRecord,
     LoginHistory,
     ArchivedRecord,
     Report,
@@ -161,6 +162,29 @@ def reset_password(user_id):
 def access_all_player_data():
     players = Player.query.order_by(Player.last_name).all()
     return jsonify([p.to_dict() for p in players])
+
+
+@admin_bp.get("/players/health-overview")
+@roles_required("admin")
+def player_health_overview():
+    players = Player.query.all()
+    counts = {"healthy": 0, "injured": 0, "recovering": 0}
+    for p in players:
+        counts[p.health_status] += 1
+    not_healthy = [p.to_dict() for p in players if p.health_status != "healthy"]
+    return jsonify({"counts": counts, "players": not_healthy})
+
+
+@admin_bp.get("/players/<int:player_id>/health")
+@roles_required("admin")
+def get_player_health_admin(player_id):
+    Player.query.get_or_404(player_id)
+    records = (
+        PlayerHealthRecord.query.filter_by(player_id=player_id)
+        .order_by(PlayerHealthRecord.reported_date.desc())
+        .all()
+    )
+    return jsonify([r.to_dict() for r in records])
 
 
 @admin_bp.get("/attendance")

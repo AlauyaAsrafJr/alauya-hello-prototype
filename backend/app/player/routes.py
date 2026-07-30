@@ -3,7 +3,15 @@ from flask_jwt_extended import get_jwt_identity
 
 from app.decorators import roles_required
 from app.extensions import db
-from app.models import Player, Attendance, Participation, PerformanceFeedback, PlayerNote, TrainingActivity
+from app.models import (
+    Player,
+    Attendance,
+    Participation,
+    PerformanceFeedback,
+    PlayerNote,
+    PlayerHealthRecord,
+    TrainingActivity,
+)
 
 player_bp = Blueprint("player", __name__)
 
@@ -91,6 +99,20 @@ def get_performance_feedback():
     records = (
         PerformanceFeedback.query.filter_by(player_id=player.player_id)
         .order_by(PerformanceFeedback.feedback_date.desc())
+        .all()
+    )
+    return jsonify([r.to_dict() for r in records])
+
+
+@player_bp.get("/health")
+@roles_required("player")
+def get_health():
+    player = _current_player()
+    if not player:
+        return jsonify({"error": "Player profile not found"}), 404
+    records = (
+        PlayerHealthRecord.query.filter_by(player_id=player.player_id)
+        .order_by(PlayerHealthRecord.reported_date.desc())
         .all()
     )
     return jsonify([r.to_dict() for r in records])

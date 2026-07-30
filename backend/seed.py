@@ -21,6 +21,7 @@ from app.models import (
     Attendance,
     Participation,
     PerformanceFeedback,
+    PlayerHealthRecord,
     Sport,
 )
 
@@ -166,6 +167,35 @@ with app.app_context():
 
     seed_team(coach, basketball_players, "Basketball")
     seed_team(coach2, volleyball_players, "Volleyball")
+
+    # Demo: one basketball player with an ankle sprain, one volleyball player recovering.
+    injured_player = basketball_players[0]
+    injured_player.health_status = "injured"
+    db.session.add(
+        PlayerHealthRecord(
+            player_id=injured_player.player_id,
+            coach_id=coach.coach_id,
+            status="injured",
+            injury_type="Ankle sprain",
+            notes="Rolled ankle during Week 4 scrimmage. Advised rest and ice.",
+            reported_date=date.today() - timedelta(days=3),
+            expected_return_date=date.today() + timedelta(days=11),
+        )
+    )
+
+    recovering_player = volleyball_players[0]
+    recovering_player.health_status = "recovering"
+    db.session.add(
+        PlayerHealthRecord(
+            player_id=recovering_player.player_id,
+            coach_id=coach2.coach_id,
+            status="recovering",
+            injury_type="Shoulder strain",
+            notes="Cleared for light training, no overhead serves yet.",
+            reported_date=date.today() - timedelta(days=10),
+            expected_return_date=date.today() + timedelta(days=4),
+        )
+    )
 
     db.session.commit()
 

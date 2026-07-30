@@ -11,6 +11,12 @@ function membershipTag(status: string) {
   return 'tag tag-neutral';
 }
 
+function healthTag(status: string) {
+  if (status === 'healthy') return 'tag tag-success';
+  if (status === 'recovering') return 'tag tag-warning';
+  return 'tag tag-danger';
+}
+
 export function PlayersPage() {
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
   const [search, setSearch] = useState('');
@@ -61,6 +67,7 @@ export function PlayersPage() {
               <th>Team</th>
               <th>Email</th>
               <th>Membership</th>
+              <th>Health</th>
               <th>Account status</th>
               <th style={{ width: 80 }}>Actions</th>
             </tr>
@@ -72,6 +79,7 @@ export function PlayersPage() {
                 <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
                 <td style={{ opacity: 0.75 }}>{p.email}</td>
                 <td><span className={membershipTag(p.membership_status)}>{p.membership_status}</span></td>
+                <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
                 <td><span className={p.is_active ? 'tag tag-success' : 'tag tag-danger'}>{p.is_active ? 'Active' : 'Inactive'}</span></td>
                 <td>
                   <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}><EyeIcon /></button>
@@ -79,7 +87,7 @@ export function PlayersPage() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
+              <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
             )}
           </tbody>
         </table>
@@ -95,6 +103,7 @@ export function PlayersPage() {
               ['Team', viewing.team || '—'],
               ['Date of birth', viewing.date_of_birth || '—'],
               ['Membership status', viewing.membership_status],
+              ['Health status', viewing.health_status],
               ['Account status', viewing.is_active ? 'Active' : 'Inactive'],
             ].map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>

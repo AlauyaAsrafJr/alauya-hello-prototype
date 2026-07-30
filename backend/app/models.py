@@ -42,12 +42,20 @@ class Player(db.Model):
     membership_status = db.Column(
         db.Enum("active", "inactive", "suspended", name="membership_status"), default="active"
     )
+    health_status = db.Column(
+        db.Enum("healthy", "injured", "recovering", name="player_health_status"),
+        default="healthy",
+        nullable=False,
+    )
 
     user = db.relationship("SystemUser", back_populates="player")
     attendances = db.relationship("Attendance", back_populates="player", cascade="all, delete-orphan")
     participations = db.relationship("Participation", back_populates="player", cascade="all, delete-orphan")
     feedback = db.relationship("PerformanceFeedback", back_populates="player", cascade="all, delete-orphan")
     notes = db.relationship("PlayerNote", back_populates="player", cascade="all, delete-orphan")
+    health_records = db.relationship(
+        "PlayerHealthRecord", back_populates="player", cascade="all, delete-orphan"
+    )
 
     def to_dict(self):
         return {
@@ -62,6 +70,7 @@ class Player(db.Model):
             "team": self.team,
             "profile_photo": self.profile_photo,
             "membership_status": self.membership_status,
+            "health_status": self.health_status,
             "is_active": self.user.is_active if self.user else True,
         }
 
@@ -81,6 +90,7 @@ class Coach(db.Model):
     attendances_recorded = db.relationship("Attendance", back_populates="coach")
     activities = db.relationship("TrainingActivity", back_populates="coach")
     feedback_given = db.relationship("PerformanceFeedback", back_populates="coach")
+    health_records_logged = db.relationship("PlayerHealthRecord", back_populates="coach")
 
     def to_dict(self):
         return {
@@ -238,6 +248,40 @@ class PlayerNote(db.Model):
             "player_id": self.player_id,
             "note_date": self.note_date.isoformat() if self.note_date else None,
             "content": self.content,
+        }
+
+
+class PlayerHealthRecord(db.Model):
+    """History of a player's injury/health status, logged by their coach."""
+
+    __tablename__ = "player_health_records"
+
+    health_record_id = db.Column(db.Integer, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey("players.player_id"), nullable=False)
+    coach_id = db.Column(db.Integer, db.ForeignKey("coaches.coach_id"), nullable=True)
+    status = db.Column(
+        db.Enum("healthy", "injured", "recovering", name="health_record_status"), nullable=False
+    )
+    injury_type = db.Column(db.String(120))
+    notes = db.Column(db.Text)
+    reported_date = db.Column(db.Date, default=date.today)
+    expected_return_date = db.Column(db.Date, nullable=True)
+
+    player = db.relationship("Player", back_populates="health_records")
+    coach = db.relationship("Coach", back_populates="health_records_logged")
+
+    def to_dict(self):
+        return {
+            "health_record_id": self.health_record_id,
+            "player_id": self.player_id,
+            "player_name": f"{self.player.first_name} {self.player.last_name}" if self.player else None,
+            "coach_id": self.coach_id,
+            "coach_name": f"{self.coach.first_name} {self.coach.last_name}" if self.coach else None,
+            "status": self.status,
+            "injury_type": self.injury_type,
+            "notes": self.notes,
+            "reported_date": self.reported_date.isoformat() if self.reported_date else None,
+            "expected_return_date": self.expected_return_date.isoformat() if self.expected_return_date else None,
         }
 
 

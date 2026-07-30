@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
-import type { PlayerProfile, PlayerStatistics } from '../../api/domain';
+import type { PlayerHealthRecord, PlayerProfile, PlayerStatistics } from '../../api/domain';
 import { useAuth } from '../../auth/AuthContext';
 import { StatCard } from '../../components/StatCard';
 import { AttendanceIcon, SessionsIcon, ActivitiesIcon, StarIcon } from '../../icons';
@@ -9,23 +9,32 @@ interface ProfilePageProps {
   showToast: (msg: string) => void;
 }
 
+function healthTag(status: string) {
+  if (status === 'healthy') return 'tag tag-success';
+  if (status === 'recovering') return 'tag tag-warning';
+  return 'tag tag-danger';
+}
+
 export function ProfilePage({ showToast }: ProfilePageProps) {
   const { refreshUser } = useAuth();
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
   const [stats, setStats] = useState<PlayerStatistics | null>(null);
+  const [healthHistory, setHealthHistory] = useState<PlayerHealthRecord[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [contactNumber, setContactNumber] = useState('');
   const [loading, setLoading] = useState(true);
 
   async function load() {
     setLoading(true);
-    const [p, s] = await Promise.all([
+    const [p, s, h] = await Promise.all([
       api.get<PlayerProfile>('/player/profile'),
       api.get<PlayerStatistics>('/player/statistics'),
+      api.get<PlayerHealthRecord[]>('/player/health'),
     ]);
     setProfile(p);
     setContactNumber(p.contact_number || '');
     setStats(s);
+    setHealthHistory(h);
     setLoading(false);
   }
 
@@ -80,6 +89,11 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
             </div>
           ))}
 
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>
+            <span style={{ opacity: 0.6 }}>Health status</span>
+            <span className={healthTag(profile.health_status)} style={{ textTransform: 'capitalize' }}>{profile.health_status}</span>
+          </div>
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: 13.5 }}>
             <span style={{ opacity: 0.6 }}>Contact number</span>
             {editing ? (
@@ -102,6 +116,28 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
           changes to your name, email, or team assignment.
         </p>
       </div>
+
+      {healthHistory && healthHistory.length > 0 && (
+        <div className="card elev-sm" style={{ padding: 24, maxWidth: 560, marginTop: 20 }}>
+          <div className="card-kicker">Health history</div>
+          <div className="card-title" style={{ marginBottom: 12 }}>Logged by your coach</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {healthHistory.map((r) => (
+              <div key={r.health_record_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>{r.status}</span>
+                  <span style={{ fontSize: 11.5, opacity: 0.55 }}>{r.reported_date}</span>
+                </div>
+                {r.injury_type && <div style={{ fontSize: 13.5, fontWeight: 600 }}>{r.injury_type}</div>}
+                {r.notes && <div style={{ fontSize: 13, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}
+                {r.expected_return_date && (
+                  <div style={{ fontSize: 11.5, opacity: 0.55, marginTop: 4 }}>Expected return: {r.expected_return_date}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }

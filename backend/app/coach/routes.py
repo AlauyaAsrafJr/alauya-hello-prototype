@@ -12,6 +12,7 @@ from app.models import (
     TrainingActivity,
     Participation,
     PerformanceFeedback,
+    PlayerHealthRecord,
     Report,
 )
 
@@ -101,6 +102,56 @@ def edit_player_profile(player_id):
         player.date_of_birth = date.fromisoformat(data["date_of_birth"])
     db.session.commit()
     return jsonify(player.to_dict())
+
+
+# ---- Player Health / Injury Monitoring ----
+
+
+@coach_bp.get("/players/<int:player_id>/health")
+@roles_required("coach")
+def get_player_health(player_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    if player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Player not found"}), 404
+    records = (
+        PlayerHealthRecord.query.filter_by(player_id=player_id)
+        .order_by(PlayerHealthRecord.reported_date.desc())
+        .all()
+    )
+    return jsonify([r.to_dict() for r in records])
+
+
+@coach_bp.post("/players/<int:player_id>/health")
+@roles_required("coach")
+def log_player_health(player_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    if player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Player not found"}), 404
+    data = request.get_json(force=True) or {}
+    status = data.get("status")
+    if status not in ("healthy", "injured", "recovering"):
+        return jsonify({"error": "status must be healthy, injured, or recovering"}), 400
+
+    record = PlayerHealthRecord(
+        player_id=player_id,
+        coach_id=coach.coach_id,
+        status=status,
+        injury_type=data.get("injury_type"),
+        notes=data.get("notes"),
+        expected_return_date=(
+            date.fromisoformat(data["expected_return_date"]) if data.get("expected_return_date") else None
+        ),
+    )
+    db.session.add(record)
+
+    player = Player.query.get_or_404(player_id)
+    player.health_status = status
+    db.session.commit()
+    return jsonify(record.to_dict()), 201
 
 
 # ---- Track Participation: Record Attendance ----

@@ -1,14 +1,20 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
-import type { CoachProfile, PlayerProfile } from '../../api/domain';
+import type { CoachProfile, HealthStatus, PlayerHealthRecord, PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
-import { EyeIcon } from '../../icons';
+import { EyeIcon, HeartPulseIcon } from '../../icons';
 
 function membershipTag(status: string) {
   if (status === 'active') return 'tag tag-success';
   if (status === 'suspended') return 'tag tag-danger';
   return 'tag tag-neutral';
+}
+
+function healthTag(status: string) {
+  if (status === 'healthy') return 'tag tag-success';
+  if (status === 'recovering') return 'tag tag-warning';
+  return 'tag tag-danger';
 }
 
 interface PlayersPageProps {
@@ -23,6 +29,15 @@ interface EditForm {
   membership_status: string;
 }
 
+interface HealthForm {
+  status: HealthStatus;
+  injury_type: string;
+  notes: string;
+  expected_return_date: string;
+}
+
+const EMPTY_HEALTH_FORM: HealthForm = { status: 'healthy', injury_type: '', notes: '', expected_return_date: '' };
+
 export function PlayersPage({ showToast }: PlayersPageProps) {
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
   const [coach, setCoach] = useState<CoachProfile | null>(null);
@@ -30,6 +45,10 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
   const [editing, setEditing] = useState<PlayerProfile | null>(null);
   const [form, setForm] = useState<EditForm | null>(null);
   const [viewing, setViewing] = useState<PlayerProfile | null>(null);
+  const [healthTarget, setHealthTarget] = useState<PlayerProfile | null>(null);
+  const [healthForm, setHealthForm] = useState<HealthForm>(EMPTY_HEALTH_FORM);
+  const [healthHistory, setHealthHistory] = useState<PlayerHealthRecord[] | null>(null);
+  const [savingHealth, setSavingHealth] = useState(false);
 
   async function load(q = '') {
     const data = await api.get<PlayerProfile[]>(`/coach/players${q ? `?q=${encodeURIComponent(q)}` : ''}`);
@@ -58,6 +77,32 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
     setEditing(null);
     showToast(`${form.first_name} ${form.last_name} updated`);
     load(search);
+  }
+
+  async function openHealth(p: PlayerProfile) {
+    setHealthTarget(p);
+    setHealthForm({ ...EMPTY_HEALTH_FORM, status: p.health_status });
+    setHealthHistory(null);
+    const records = await api.get<PlayerHealthRecord[]>(`/coach/players/${p.player_id}/health`);
+    setHealthHistory(records);
+  }
+
+  async function submitHealth() {
+    if (!healthTarget) return;
+    setSavingHealth(true);
+    try {
+      await api.post(`/coach/players/${healthTarget.player_id}/health`, {
+        status: healthForm.status,
+        injury_type: healthForm.injury_type || undefined,
+        notes: healthForm.notes || undefined,
+        expected_return_date: healthForm.expected_return_date || undefined,
+      });
+      showToast(`${healthTarget.first_name} ${healthTarget.last_name} marked as ${healthForm.status}`);
+      setHealthTarget(null);
+      load(search);
+    } finally {
+      setSavingHealth(false);
+    }
   }
 
   return (
@@ -97,7 +142,8 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               <th>Team</th>
               <th>Email</th>
               <th>Membership</th>
-              <th style={{ width: 110 }}>Actions</th>
+              <th>Health</th>
+              <th style={{ width: 160 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -107,16 +153,18 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
                 <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
                 <td style={{ opacity: 0.75 }}>{p.email}</td>
                 <td><span className={membershipTag(p.membership_status)}>{p.membership_status}</span></td>
+                <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
                 <td>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}><EyeIcon /></button>
+                    <button type="button" className="btn btn-ghost btn-icon" aria-label="Log health" onClick={() => openHealth(p)}><HeartPulseIcon /></button>
                     <button type="button" className="btn btn-secondary" onClick={() => openEdit(p)}>Edit</button>
                   </div>
                 </td>
               </tr>
             ))}
             {players && players.length === 0 && (
-              <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
+              <tr><td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
             )}
           </tbody>
         </table>
@@ -131,6 +179,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               ['Team', viewing.team || '—'],
               ['Date of birth', viewing.date_of_birth || '—'],
               ['Membership status', viewing.membership_status],
+              ['Health status', viewing.health_status],
             ].map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>
                 <span style={{ opacity: 0.6 }}>{k}</span>
@@ -189,6 +238,87 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               />
             </div>
           </div>
+        </DialogShell>
+      )}
+
+      {healthTarget && (
+        <DialogShell
+          title={`Player health — ${healthTarget.first_name} ${healthTarget.last_name}`}
+          onClose={() => setHealthTarget(null)}
+          actions={
+            <>
+              <button type="button" className="btn btn-secondary" onClick={() => setHealthTarget(null)}>Cancel</button>
+              <button type="button" className="btn btn-primary" onClick={submitHealth} disabled={savingHealth}>
+                {savingHealth ? 'Saving…' : 'Save status'}
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+            <div className="field">
+              <label>Status</label>
+              <Select
+                value={healthForm.status}
+                onChange={(v) => setHealthForm({ ...healthForm, status: v as HealthStatus })}
+                options={[
+                  { value: 'healthy', label: 'Healthy' },
+                  { value: 'injured', label: 'Injured' },
+                  { value: 'recovering', label: 'Recovering' },
+                ]}
+              />
+            </div>
+            {healthForm.status !== 'healthy' && (
+              <>
+                <div className="field">
+                  <label>Injury type</label>
+                  <input
+                    className="input"
+                    placeholder="e.g. Ankle sprain"
+                    value={healthForm.injury_type}
+                    onChange={(e) => setHealthForm({ ...healthForm, injury_type: e.target.value })}
+                  />
+                </div>
+                <div className="field">
+                  <label>Notes</label>
+                  <textarea
+                    className="input"
+                    style={{ minHeight: 70 }}
+                    value={healthForm.notes}
+                    onChange={(e) => setHealthForm({ ...healthForm, notes: e.target.value })}
+                  />
+                </div>
+                <div className="field">
+                  <label>Expected return date</label>
+                  <input
+                    className="input"
+                    type="date"
+                    value={healthForm.expected_return_date}
+                    onChange={(e) => setHealthForm({ ...healthForm, expected_return_date: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="card-kicker" style={{ marginBottom: 8 }}>History</div>
+          {healthHistory === null ? (
+            <div className="card-body">Loading…</div>
+          ) : healthHistory.length === 0 ? (
+            <div style={{ opacity: 0.6, fontSize: 13 }}>No health records logged yet.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 180, overflowY: 'auto' }}>
+              {healthHistory.map((r) => (
+                <div key={r.health_record_id} style={{ paddingBottom: 8, borderBottom: '1px solid var(--color-divider)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>{r.status}</span>
+                    <span style={{ fontSize: 11, opacity: 0.55 }}>{r.reported_date}</span>
+                  </div>
+                  {r.injury_type && <div style={{ fontSize: 13, fontWeight: 600, marginTop: 2 }}>{r.injury_type}</div>}
+                  {r.notes && <div style={{ fontSize: 12.5, opacity: 0.8 }}>{r.notes}</div>}
+                </div>
+              ))}
+            </div>
+          )}
         </DialogShell>
       )}
     </>

@@ -5,6 +5,7 @@ export interface Sport {
 
 export type UserRole = 'player' | 'coach' | 'admin';
 export type MembershipStatus = 'active' | 'inactive' | 'suspended';
+export type HealthStatus = 'healthy' | 'injured' | 'recovering';
 export type AttendanceStatus = 'present' | 'absent' | 'late';
 export type ParticipationStatus = 'joined' | 'excused' | 'no_show';
 export type ReportType = 'attendance' | 'performance' | 'training';
@@ -22,7 +23,21 @@ export interface PlayerProfile {
   team: string | null;
   profile_photo: string | null;
   membership_status: MembershipStatus;
+  health_status: HealthStatus;
   is_active: boolean;
+}
+
+export interface PlayerHealthRecord {
+  health_record_id: number;
+  player_id: number;
+  player_name: string | null;
+  coach_id: number | null;
+  coach_name: string | null;
+  status: HealthStatus;
+  injury_type: string | null;
+  notes: string | null;
+  reported_date: string;
+  expected_return_date: string | null;
 }
 
 export interface CoachProfile {
@@ -178,8 +193,13 @@ export interface SystemStatistics {
   archived_records: number;
 }
 
-export interface HealthStatus {
+export interface SystemHealthStatus {
   status: string;
   database: string;
   checked_at: string;
+}
+
+export interface PlayerHealthOverview {
+  counts: { healthy: number; injured: number; recovering: number };
+  players: PlayerProfile[];
 }
