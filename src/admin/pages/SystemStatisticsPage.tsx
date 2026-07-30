@@ -135,7 +135,7 @@ export function SystemStatisticsPage() {
                   </tr>
                 ))}
                 {playerHealth && playerHealth.players.length === 0 && (
-                  <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>Every player is healthy right now.</td></tr>
+                  <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
                 )}
                 {playerHealth && playerHealth.players.length > 0 && filteredHealthPlayers.length === 0 && (
                   <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No matching players found.</td></tr>

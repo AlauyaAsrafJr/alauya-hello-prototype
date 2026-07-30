@@ -165,15 +165,14 @@ def access_all_player_data():
 @admin_bp.get("/players/health-overview")
 @roles_required("admin")
 def player_health_overview():
-    players = Player.query.all()
+    players = Player.query.order_by(Player.last_name).all()
     counts = {"healthy": 0, "injured": 0, "recovering": 0}
     for p in players:
         counts[p.health_status] += 1
 
-    not_healthy = []
+    status_rank = {"injured": 0, "recovering": 1, "healthy": 2}
+    entries = []
     for p in players:
-        if p.health_status == "healthy":
-            continue
         entry = p.to_dict()
         latest = (
             PlayerHealthRecord.query.filter_by(player_id=p.player_id)
@@ -182,9 +181,10 @@ def player_health_overview():
         )
         entry["latest_reported_date"] = latest.reported_date.isoformat() if latest else None
         entry["latest_injury_type"] = latest.injury_type if latest else None
-        not_healthy.append(entry)
+        entries.append(entry)
+    entries.sort(key=lambda e: status_rank.get(e["health_status"], 3))
 
-    return jsonify({"counts": counts, "players": not_healthy})
+    return jsonify({"counts": counts, "players": entries})
 
 
 @admin_bp.get("/players/<int:player_id>/health")
