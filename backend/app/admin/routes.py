@@ -1,4 +1,3 @@
-import secrets
 from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify
@@ -150,8 +149,7 @@ def archive_user(user_id):
 @roles_required("admin")
 def reset_password(user_id):
     user = SystemUser.query.get_or_404(user_id)
-    data = request.get_json(silent=True) or {}
-    new_password = data.get("new_password") or secrets.token_urlsafe(9)
+    new_password = "changeme"
     user.password_hash = bcrypt.generate_password_hash(new_password).decode("utf-8")
     db.session.commit()
     return jsonify({"message": "Password reset", "temporary_password": new_password})

@@ -268,18 +268,24 @@ export function UsersPage({ showToast }: UsersPageProps) {
             ) : (
               <>
                 <button type="button" className="btn btn-secondary" onClick={() => setResetTarget(null)}>Cancel</button>
-                <button type="button" className="btn btn-primary" onClick={submitResetPassword}>Generate new password</button>
+                <button type="button" className="btn btn-primary" onClick={submitResetPassword}>Reset to default</button>
               </>
             )
           }
         >
           {tempPassword ? (
             <div className="dialog-body">
-              New temporary password: <strong style={{ fontFamily: 'monospace' }}>{tempPassword}</strong>
-              <p style={{ marginTop: 8, fontSize: 12.5, opacity: 0.7 }}>Share this with the user securely. It will not be shown again.</p>
+              Temporary password: <strong style={{ fontFamily: 'monospace' }}>{tempPassword}</strong>
+              <p style={{ marginTop: 8, fontSize: 12.5, opacity: 0.7 }}>
+                Share this with {resetTarget.display_name}. They should log in and change it from their own
+                profile as soon as possible.
+              </p>
             </div>
           ) : (
-            <div className="dialog-body">This will generate a new random password for {resetTarget.display_name} and invalidate their current one.</div>
+            <div className="dialog-body">
+              This will reset {resetTarget.display_name}'s password to <strong style={{ fontFamily: 'monospace' }}>changeme</strong>,
+              invalidating their current one. They'll need to log in and set a new password themselves.
+            </div>
           )}
         </DialogShell>
       )}

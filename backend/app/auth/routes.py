@@ -72,6 +72,25 @@ def logout():
     return jsonify({"message": "Logged out"})
 
 
+@auth_bp.post("/change-password")
+@jwt_required()
+def change_password():
+    user_id = int(get_jwt_identity())
+    user = SystemUser.query.get_or_404(user_id)
+    data = request.get_json(force=True) or {}
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+    if not current_password or not new_password:
+        return jsonify({"error": "Current and new password are required"}), 400
+    if not bcrypt.check_password_hash(user.password_hash, current_password):
+        return jsonify({"error": "Current password is incorrect"}), 401
+    if len(new_password) < 6:
+        return jsonify({"error": "New password must be at least 6 characters"}), 400
+    user.password_hash = bcrypt.generate_password_hash(new_password).decode("utf-8")
+    db.session.commit()
+    return jsonify({"message": "Password updated"})
+
+
 @auth_bp.get("/me")
 @jwt_required()
 def me():

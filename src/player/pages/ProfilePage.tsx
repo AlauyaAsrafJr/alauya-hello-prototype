@@ -3,6 +3,7 @@ import { api } from '../../api/client';
 import type { PlayerHealthRecord, PlayerProfile, PlayerStatistics } from '../../api/domain';
 import { useAuth } from '../../auth/AuthContext';
 import { StatCard } from '../../components/StatCard';
+import { ChangePasswordCard } from '../../components/ChangePasswordCard';
 import { AttendanceIcon, SessionsIcon, ActivitiesIcon, StarIcon } from '../../icons';
 
 interface ProfilePageProps {
@@ -115,6 +116,10 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
           Only your contact number and photo can be updated here. Contact your coach or the sports office for
           changes to your name, email, or team assignment.
         </p>
+      </div>
+
+      <div style={{ marginTop: 20 }}>
+        <ChangePasswordCard showToast={showToast} />
       </div>
 
       {healthHistory && healthHistory.length > 0 && (

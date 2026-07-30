@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
 import type { Sport } from '../../api/domain';
 import { TrashIcon } from '../../icons';
+import { ChangePasswordCard } from '../../components/ChangePasswordCard';
 
 interface SettingsPageProps {
   showToast: (msg: string) => void;
@@ -48,7 +49,8 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
   }
 
   return (
-    <div className="card elev-sm" style={{ padding: 24, maxWidth: 560 }}>
+    <>
+    <div className="card elev-sm" style={{ padding: 24, maxWidth: 560, marginBottom: 20 }}>
       <div className="card-kicker">System configuration</div>
       <div className="card-title" style={{ marginBottom: 6 }}>Manage sports</div>
       <p className="card-body" style={{ marginBottom: 16 }}>
@@ -87,5 +89,8 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
         </div>
       )}
     </div>
+
+    <ChangePasswordCard showToast={showToast} />
+    </>
   );
 }
