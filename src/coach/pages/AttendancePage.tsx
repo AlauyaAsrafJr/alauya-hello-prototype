@@ -40,6 +40,33 @@ function groupByDate(records: AttendanceRecord[]): SessionSummary[] {
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
+interface PlayerSummary {
+  player_id: number;
+  player_name: string;
+  total: number;
+  present: number;
+  late: number;
+  absent: number;
+}
+
+function groupByPlayer(records: AttendanceRecord[]): PlayerSummary[] {
+  const byPlayer = new Map<number, AttendanceRecord[]>();
+  for (const r of records) {
+    if (!byPlayer.has(r.player_id)) byPlayer.set(r.player_id, []);
+    byPlayer.get(r.player_id)!.push(r);
+  }
+  return Array.from(byPlayer.entries())
+    .map(([player_id, recs]) => ({
+      player_id,
+      player_name: recs[0]?.player_name || '—',
+      total: recs.length,
+      present: recs.filter((r) => r.status === 'present').length,
+      late: recs.filter((r) => r.status === 'late').length,
+      absent: recs.filter((r) => r.status === 'absent').length,
+    }))
+    .sort((a, b) => a.player_name.localeCompare(b.player_name));
+}
+
 const today = () => new Date().toISOString().slice(0, 10);
 
 export function AttendancePage({ showToast }: AttendancePageProps) {
@@ -52,6 +79,7 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
   const [editingSession, setEditingSession] = useState<SessionSummary | null>(null);
   const [editStatuses, setEditStatuses] = useState<Record<number, AttendanceStatus>>({});
   const [savingEdit, setSavingEdit] = useState(false);
+  const [viewMode, setViewMode] = useState<'session' | 'player'>('session');
 
   async function loadPlayers() {
     const data = await api.get<PlayerProfile[]>('/coach/players');
@@ -113,6 +141,7 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
   }
 
   const sessions = history ? groupByDate(history) : null;
+  const playerSummaries = history ? groupByPlayer(history) : null;
 
   return (
     <>
@@ -156,43 +185,88 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
         </button>
       </div>
 
-      <div className="card-title" style={{ marginBottom: 10 }}>Attendance history</div>
-      <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Present</th>
-              <th>Late</th>
-              <th>Absent</th>
-              <th>Total</th>
-              <th>Rate</th>
-              <th style={{ width: 150 }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sessions?.map((s) => (
-              <tr key={s.date}>
-                <td style={{ fontWeight: 600 }}>{s.date}</td>
-                <td><span className="tag tag-success">{s.present}</span></td>
-                <td><span className="tag tag-warning">{s.late}</span></td>
-                <td><span className="tag tag-danger">{s.absent}</span></td>
-                <td style={{ opacity: 0.75 }}>{s.total}</td>
-                <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
-                <td>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>View</button>
-                    <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>Edit</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {sessions && sessions.length === 0 && (
-              <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance recorded yet.</td></tr>
-            )}
-          </tbody>
-        </table>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 12 }}>
+        <div className="card-title">Attendance history</div>
+        <div className="seg">
+          <label className="seg-opt">
+            <input type="radio" checked={viewMode === 'session'} onChange={() => setViewMode('session')} />
+            By session
+          </label>
+          <label className="seg-opt">
+            <input type="radio" checked={viewMode === 'player'} onChange={() => setViewMode('player')} />
+            By player
+          </label>
+        </div>
       </div>
+
+      {viewMode === 'session' ? (
+        <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Present</th>
+                <th>Late</th>
+                <th>Absent</th>
+                <th>Total</th>
+                <th>Rate</th>
+                <th style={{ width: 150 }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sessions?.map((s) => (
+                <tr key={s.date}>
+                  <td style={{ fontWeight: 600 }}>{s.date}</td>
+                  <td><span className="tag tag-success">{s.present}</span></td>
+                  <td><span className="tag tag-warning">{s.late}</span></td>
+                  <td><span className="tag tag-danger">{s.absent}</span></td>
+                  <td style={{ opacity: 0.75 }}>{s.total}</td>
+                  <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>View</button>
+                      <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>Edit</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {sessions && sessions.length === 0 && (
+                <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance recorded yet.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Present</th>
+                <th>Late</th>
+                <th>Absent</th>
+                <th>Total sessions</th>
+                <th>Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {playerSummaries?.map((p) => (
+                <tr key={p.player_id}>
+                  <td style={{ fontWeight: 600 }}>{p.player_name}</td>
+                  <td><span className="tag tag-success">{p.present}</span></td>
+                  <td><span className="tag tag-warning">{p.late}</span></td>
+                  <td><span className="tag tag-danger">{p.absent}</span></td>
+                  <td style={{ opacity: 0.75 }}>{p.total}</td>
+                  <td style={{ opacity: 0.75 }}>{p.total ? Math.round(((p.present + p.late) / p.total) * 100) : 0}%</td>
+                </tr>
+              ))}
+              {playerSummaries && playerSummaries.length === 0 && (
+                <tr><td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance recorded yet.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {viewingSession && (
         <DialogShell
