@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
-import type { SystemUserSummary, UserRole } from '../../api/domain';
+import type { Sport, SystemUserSummary, UserRole } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import { ArchiveIcon, EyeIcon, PlusIcon } from '../../icons';
-import { TEAMS } from '../../constants/teams';
 
 interface UsersPageProps {
   showToast: (msg: string) => void;
@@ -27,11 +26,12 @@ const EMPTY_FORM: NewUserForm = {
   first_name: '',
   last_name: '',
   email: '',
-  team: TEAMS[0],
+  team: '',
 };
 
 export function UsersPage({ showToast }: UsersPageProps) {
   const [users, setUsers] = useState<SystemUserSummary[] | null>(null);
+  const [sports, setSports] = useState<Sport[] | null>(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [addOpen, setAddOpen] = useState(false);
@@ -47,9 +47,19 @@ export function UsersPage({ showToast }: UsersPageProps) {
     setUsers(data);
   }
 
+  async function loadSports() {
+    const data = await api.get<Sport[]>('/admin/sports');
+    setSports(data);
+    setForm((prev) => (prev.team ? prev : { ...prev, team: data[0]?.name || '' }));
+  }
+
   useEffect(() => {
     load();
   }, [roleFilter]);
+
+  useEffect(() => {
+    loadSports();
+  }, []);
 
   const filtered = (users || []).filter(
     (u) =>
@@ -196,15 +206,17 @@ export function UsersPage({ showToast }: UsersPageProps) {
               <div className="field">
                 <label>{form.role === 'coach' ? 'Team / sport they coach' : 'Team'}</label>
                 <select className="input" value={form.team} onChange={(e) => setForm({ ...form, team: e.target.value })}>
-                  {TEAMS.map((t) => (
-                    <option key={t} value={t}>{t}</option>
+                  {!sports?.length && <option value="">No sports set up yet</option>}
+                  {sports?.map((s) => (
+                    <option key={s.sport_id} value={s.name}>{s.name}</option>
                   ))}
                 </select>
-                {form.role === 'coach' && (
-                  <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>
-                    This coach will only see and manage players on this team.
-                  </p>
-                )}
+                <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>
+                  {form.role === 'coach'
+                    ? 'This coach will only see and manage players on this team.'
+                    : ''}
+                  {' '}Don't see the right sport? Add it from Settings → Manage Sports.
+                </p>
               </div>
             )}
           </div>

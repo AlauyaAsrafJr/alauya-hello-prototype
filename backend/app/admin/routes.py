@@ -19,6 +19,7 @@ from app.models import (
     ArchivedRecord,
     Report,
     Statistic,
+    Sport,
 )
 
 admin_bp = Blueprint("admin", __name__)
@@ -352,3 +353,43 @@ def delete_archived_record(archive_id):
     db.session.delete(record)
     db.session.commit()
     return jsonify({"message": "Record permanently deleted"})
+
+
+# ---- Manage Sports / Teams ----
+
+
+@admin_bp.get("/sports")
+@roles_required("admin")
+def list_sports():
+    sports = Sport.query.order_by(Sport.name).all()
+    return jsonify([s.to_dict() for s in sports])
+
+
+@admin_bp.post("/sports")
+@roles_required("admin")
+def create_sport():
+    data = request.get_json(force=True) or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    if Sport.query.filter(db.func.lower(Sport.name) == name.lower()).first():
+        return jsonify({"error": "That sport already exists"}), 409
+    sport = Sport(name=name)
+    db.session.add(sport)
+    db.session.commit()
+    return jsonify(sport.to_dict()), 201
+
+
+@admin_bp.delete("/sports/<int:sport_id>")
+@roles_required("admin")
+def delete_sport(sport_id):
+    sport = Sport.query.get_or_404(sport_id)
+    in_use = (
+        Player.query.filter_by(team=sport.name).first()
+        or Coach.query.filter_by(specialization=sport.name).first()
+    )
+    if in_use:
+        return jsonify({"error": "This sport is still assigned to a player or coach and can't be removed"}), 400
+    db.session.delete(sport)
+    db.session.commit()
+    return jsonify({"message": "Sport removed"})

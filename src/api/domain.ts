@@ -1,3 +1,8 @@
+export interface Sport {
+  sport_id: number;
+  name: string;
+}
+
 export type UserRole = 'player' | 'coach' | 'admin';
 export type MembershipStatus = 'active' | 'inactive' | 'suspended';
 export type AttendanceStatus = 'present' | 'absent' | 'late';

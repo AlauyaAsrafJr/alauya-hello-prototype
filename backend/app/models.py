@@ -340,3 +340,20 @@ class Statistic(db.Model):
             "data_payload": self.data_payload,
             "generated_date": self.generated_date.isoformat() if self.generated_date else None,
         }
+
+
+class Sport(db.Model):
+    """The list of teams/sports a player can join or a coach can specialize in.
+
+    Kept as an admin-managed table (rather than a hardcoded list) so a new
+    sport can be added from the UI without a code change.
+    """
+
+    __tablename__ = "sports"
+
+    sport_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {"sport_id": self.sport_id, "name": self.name}

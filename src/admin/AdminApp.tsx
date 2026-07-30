@@ -11,7 +11,7 @@ import { AttendancePage } from './pages/AttendancePage';
 import { ReportsPage } from './pages/ReportsPage';
 import { ArchivePage } from './pages/ArchivePage';
 import { SystemStatisticsPage } from './pages/SystemStatisticsPage';
-import { SettingsPage } from '../pages/SettingsPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 type AdminPageKey = 'dashboard' | 'users' | 'players' | 'attendance' | 'reports' | 'archive' | 'system' | 'settings';
 
@@ -64,7 +64,7 @@ export function AdminApp() {
       {page === 'reports' && <ReportsPage showToast={showToast} />}
       {page === 'archive' && <ArchivePage showToast={showToast} />}
       {page === 'system' && <SystemStatisticsPage />}
-      {page === 'settings' && <SettingsPage />}
+      {page === 'settings' && <SettingsPage showToast={showToast} />}
 
       {toast && <Toast message={toast} />}
     </AppShell>
