@@ -15,22 +15,10 @@ interface LoginResponse {
   user: AuthUser;
 }
 
-export interface RegisterPlayerForm {
-  username: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  contact_number?: string;
-  date_of_birth?: string;
-  team?: string;
-}
-
 interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  registerPlayer: (form: RegisterPlayerForm) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -64,11 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: res.access_token, user: res.user }));
   }
 
-  async function registerPlayer(form: RegisterPlayerForm) {
-    await api.post('/auth/register', form);
-    await login(form.username, form.password);
-  }
-
   async function logout() {
     try {
       await api.post('/auth/logout');
@@ -90,10 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const value = useMemo(
-    () => ({ user, loading, login, registerPlayer, logout, refreshUser }),
-    [user, loading],
-  );
+  const value = useMemo(() => ({ user, loading, login, logout, refreshUser }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

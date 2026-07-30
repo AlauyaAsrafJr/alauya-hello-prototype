@@ -18,7 +18,7 @@ centralized, role-based web system for **Players**, **Coaches**, and
 backend/            Flask API (auth, player, coach, admin blueprints)
   app/
     models.py        SQLAlchemy models matching the system ERD
-    auth/             Register / login / logout / me
+    auth/             Login / logout / me
     player/           Player-facing endpoints
     coach/            Coach-facing endpoints
     admin/            Admin-facing endpoints
@@ -27,7 +27,7 @@ backend/            Flask API (auth, player, coach, admin blueprints)
 
 src/                 React frontend
   api/                Fetch client + shared domain types
-  auth/               Auth context, Login/Register pages
+  auth/               Auth context, Login page
   player/ coach/ admin/  Per-role dashboards and pages
   components/         Shared UI (Sidebar, Topbar, modals, design tokens)
 ```
@@ -80,5 +80,6 @@ npm run lint             # oxlint
   archive), access all player data, generate/approve reports, view system
   statistics (login history, health monitoring), retrieve archived records.
 
-Only players self-register; coach and admin accounts are created by an
-administrator from the Manage Users page.
+There is no public self-registration. Every account — player, coach, or
+admin — is created by an administrator from the Manage Users page, so only
+people the sports office has vetted can access the system.

@@ -1,57 +1,16 @@
-from datetime import datetime, date
+from datetime import datetime
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
     create_access_token,
     jwt_required,
     get_jwt_identity,
-    get_jwt,
 )
 
 from app.extensions import db, bcrypt
-from app.models import SystemUser, Player, LoginHistory
+from app.models import SystemUser, LoginHistory
 
 auth_bp = Blueprint("auth", __name__)
-
-
-@auth_bp.post("/register")
-def register():
-    data = request.get_json(force=True) or {}
-    required = ["username", "password", "first_name", "last_name", "email"]
-    missing = [f for f in required if not data.get(f)]
-    if missing:
-        return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
-
-    if SystemUser.query.filter_by(username=data["username"]).first():
-        return jsonify({"error": "Username already taken"}), 409
-    if Player.query.filter_by(email=data["email"]).first():
-        return jsonify({"error": "Email already registered"}), 409
-
-    password_hash = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
-    user = SystemUser(username=data["username"], password_hash=password_hash, role="player")
-    db.session.add(user)
-    db.session.flush()
-
-    dob = None
-    if data.get("date_of_birth"):
-        try:
-            dob = date.fromisoformat(data["date_of_birth"])
-        except ValueError:
-            dob = None
-
-    player = Player(
-        user_id=user.user_id,
-        first_name=data["first_name"],
-        last_name=data["last_name"],
-        email=data["email"],
-        contact_number=data.get("contact_number"),
-        date_of_birth=dob,
-        team=data.get("team"),
-    )
-    db.session.add(player)
-    db.session.commit()
-
-    return jsonify({"message": "Registration successful", "player": player.to_dict()}), 201
 
 
 @auth_bp.post("/login")

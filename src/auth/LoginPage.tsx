@@ -2,11 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useAuth } from './AuthContext';
 import { ApiError } from '../api/client';
 
-interface LoginPageProps {
-  onGoRegister: () => void;
-}
-
-export function LoginPage({ onGoRegister }: LoginPageProps) {
+export function LoginPage() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -96,12 +92,10 @@ export function LoginPage({ onGoRegister }: LoginPageProps) {
           </button>
         </form>
 
-        <div style={{ marginTop: 18, fontSize: 13, textAlign: 'center' }}>
-          Varsity player without an account?{' '}
-          <button type="button" className="btn btn-ghost" style={{ padding: 0, fontSize: 13 }} onClick={onGoRegister}>
-            Register here
-          </button>
-        </div>
+        <p style={{ marginTop: 18, fontSize: 12.5, textAlign: 'center', opacity: 0.6 }}>
+          Accounts are created by the sports office administrator. Contact your coach or the admin office if you
+          need access.
+        </p>
       </div>
     </div>
   );
