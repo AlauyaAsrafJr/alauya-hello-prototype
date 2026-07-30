@@ -70,6 +70,7 @@ export interface SystemUserSummary {
   last_login: string | null;
   display_name: string;
   email: string | null;
+  team: string | null;
 }
 
 export interface AttendanceRecord {

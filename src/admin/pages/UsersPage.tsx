@@ -125,17 +125,18 @@ export function UsersPage({ showToast }: UsersPageProps) {
         </button>
       </div>
 
-      <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
+      <div className="card elev-sm" style={{ padding: 0, overflowX: 'auto', overflowY: 'hidden' }}>
+        <table className="table" style={{ minWidth: 1080 }}>
           <thead>
             <tr>
               <th>Name</th>
               <th>Username</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Team</th>
               <th>Status</th>
               <th>Last login</th>
-              <th style={{ width: 190 }}>Actions</th>
+              <th style={{ width: 250 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -145,20 +146,21 @@ export function UsersPage({ showToast }: UsersPageProps) {
                 <td style={{ opacity: 0.75 }}>{u.username}</td>
                 <td style={{ opacity: 0.75 }}>{u.email || '—'}</td>
                 <td><span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>{u.role}</span></td>
+                <td style={{ opacity: 0.75 }}>{u.team || '—'}</td>
                 <td><span className={u.is_active ? 'tag tag-success' : 'tag tag-danger'}>{u.is_active ? 'Active' : 'Inactive'}</span></td>
                 <td style={{ opacity: 0.65 }}>{u.last_login ? new Date(u.last_login).toLocaleString() : 'Never'}</td>
                 <td>
-                  <div style={{ display: 'flex', gap: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
                     <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(u)}><EyeIcon /></button>
-                    <button type="button" className="btn btn-secondary" onClick={() => toggleActive(u)}>{u.is_active ? 'Deactivate' : 'Activate'}</button>
-                    <button type="button" className="btn btn-ghost" onClick={() => setResetTarget(u)}>Reset PW</button>
-                    <button type="button" className="btn btn-ghost btn-icon" aria-label="Archive" onClick={() => setArchiveTarget(u)}><ArchiveIcon size={15} /></button>
+                    <button type="button" className="btn btn-ghost" style={{ whiteSpace: 'nowrap' }} onClick={() => setResetTarget(u)}>Reset PW</button>
+                    <button type="button" className="btn btn-secondary" style={{ whiteSpace: 'nowrap' }} onClick={() => toggleActive(u)}>{u.is_active ? 'Deactivate' : 'Activate'}</button>
+                    <button type="button" className="btn btn-ghost btn-icon" aria-label="Archive" style={{ marginLeft: 'auto' }} onClick={() => setArchiveTarget(u)}><ArchiveIcon size={15} /></button>
                   </div>
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No users found.</td></tr>
+              <tr><td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No users found.</td></tr>
             )}
           </tbody>
         </table>
@@ -240,6 +242,7 @@ export function UsersPage({ showToast }: UsersPageProps) {
               ['Username', viewing.username],
               ['Email', viewing.email || '—'],
               ['Role', viewing.role],
+              ['Team', viewing.team || '—'],
               ['Status', viewing.is_active ? 'Active' : 'Inactive'],
               ['Last login', viewing.last_login ? new Date(viewing.last_login).toLocaleString() : 'Never'],
             ].map(([k, v]) => (

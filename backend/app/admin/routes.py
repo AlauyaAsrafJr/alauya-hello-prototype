@@ -62,6 +62,7 @@ def list_users():
                 "last_login": u.last_login.isoformat() if u.last_login else None,
                 "display_name": u.display_name(),
                 "email": getattr(profile, "email", None),
+                "team": getattr(profile, "team", None) or getattr(profile, "specialization", None),
             }
         )
     return jsonify(result)
