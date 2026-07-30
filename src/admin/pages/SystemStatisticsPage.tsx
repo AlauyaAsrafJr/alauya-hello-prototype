@@ -90,9 +90,16 @@ export function SystemStatisticsPage() {
 
       {viewMode === 'health' ? (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10, gap: 12 }}>
-            <div className="card-title" style={{ margin: 0 }}>Player health</div>
-            <div style={{ flex: 1 }} />
+          <div className="card-title" style={{ marginBottom: 10 }}>Player health</div>
+          {playerHealth && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
+              <StatCard label="Healthy" value={playerHealth.counts.healthy} icon={HeartPulseIcon} variant="success" />
+              <StatCard label="Recovering" value={playerHealth.counts.recovering} icon={HeartPulseIcon} variant="warning" />
+              <StatCard label="Injured" value={playerHealth.counts.injured} icon={HeartPulseIcon} variant="danger" />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', marginBottom: 10 }}>
             <input
               className="input"
               style={{ maxWidth: 260 }}
@@ -101,13 +108,6 @@ export function SystemStatisticsPage() {
               onChange={(e) => setHealthSearch(e.target.value)}
             />
           </div>
-          {playerHealth && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
-              <StatCard label="Healthy" value={playerHealth.counts.healthy} icon={HeartPulseIcon} variant="success" />
-              <StatCard label="Recovering" value={playerHealth.counts.recovering} icon={HeartPulseIcon} variant="warning" />
-              <StatCard label="Injured" value={playerHealth.counts.injured} icon={HeartPulseIcon} variant="danger" />
-            </div>
-          )}
 
           <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
             <table className="table">
