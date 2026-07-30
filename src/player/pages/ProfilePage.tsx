@@ -185,7 +185,7 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
         <div className="card elev-sm" style={{ padding: 24, flex: '1 1 360px', maxWidth: 420 }}>
           <div className="card-kicker">Health history</div>
           <div className="card-title" style={{ marginBottom: 12 }}>Logged by your coach</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 360, overflowY: 'auto', paddingRight: 4 }}>
             {healthHistory.map((r) => (
               <div key={r.health_record_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
