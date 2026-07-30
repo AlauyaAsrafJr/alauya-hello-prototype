@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
+import { Select } from '../../components/Select';
 import { EyeIcon } from '../../icons';
 
 function membershipTag(status: string) {
@@ -38,28 +39,18 @@ export function PlayersPage() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+        <Select
+          style={{ minWidth: 200 }}
+          value={teamFilter}
+          onChange={setTeamFilter}
+          options={[
+            { value: 'all', label: `All (${(players || []).length})` },
+            ...teams.map((t) => ({ value: t, label: `${t} (${countFor(t)})` })),
+          ]}
+        />
+        <div style={{ flex: 1 }} />
         <input className="input" style={{ maxWidth: 300 }} placeholder="Search players by name or email" value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-        <button
-          type="button"
-          className={teamFilter === 'all' ? 'btn btn-primary' : 'btn btn-secondary'}
-          onClick={() => setTeamFilter('all')}
-        >
-          All ({(players || []).length})
-        </button>
-        {teams.map((t) => (
-          <button
-            key={t}
-            type="button"
-            className={teamFilter === t ? 'btn btn-primary' : 'btn btn-secondary'}
-            onClick={() => setTeamFilter(t)}
-          >
-            {t} ({countFor(t)})
-          </button>
-        ))}
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
