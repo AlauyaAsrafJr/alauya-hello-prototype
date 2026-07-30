@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { CoachAnalytics } from '../../api/domain';
 import { PlayersIcon, ActivitiesIcon, AttendanceIcon, StarIcon } from '../../icons';
+import { StatCard, type StatCardVariant } from '../../components/StatCard';
 
 interface DashboardPageProps {
   onNavigate: (key: string) => void;
@@ -16,37 +17,18 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   if (!analytics) return <div className="card-body">Loading analytics…</div>;
 
-  const cards = [
-    { label: 'Total Players', value: analytics.total_players, Icon: PlayersIcon, onView: () => onNavigate('players') },
-    { label: 'Training Activities', value: analytics.total_activities, Icon: ActivitiesIcon, onView: () => onNavigate('activities') },
-    { label: 'Attendance Rate', value: `${analytics.attendance_rate}%`, Icon: AttendanceIcon, onView: () => onNavigate('attendance') },
-    { label: 'Average Rating', value: analytics.average_rating != null ? analytics.average_rating.toFixed(1) : '—', Icon: StarIcon, onView: () => onNavigate('feedback') },
+  const cards: { label: string; value: string | number; Icon: typeof PlayersIcon; variant: StatCardVariant; onView: () => void }[] = [
+    { label: 'Total Players', value: analytics.total_players, Icon: PlayersIcon, variant: 'info', onView: () => onNavigate('players') },
+    { label: 'Training Activities', value: analytics.total_activities, Icon: ActivitiesIcon, variant: 'success', onView: () => onNavigate('activities') },
+    { label: 'Attendance Rate', value: `${analytics.attendance_rate}%`, Icon: AttendanceIcon, variant: 'warning', onView: () => onNavigate('attendance') },
+    { label: 'Average Rating', value: analytics.average_rating != null ? analytics.average_rating.toFixed(1) : '—', Icon: StarIcon, variant: 'accent', onView: () => onNavigate('feedback') },
   ];
 
   return (
     <>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
         {cards.map((c) => (
-          <div key={c.label} className="card elev-sm" style={{ padding: 18 }}>
-            <div
-              style={{
-                width: 38,
-                height: 38,
-                background: 'var(--color-accent-100)',
-                color: 'var(--color-accent-700)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <c.Icon />
-            </div>
-            <div className="card-title" style={{ fontSize: 28, marginTop: 6 }}>{c.value}</div>
-            <div style={{ fontSize: 12.5, opacity: 0.65, fontWeight: 600 }}>{c.label}</div>
-            <button type="button" onClick={c.onView} className="btn btn-ghost" style={{ paddingInline: 0, marginTop: 2, fontSize: 12.5 }}>
-              Quick view →
-            </button>
-          </div>
+          <StatCard key={c.label} label={c.label} value={c.value} icon={c.Icon} variant={c.variant} onView={c.onView} />
         ))}
       </div>
 

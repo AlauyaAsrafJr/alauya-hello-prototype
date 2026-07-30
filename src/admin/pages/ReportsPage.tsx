@@ -71,7 +71,7 @@ export function ReportsPage({ showToast }: ReportsPageProps) {
                 <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type}</td>
                 <td style={{ opacity: 0.75 }}>{r.generated_by_name}</td>
                 <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
-                <td><span className={r.status === 'approved' ? 'tag tag-accent' : 'tag tag-outline'}>{r.status}</span></td>
+                <td><span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span></td>
                 <td>
                   {r.status === 'pending' && (
                     <button type="button" className="btn btn-secondary" onClick={() => approve(r)}>Approve</button>

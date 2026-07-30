@@ -3,9 +3,9 @@ import { api } from '../../api/client';
 import type { ParticipationRecord } from '../../api/domain';
 
 function statusTag(status: string) {
-  if (status === 'joined') return 'tag tag-accent';
-  if (status === 'excused') return 'tag tag-outline';
-  return 'tag tag-neutral';
+  if (status === 'joined') return 'tag tag-success';
+  if (status === 'excused') return 'tag tag-warning';
+  return 'tag tag-danger';
 }
 
 export function ParticipationPage() {

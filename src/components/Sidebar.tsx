@@ -5,6 +5,7 @@ export interface NavItem {
   key: string;
   label: string;
   icon: ComponentType<{ size?: number }>;
+  group?: string;
 }
 
 interface SidebarProps {
@@ -13,16 +14,25 @@ interface SidebarProps {
   onNavigate: (key: string) => void;
   onLogout: () => void;
   roleLabel: string;
+  displayName?: string;
 }
 
-export function Sidebar({ items, active, onNavigate, onLogout, roleLabel }: SidebarProps) {
+function initialsOf(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return parts.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '').join('') || '?';
+}
+
+export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displayName }: SidebarProps) {
+  let lastGroup: string | undefined;
+
   return (
     <aside
       style={{
-        width: 248,
+        width: 250,
         flex: 'none',
-        background: 'var(--color-neutral-900)',
-        color: 'var(--color-neutral-100)',
+        background: 'var(--color-bg)',
+        borderRight: '1px solid var(--color-divider)',
+        color: 'var(--color-neutral-300)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -30,8 +40,8 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel }: Side
     >
       <div
         style={{
-          padding: '22px 20px',
-          borderBottom: '2px solid rgba(255,255,255,0.12)',
+          padding: '20px 18px',
+          borderBottom: '1px solid var(--color-divider)',
           display: 'flex',
           alignItems: 'center',
           gap: 10,
@@ -42,6 +52,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel }: Side
             width: 34,
             height: 34,
             background: 'var(--color-accent)',
+            borderRadius: 'var(--radius-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -55,46 +66,75 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel }: Side
           A
         </div>
         <div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 17, letterSpacing: '-0.01em' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16.5, letterSpacing: '-0.01em', color: 'var(--color-neutral-100)' }}>
             ACTIBASE
           </div>
           <div style={{ fontSize: 10.5, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{roleLabel}</div>
         </div>
       </div>
 
-      <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {items.map(({ key, label, icon: Icon }) => {
+      <nav style={{ flex: 1, padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto' }}>
+        {items.map(({ key, label, icon: Icon, group }) => {
           const isActive = active === key;
+          const showGroupHeader = group && group !== lastGroup;
+          lastGroup = group;
           return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onNavigate(key)}
-              className="sidebar-nav-btn"
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 12px',
-                background: isActive ? 'var(--color-accent)' : 'transparent',
-                border: 0,
-                color: isActive ? '#fff' : 'var(--color-neutral-300)',
-                fontFamily: 'var(--font-body)',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <Icon />
-              {label}
-            </button>
+            <div key={key}>
+              {showGroupHeader && (
+                <div
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-neutral-600)',
+                    padding: '14px 10px 6px',
+                  }}
+                >
+                  {group}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => onNavigate(key)}
+                className="sidebar-nav-btn"
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '9px 12px',
+                  background: isActive ? 'var(--color-accent-100)' : 'transparent',
+                  border: 0,
+                  borderRadius: 'var(--radius-sm)',
+                  color: isActive ? 'var(--color-accent-400)' : 'var(--color-neutral-300)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                <Icon />
+                {label}
+              </button>
+            </div>
           );
         })}
       </nav>
 
-      <div style={{ padding: '14px 12px', borderTop: '2px solid rgba(255,255,255,0.12)' }}>
+      <div style={{ padding: '12px', borderTop: '1px solid var(--color-divider)' }}>
+        {displayName && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', marginBottom: 4 }}>
+            <div className="avatar-chip">{initialsOf(displayName)}</div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--color-neutral-100)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {displayName}
+              </div>
+              <div style={{ fontSize: 10.5, opacity: 0.55 }}>{roleLabel}</div>
+            </div>
+          </div>
+        )}
         <button
           type="button"
           onClick={onLogout}
@@ -104,12 +144,13 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel }: Side
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            padding: '10px 12px',
+            padding: '9px 12px',
             background: 'transparent',
             border: 0,
+            borderRadius: 'var(--radius-sm)',
             color: 'var(--color-neutral-300)',
             fontFamily: 'var(--font-body)',
-            fontSize: 14,
+            fontSize: 13.5,
             fontWeight: 600,
             cursor: 'pointer',
             textAlign: 'left',

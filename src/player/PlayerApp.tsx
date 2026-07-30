@@ -14,12 +14,12 @@ import { NotesPage } from './pages/NotesPage';
 type PlayerPageKey = 'profile' | 'attendance' | 'participation' | 'training' | 'feedback' | 'notes';
 
 const NAV_ITEMS = [
-  { key: 'profile', label: 'My Profile', icon: ProfileIcon },
-  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon },
-  { key: 'participation', label: 'Participation History', icon: SessionsIcon },
-  { key: 'training', label: 'Training Activity', icon: ActivitiesIcon },
-  { key: 'feedback', label: 'Performance Feedback', icon: ReportsIcon },
-  { key: 'notes', label: 'My Notes', icon: NoteIcon },
+  { key: 'profile', label: 'My Profile', icon: ProfileIcon, group: 'Overview' },
+  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon, group: 'My Records' },
+  { key: 'participation', label: 'Participation History', icon: SessionsIcon, group: 'My Records' },
+  { key: 'training', label: 'Training Activity', icon: ActivitiesIcon, group: 'My Records' },
+  { key: 'feedback', label: 'Performance Feedback', icon: ReportsIcon, group: 'My Records' },
+  { key: 'notes', label: 'My Notes', icon: NoteIcon, group: 'Personal' },
 ];
 
 const PAGE_TITLES: Record<PlayerPageKey, [string, string]> = {

@@ -4,6 +4,12 @@ import type { PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { EyeIcon } from '../../icons';
 
+function membershipTag(status: string) {
+  if (status === 'active') return 'tag tag-success';
+  if (status === 'suspended') return 'tag tag-danger';
+  return 'tag tag-neutral';
+}
+
 interface PlayersPageProps {
   showToast: (msg: string) => void;
 }
@@ -85,7 +91,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
                 <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
                 <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
                 <td style={{ opacity: 0.75 }}>{p.email}</td>
-                <td><span className={p.membership_status === 'active' ? 'tag tag-accent' : 'tag tag-neutral'}>{p.membership_status}</span></td>
+                <td><span className={membershipTag(p.membership_status)}>{p.membership_status}</span></td>
                 <td>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}><EyeIcon /></button>

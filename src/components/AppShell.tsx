@@ -49,7 +49,7 @@ export function AppShell({
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: 'var(--color-bg)', fontFamily: 'var(--font-body)', color: 'var(--color-text)' }}>
-      <Sidebar items={items} active={active} onNavigate={handleNavigate} onLogout={onLogout} roleLabel={roleLabel} />
+      <Sidebar items={items} active={active} onNavigate={handleNavigate} onLogout={onLogout} roleLabel={roleLabel} displayName={displayName} />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%', overflowY: 'auto' }}>
         <Topbar

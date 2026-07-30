@@ -14,12 +14,12 @@ import { ReportsPage } from './pages/ReportsPage';
 type CoachPageKey = 'dashboard' | 'players' | 'attendance' | 'activities' | 'feedback' | 'reports';
 
 const NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
-  { key: 'players', label: 'Manage Players', icon: PlayersIcon },
-  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon },
-  { key: 'activities', label: 'Training Activities', icon: ActivitiesIcon },
-  { key: 'feedback', label: 'Performance Feedback', icon: StarIcon },
-  { key: 'reports', label: 'Analytics & Reports', icon: ReportsIcon },
+  { key: 'dashboard', label: 'Dashboard', icon: DashboardIcon, group: 'Overview' },
+  { key: 'players', label: 'Manage Players', icon: PlayersIcon, group: 'Roster' },
+  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon, group: 'Operations' },
+  { key: 'activities', label: 'Training Activities', icon: ActivitiesIcon, group: 'Operations' },
+  { key: 'feedback', label: 'Performance Feedback', icon: StarIcon, group: 'Operations' },
+  { key: 'reports', label: 'Analytics & Reports', icon: ReportsIcon, group: 'Insights' },
 ];
 
 const PAGE_TITLES: Record<CoachPageKey, [string, string]> = {

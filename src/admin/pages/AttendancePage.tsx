@@ -3,9 +3,9 @@ import { api } from '../../api/client';
 import type { AttendanceRecord } from '../../api/domain';
 
 function statusTag(status: string) {
-  if (status === 'present') return 'tag tag-accent';
-  if (status === 'late') return 'tag tag-outline';
-  return 'tag tag-neutral';
+  if (status === 'present') return 'tag tag-success';
+  if (status === 'late') return 'tag tag-warning';
+  return 'tag tag-danger';
 }
 
 function isWithinLastWeek(dateStr: string) {
@@ -42,7 +42,7 @@ export function AttendancePage() {
           </label>
         </div>
         <div style={{ flex: 1 }} />
-        <span className="tag tag-outline">{total} records · {rate}% present</span>
+        <span className="tag tag-info">{total} records · {rate}% present</span>
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>

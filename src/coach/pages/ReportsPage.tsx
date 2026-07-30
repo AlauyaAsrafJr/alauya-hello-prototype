@@ -56,7 +56,7 @@ export function ReportsPage({ showToast }: ReportsPageProps) {
                 <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type}</td>
                 <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '—'}</td>
                 <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
-                <td><span className={r.status === 'approved' ? 'tag tag-accent' : 'tag tag-outline'}>{r.status}</span></td>
+                <td><span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span></td>
               </tr>
             ))}
             {reports && reports.length === 0 && (

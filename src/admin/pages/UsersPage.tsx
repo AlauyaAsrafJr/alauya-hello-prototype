@@ -119,7 +119,7 @@ export function UsersPage({ showToast }: UsersPageProps) {
                 <td style={{ opacity: 0.75 }}>{u.username}</td>
                 <td style={{ opacity: 0.75 }}>{u.email || '—'}</td>
                 <td><span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>{u.role}</span></td>
-                <td><span className={u.is_active ? 'tag tag-accent' : 'tag tag-neutral'}>{u.is_active ? 'Active' : 'Inactive'}</span></td>
+                <td><span className={u.is_active ? 'tag tag-success' : 'tag tag-danger'}>{u.is_active ? 'Active' : 'Inactive'}</span></td>
                 <td style={{ opacity: 0.65 }}>{u.last_login ? new Date(u.last_login).toLocaleString() : 'Never'}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 4 }}>

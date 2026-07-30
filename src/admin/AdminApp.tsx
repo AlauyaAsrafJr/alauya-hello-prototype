@@ -16,14 +16,14 @@ import { SettingsPage } from '../pages/SettingsPage';
 type AdminPageKey = 'dashboard' | 'users' | 'players' | 'attendance' | 'reports' | 'archive' | 'system' | 'settings';
 
 const NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
-  { key: 'users', label: 'Manage Users', icon: UsersIcon },
-  { key: 'players', label: 'Player Data', icon: PlayersIcon },
-  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon },
-  { key: 'reports', label: 'Reports & Analytics', icon: ReportsIcon },
-  { key: 'archive', label: 'Archive', icon: ArchiveIcon },
-  { key: 'system', label: 'System Statistics', icon: HeartPulseIcon },
-  { key: 'settings', label: 'Settings', icon: SettingsIcon },
+  { key: 'dashboard', label: 'Dashboard', icon: DashboardIcon, group: 'Overview' },
+  { key: 'users', label: 'Manage Users', icon: UsersIcon, group: 'People' },
+  { key: 'players', label: 'Player Data', icon: PlayersIcon, group: 'People' },
+  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon, group: 'Operations' },
+  { key: 'reports', label: 'Reports & Analytics', icon: ReportsIcon, group: 'Operations' },
+  { key: 'archive', label: 'Archive', icon: ArchiveIcon, group: 'Operations' },
+  { key: 'system', label: 'System Statistics', icon: HeartPulseIcon, group: 'System' },
+  { key: 'settings', label: 'Settings', icon: SettingsIcon, group: 'System' },
 ];
 
 const PAGE_TITLES: Record<AdminPageKey, [string, string]> = {

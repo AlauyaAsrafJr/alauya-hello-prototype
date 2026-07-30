@@ -21,7 +21,7 @@ export function SystemStatisticsPage() {
           {health ? (
             <>
               <div className="card-title" style={{ marginTop: 6, textTransform: 'capitalize' }}>
-                <span className={health.status === 'healthy' ? 'tag tag-accent' : 'tag tag-neutral'}>{health.status}</span>
+                <span className={health.status === 'healthy' ? 'tag tag-success' : 'tag tag-danger'}>{health.status}</span>
               </div>
               <div style={{ fontSize: 12.5, opacity: 0.65, marginTop: 8 }}>Database: {health.database}</div>
               <div style={{ fontSize: 11.5, opacity: 0.5, marginTop: 4 }}>Checked {new Date(health.checked_at).toLocaleString()}</div>

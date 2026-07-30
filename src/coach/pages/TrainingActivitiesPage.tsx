@@ -8,6 +8,12 @@ interface TrainingActivitiesPageProps {
   showToast: (msg: string) => void;
 }
 
+function participationTag(status: string) {
+  if (status === 'joined') return 'tag tag-success';
+  if (status === 'excused') return 'tag tag-warning';
+  return 'tag tag-danger';
+}
+
 const today = () => new Date().toISOString().slice(0, 10);
 
 export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProps) {
@@ -227,7 +233,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
             {viewing.participants.map((p) => (
               <div key={p.participation_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>
                 <span>{p.player_name}</span>
-                <span className="tag tag-neutral">{p.participation_status}</span>
+                <span className={participationTag(p.participation_status)}>{p.participation_status}</span>
               </div>
             ))}
             {viewing.participants.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No participants recorded.</div>}

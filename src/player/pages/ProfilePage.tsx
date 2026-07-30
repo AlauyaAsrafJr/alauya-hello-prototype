@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { PlayerProfile, PlayerStatistics } from '../../api/domain';
 import { useAuth } from '../../auth/AuthContext';
+import { StatCard } from '../../components/StatCard';
+import { AttendanceIcon, SessionsIcon, ActivitiesIcon, StarIcon } from '../../icons';
 
 interface ProfilePageProps {
   showToast: (msg: string) => void;
@@ -42,22 +44,19 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
   if (loading || !profile) return <div className="card-body">Loading profile…</div>;
 
   const statCards = stats
-    ? [
-        { label: 'Attendance rate', value: `${stats.attendance_rate}%` },
-        { label: 'Sessions attended', value: stats.total_sessions },
-        { label: 'Activities joined', value: stats.participation_count },
-        { label: 'Average rating', value: stats.average_rating != null ? stats.average_rating.toFixed(1) : '—' },
-      ]
+    ? ([
+        { label: 'Attendance rate', value: `${stats.attendance_rate}%`, icon: AttendanceIcon, variant: 'warning' as const },
+        { label: 'Sessions attended', value: stats.total_sessions, icon: SessionsIcon, variant: 'info' as const },
+        { label: 'Activities joined', value: stats.participation_count, icon: ActivitiesIcon, variant: 'success' as const },
+        { label: 'Average rating', value: stats.average_rating != null ? stats.average_rating.toFixed(1) : '—', icon: StarIcon, variant: 'accent' as const },
+      ])
     : [];
 
   return (
     <>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
         {statCards.map((c) => (
-          <div key={c.label} className="card elev-sm" style={{ padding: 18 }}>
-            <div className="card-title" style={{ fontSize: 26 }}>{c.value}</div>
-            <div style={{ fontSize: 12.5, opacity: 0.65, fontWeight: 600 }}>{c.label}</div>
-          </div>
+          <StatCard key={c.label} label={c.label} value={c.value} icon={c.icon} variant={c.variant} />
         ))}
       </div>
 

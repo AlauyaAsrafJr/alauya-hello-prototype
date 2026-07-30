@@ -3,9 +3,9 @@ import { api } from '../../api/client';
 import type { AttendanceRecord } from '../../api/domain';
 
 function statusTag(status: string) {
-  if (status === 'present') return 'tag tag-accent';
-  if (status === 'late') return 'tag tag-outline';
-  return 'tag tag-neutral';
+  if (status === 'present') return 'tag tag-success';
+  if (status === 'late') return 'tag tag-warning';
+  return 'tag tag-danger';
 }
 
 export function AttendancePage() {

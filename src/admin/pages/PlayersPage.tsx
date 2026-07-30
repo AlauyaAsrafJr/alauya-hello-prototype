@@ -4,6 +4,12 @@ import type { PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { EyeIcon } from '../../icons';
 
+function membershipTag(status: string) {
+  if (status === 'active') return 'tag tag-success';
+  if (status === 'suspended') return 'tag tag-danger';
+  return 'tag tag-neutral';
+}
+
 export function PlayersPage() {
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
   const [search, setSearch] = useState('');
@@ -43,8 +49,8 @@ export function PlayersPage() {
                 <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
                 <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
                 <td style={{ opacity: 0.75 }}>{p.email}</td>
-                <td><span className={p.membership_status === 'active' ? 'tag tag-accent' : 'tag tag-neutral'}>{p.membership_status}</span></td>
-                <td><span className={p.is_active ? 'tag tag-accent' : 'tag tag-neutral'}>{p.is_active ? 'Active' : 'Inactive'}</span></td>
+                <td><span className={membershipTag(p.membership_status)}>{p.membership_status}</span></td>
+                <td><span className={p.is_active ? 'tag tag-success' : 'tag tag-danger'}>{p.is_active ? 'Active' : 'Inactive'}</span></td>
                 <td>
                   <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}><EyeIcon /></button>
                 </td>

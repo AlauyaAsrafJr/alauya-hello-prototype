@@ -7,9 +7,9 @@ interface AttendancePageProps {
 }
 
 function statusTag(status: string) {
-  if (status === 'present') return 'tag tag-accent';
-  if (status === 'late') return 'tag tag-outline';
-  return 'tag tag-neutral';
+  if (status === 'present') return 'tag tag-success';
+  if (status === 'late') return 'tag tag-warning';
+  return 'tag tag-danger';
 }
 
 const today = () => new Date().toISOString().slice(0, 10);

@@ -1,10 +1,11 @@
 html, body, #root { height: 100%; }
 body { margin: 0; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--color-neutral-300); }
-a { color: var(--color-accent); }
-a:hover { color: var(--color-accent-700); }
+::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-track { background: transparent; }
+a { color: var(--color-accent-400); }
+a:hover { color: var(--color-accent-200); }
 
-.sidebar-nav-btn:hover { background: rgba(255, 255, 255, 0.08) !important; }
-.sidebar-logout-btn:hover { color: #fff !important; }
-.menu-item:hover { background: var(--color-neutral-100); }
+.sidebar-nav-btn:hover { background: rgba(255, 255, 255, 0.06) !important; }
+.sidebar-logout-btn:hover { color: #fff !important; background: rgba(255, 255, 255, 0.06) !important; }
+.menu-item:hover { background: var(--color-surface-3); }
