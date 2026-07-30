@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { AttendanceRecord } from '../../api/domain';
+import { DialogShell } from '../../components/modals/DialogShell';
 
 function statusTag(status: string) {
   if (status === 'present') return 'tag tag-success';
@@ -15,9 +16,37 @@ function isWithinLastWeek(dateStr: string) {
   return date >= weekAgo;
 }
 
+interface SessionSummary {
+  date: string;
+  total: number;
+  present: number;
+  late: number;
+  absent: number;
+  records: AttendanceRecord[];
+}
+
+function groupByDate(records: AttendanceRecord[]): SessionSummary[] {
+  const byDate = new Map<string, AttendanceRecord[]>();
+  for (const r of records) {
+    if (!byDate.has(r.date)) byDate.set(r.date, []);
+    byDate.get(r.date)!.push(r);
+  }
+  return Array.from(byDate.entries())
+    .map(([date, recs]) => ({
+      date,
+      total: recs.length,
+      present: recs.filter((r) => r.status === 'present').length,
+      late: recs.filter((r) => r.status === 'late').length,
+      absent: recs.filter((r) => r.status === 'absent').length,
+      records: recs,
+    }))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
 export function AttendancePage() {
   const [records, setRecords] = useState<AttendanceRecord[] | null>(null);
   const [dateFilter, setDateFilter] = useState<'all' | 'week'>('all');
+  const [viewingSession, setViewingSession] = useState<SessionSummary | null>(null);
 
   useEffect(() => {
     api.get<AttendanceRecord[]>('/admin/attendance').then(setRecords);
@@ -27,6 +56,7 @@ export function AttendancePage() {
   const total = filtered.length;
   const present = filtered.filter((r) => r.status === 'present').length;
   const rate = total ? Math.round((present / total) * 100) : 0;
+  const sessions = groupByDate(filtered);
 
   return (
     <>
@@ -50,26 +80,54 @@ export function AttendancePage() {
           <thead>
             <tr>
               <th>Date</th>
-              <th>Player</th>
-              <th>Recorded by</th>
-              <th>Status</th>
+              <th>Present</th>
+              <th>Late</th>
+              <th>Absent</th>
+              <th>Total</th>
+              <th>Rate</th>
+              <th style={{ width: 90 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((r) => (
-              <tr key={r.attendance_id}>
-                <td>{r.date}</td>
-                <td style={{ fontWeight: 600 }}>{r.player_name}</td>
-                <td style={{ opacity: 0.75 }}>{r.coach_name}</td>
-                <td><span className={statusTag(r.status)}>{r.status}</span></td>
+            {sessions.map((s) => (
+              <tr key={s.date}>
+                <td style={{ fontWeight: 600 }}>{s.date}</td>
+                <td><span className="tag tag-success">{s.present}</span></td>
+                <td><span className="tag tag-warning">{s.late}</span></td>
+                <td><span className="tag tag-danger">{s.absent}</span></td>
+                <td style={{ opacity: 0.75 }}>{s.total}</td>
+                <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
+                <td>
+                  <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>View</button>
+                </td>
               </tr>
             ))}
-            {filtered.length === 0 && (
-              <tr><td colSpan={4} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance records found.</td></tr>
+            {sessions.length === 0 && (
+              <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance records found.</td></tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {viewingSession && (
+        <DialogShell
+          title={`Attendance — ${viewingSession.date}`}
+          onClose={() => setViewingSession(null)}
+          actions={<button type="button" className="btn btn-secondary" onClick={() => setViewingSession(null)}>Close</button>}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {viewingSession.records.map((r) => (
+              <div key={r.attendance_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>
+                <div>
+                  <div style={{ fontWeight: 600 }}>{r.player_name}</div>
+                  <div style={{ fontSize: 11.5, opacity: 0.55 }}>Recorded by {r.coach_name}</div>
+                </div>
+                <span className={statusTag(r.status)}>{r.status}</span>
+              </div>
+            ))}
+          </div>
+        </DialogShell>
+      )}
     </>
   );
 }
