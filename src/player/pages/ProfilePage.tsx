@@ -3,7 +3,7 @@ import { api } from '../../api/client';
 import type { PlayerHealthRecord, PlayerProfile, PlayerStatistics } from '../../api/domain';
 import { useAuth } from '../../auth/AuthContext';
 import { StatCard } from '../../components/StatCard';
-import { ChangePasswordCard } from '../../components/ChangePasswordCard';
+import { PasswordRow } from '../../components/PasswordRow';
 import { AttendanceIcon, SessionsIcon, ActivitiesIcon, StarIcon } from '../../icons';
 
 interface ProfilePageProps {
@@ -95,7 +95,7 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
             <span className={healthTag(profile.health_status)} style={{ textTransform: 'capitalize' }}>{profile.health_status}</span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: 13.5 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>
             <span style={{ opacity: 0.6 }}>Contact number</span>
             {editing ? (
               <div style={{ display: 'flex', gap: 6 }}>
@@ -110,16 +110,14 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
               </span>
             )}
           </div>
+
+          <PasswordRow showToast={showToast} />
         </div>
 
         <p className="card-body" style={{ marginTop: 14 }}>
           Only your contact number and photo can be updated here. Contact your coach or the sports office for
           changes to your name, email, or team assignment.
         </p>
-      </div>
-
-      <div style={{ marginTop: 20 }}>
-        <ChangePasswordCard showToast={showToast} />
       </div>
 
       {healthHistory && healthHistory.length > 0 && (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { CoachProfile } from '../../api/domain';
-import { ChangePasswordCard } from '../../components/ChangePasswordCard';
+import { PasswordRow } from '../../components/PasswordRow';
 
 interface ProfilePageProps {
   showToast: (msg: string) => void;
@@ -37,14 +37,14 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
               <span style={{ fontWeight: 600 }}>{v}</span>
             </div>
           ))}
+
+          <PasswordRow showToast={showToast} />
         </div>
 
         <p className="card-body" style={{ marginTop: 14 }}>
           Contact an administrator to update your name, email, or team assignment.
         </p>
       </div>
-
-      <ChangePasswordCard showToast={showToast} />
     </>
   );
 }
