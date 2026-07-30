@@ -1,33 +1,21 @@
-import type { ReactElement } from 'react';
-import type { Page } from '../types';
-import {
-  ArchiveIcon,
-  AttendanceIcon,
-  DashboardIcon,
-  LogoutIcon,
-  PlayersIcon,
-  ReportsIcon,
-  SettingsIcon,
-  UsersIcon,
-} from '../icons';
+import type { ComponentType } from 'react';
+import { LogoutIcon } from '../icons';
 
-const NAV_ITEMS: { key: Page; label: string; icon: (props: { size?: number }) => ReactElement }[] = [
-  { key: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
-  { key: 'users', label: 'Users', icon: UsersIcon },
-  { key: 'players', label: 'Players', icon: PlayersIcon },
-  { key: 'attendance', label: 'Attendance', icon: AttendanceIcon },
-  { key: 'reports', label: 'Reports & Analytics', icon: ReportsIcon },
-  { key: 'archive', label: 'Archive', icon: ArchiveIcon },
-  { key: 'settings', label: 'Settings', icon: SettingsIcon },
-];
-
-interface SidebarProps {
-  page: Page;
-  onNavigate: (page: Page) => void;
-  onLogout: () => void;
+export interface NavItem {
+  key: string;
+  label: string;
+  icon: ComponentType<{ size?: number }>;
 }
 
-export function Sidebar({ page, onNavigate, onLogout }: SidebarProps) {
+interface SidebarProps {
+  items: NavItem[];
+  active: string;
+  onNavigate: (key: string) => void;
+  onLogout: () => void;
+  roleLabel: string;
+}
+
+export function Sidebar({ items, active, onNavigate, onLogout, roleLabel }: SidebarProps) {
   return (
     <aside
       style={{
@@ -66,14 +54,17 @@ export function Sidebar({ page, onNavigate, onLogout }: SidebarProps) {
         >
           A
         </div>
-        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 17, letterSpacing: '-0.01em' }}>
-          ACTIBASE
+        <div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 17, letterSpacing: '-0.01em' }}>
+            ACTIBASE
+          </div>
+          <div style={{ fontSize: 10.5, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{roleLabel}</div>
         </div>
       </div>
 
       <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {NAV_ITEMS.map(({ key, label, icon: Icon }) => {
-          const active = page === key;
+        {items.map(({ key, label, icon: Icon }) => {
+          const isActive = active === key;
           return (
             <button
               key={key}
@@ -86,9 +77,9 @@ export function Sidebar({ page, onNavigate, onLogout }: SidebarProps) {
                 alignItems: 'center',
                 gap: 10,
                 padding: '10px 12px',
-                background: active ? 'var(--color-accent)' : 'transparent',
+                background: isActive ? 'var(--color-accent)' : 'transparent',
                 border: 0,
-                color: active ? '#fff' : 'var(--color-neutral-300)',
+                color: isActive ? '#fff' : 'var(--color-neutral-300)',
                 fontFamily: 'var(--font-body)',
                 fontSize: 14,
                 fontWeight: 600,
