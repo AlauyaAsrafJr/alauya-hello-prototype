@@ -33,7 +33,7 @@ const PAGE_TITLES: Record<AdminPageKey, [string, string]> = {
   attendance: ['Attendance', 'Program-wide attendance records'],
   reports: ['Reports & analytics', 'Generate, review, and approve program reports'],
   archive: ['Archive', 'Restore or permanently remove archived records'],
-  system: ['System statistics', 'Login history and system health monitoring'],
+  system: ['System statistics', 'Login history and player health monitoring'],
   settings: ['Settings', 'Account and system configuration'],
 };
 

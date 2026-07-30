@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
-from sqlalchemy import text
 
 from app.decorators import roles_required
 from app.extensions import db, bcrypt
@@ -303,23 +302,6 @@ def get_login_history():
         query = query.filter_by(user_id=user_id)
     logs = query.order_by(LoginHistory.login_time.desc()).limit(200).all()
     return jsonify([log.to_dict() for log in logs])
-
-
-@admin_bp.get("/health")
-@roles_required("admin")
-def monitor_health():
-    db_ok = True
-    try:
-        db.session.execute(text("SELECT 1"))
-    except Exception:
-        db_ok = False
-    return jsonify(
-        {
-            "status": "healthy" if db_ok else "degraded",
-            "database": "connected" if db_ok else "unreachable",
-            "checked_at": datetime.utcnow().isoformat(),
-        }
-    )
 
 
 # ---- Retrieve Archived Records ----

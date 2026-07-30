@@ -193,12 +193,6 @@ export interface SystemStatistics {
   archived_records: number;
 }
 
-export interface SystemHealthStatus {
-  status: string;
-  database: string;
-  checked_at: string;
-}
-
 export interface PlayerHealthOverview {
   counts: { healthy: number; injured: number; recovering: number };
   players: PlayerProfile[];

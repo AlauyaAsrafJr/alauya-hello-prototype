@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type {
-  SystemHealthStatus,
   LoginHistoryRecord,
   SystemStatistics,
   PlayerHealthOverview,
@@ -19,7 +18,6 @@ function healthTag(status: string) {
 
 export function SystemStatisticsPage() {
   const [stats, setStats] = useState<SystemStatistics | null>(null);
-  const [health, setHealth] = useState<SystemHealthStatus | null>(null);
   const [logins, setLogins] = useState<LoginHistoryRecord[] | null>(null);
   const [playerHealth, setPlayerHealth] = useState<PlayerHealthOverview | null>(null);
   const [historyFor, setHistoryFor] = useState<{ playerId: number; name: string } | null>(null);
@@ -27,7 +25,6 @@ export function SystemStatisticsPage() {
 
   useEffect(() => {
     api.get<SystemStatistics>('/admin/statistics').then(setStats);
-    api.get<SystemHealthStatus>('/admin/health').then(setHealth);
     api.get<LoginHistoryRecord[]>('/admin/login-history').then(setLogins);
     api.get<PlayerHealthOverview>('/admin/players/health-overview').then(setPlayerHealth);
   }, []);
@@ -41,22 +38,7 @@ export function SystemStatisticsPage() {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 24 }}>
-        <div className="card elev-sm" style={{ padding: 18 }}>
-          <div className="card-kicker">Server / database health</div>
-          {health ? (
-            <>
-              <div className="card-title" style={{ marginTop: 6, textTransform: 'capitalize' }}>
-                <span className={health.status === 'healthy' ? 'tag tag-success' : 'tag tag-danger'}>{health.status}</span>
-              </div>
-              <div style={{ fontSize: 12.5, opacity: 0.65, marginTop: 8 }}>Database: {health.database}</div>
-              <div style={{ fontSize: 11.5, opacity: 0.5, marginTop: 4 }}>Checked {new Date(health.checked_at).toLocaleString()}</div>
-            </>
-          ) : (
-            <div className="card-body">Checking…</div>
-          )}
-        </div>
-
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 16, marginBottom: 24 }}>
         <div className="card elev-sm" style={{ padding: 18 }}>
           <div className="card-kicker">Accounts</div>
           {stats && (
