@@ -23,12 +23,22 @@ export function SystemStatisticsPage() {
   const [historyFor, setHistoryFor] = useState<{ playerId: number; name: string } | null>(null);
   const [history, setHistory] = useState<PlayerHealthRecord[] | null>(null);
   const [viewMode, setViewMode] = useState<'health' | 'logins'>('health');
+  const [healthSearch, setHealthSearch] = useState('');
 
   useEffect(() => {
     api.get<SystemStatistics>('/admin/statistics').then(setStats);
     api.get<LoginHistoryRecord[]>('/admin/login-history').then(setLogins);
     api.get<PlayerHealthOverview>('/admin/players/health-overview').then(setPlayerHealth);
   }, []);
+
+  const filteredHealthPlayers = (playerHealth?.players || []).filter((p) => {
+    const q = healthSearch.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      `${p.first_name} ${p.last_name}`.toLowerCase().includes(q) ||
+      (p.team || '').toLowerCase().includes(q)
+    );
+  });
 
   async function openHistory(playerId: number, name: string) {
     setHistoryFor({ playerId, name });
@@ -80,7 +90,17 @@ export function SystemStatisticsPage() {
 
       {viewMode === 'health' ? (
         <>
-          <div className="card-title" style={{ marginBottom: 10 }}>Player health</div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10, gap: 12 }}>
+            <div className="card-title" style={{ margin: 0 }}>Player health</div>
+            <div style={{ flex: 1 }} />
+            <input
+              className="input"
+              style={{ maxWidth: 260 }}
+              placeholder="Search by player or team"
+              value={healthSearch}
+              onChange={(e) => setHealthSearch(e.target.value)}
+            />
+          </div>
           {playerHealth && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
               <StatCard label="Healthy" value={playerHealth.counts.healthy} icon={HeartPulseIcon} variant="success" />
@@ -96,15 +116,17 @@ export function SystemStatisticsPage() {
                   <th>Player</th>
                   <th>Team</th>
                   <th>Status</th>
+                  <th>Since</th>
                   <th style={{ width: 100 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {playerHealth?.players.map((p) => (
+                {filteredHealthPlayers.map((p) => (
                   <tr key={p.player_id}>
                     <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
                     <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
                     <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
+                    <td style={{ opacity: 0.75 }}>{p.latest_reported_date || '—'}</td>
                     <td>
                       <button type="button" className="btn btn-secondary" onClick={() => openHistory(p.player_id, `${p.first_name} ${p.last_name}`)}>
                         History
@@ -113,7 +135,10 @@ export function SystemStatisticsPage() {
                   </tr>
                 ))}
                 {playerHealth && playerHealth.players.length === 0 && (
-                  <tr><td colSpan={4} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>Every player is healthy right now.</td></tr>
+                  <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>Every player is healthy right now.</td></tr>
+                )}
+                {playerHealth && playerHealth.players.length > 0 && filteredHealthPlayers.length === 0 && (
+                  <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No matching players found.</td></tr>
                 )}
               </tbody>
             </table>

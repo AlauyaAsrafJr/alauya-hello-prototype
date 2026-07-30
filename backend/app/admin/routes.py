@@ -170,7 +170,21 @@ def player_health_overview():
     counts = {"healthy": 0, "injured": 0, "recovering": 0}
     for p in players:
         counts[p.health_status] += 1
-    not_healthy = [p.to_dict() for p in players if p.health_status != "healthy"]
+
+    not_healthy = []
+    for p in players:
+        if p.health_status == "healthy":
+            continue
+        entry = p.to_dict()
+        latest = (
+            PlayerHealthRecord.query.filter_by(player_id=p.player_id)
+            .order_by(PlayerHealthRecord.reported_date.desc())
+            .first()
+        )
+        entry["latest_reported_date"] = latest.reported_date.isoformat() if latest else None
+        entry["latest_injury_type"] = latest.injury_type if latest else None
+        not_healthy.append(entry)
+
     return jsonify({"counts": counts, "players": not_healthy})
 
 

@@ -195,5 +195,5 @@ export interface SystemStatistics {
 
 export interface PlayerHealthOverview {
   counts: { healthy: number; injured: number; recovering: number };
-  players: PlayerProfile[];
+  players: (PlayerProfile & { latest_reported_date: string | null; latest_injury_type: string | null })[];
 }
