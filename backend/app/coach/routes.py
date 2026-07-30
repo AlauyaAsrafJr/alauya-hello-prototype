@@ -123,6 +123,17 @@ def record_attendance():
     return jsonify([a.to_dict() for a in created]), 201
 
 
+@coach_bp.patch("/attendance/<int:attendance_id>")
+@roles_required("coach")
+def edit_attendance(attendance_id):
+    record = Attendance.query.get_or_404(attendance_id)
+    data = request.get_json(force=True) or {}
+    if "status" in data:
+        record.status = data["status"]
+    db.session.commit()
+    return jsonify(record.to_dict())
+
+
 # ---- Track Participation: Log / Edit Training Activity ----
 
 

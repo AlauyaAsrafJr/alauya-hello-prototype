@@ -49,6 +49,9 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
   const [submitting, setSubmitting] = useState(false);
   const [history, setHistory] = useState<AttendanceRecord[] | null>(null);
   const [viewingSession, setViewingSession] = useState<SessionSummary | null>(null);
+  const [editingSession, setEditingSession] = useState<SessionSummary | null>(null);
+  const [editStatuses, setEditStatuses] = useState<Record<number, AttendanceStatus>>({});
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function loadPlayers() {
     const data = await api.get<PlayerProfile[]>('/coach/players');
@@ -83,6 +86,29 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
       loadHistory();
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function openEdit(session: SessionSummary) {
+    setEditingSession(session);
+    setEditStatuses(Object.fromEntries(session.records.map((r) => [r.attendance_id, r.status])));
+  }
+
+  async function saveEdit() {
+    if (!editingSession) return;
+    setSavingEdit(true);
+    try {
+      const changed = editingSession.records.filter((r) => editStatuses[r.attendance_id] !== r.status);
+      await Promise.all(
+        changed.map((r) =>
+          api.patch(`/coach/attendance/${r.attendance_id}`, { status: editStatuses[r.attendance_id] }),
+        ),
+      );
+      showToast(`Attendance for ${editingSession.date} updated`);
+      setEditingSession(null);
+      loadHistory();
+    } finally {
+      setSavingEdit(false);
     }
   }
 
@@ -141,7 +167,7 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
               <th>Absent</th>
               <th>Total</th>
               <th>Rate</th>
-              <th style={{ width: 90 }}>Actions</th>
+              <th style={{ width: 150 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -154,7 +180,10 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
                 <td style={{ opacity: 0.75 }}>{s.total}</td>
                 <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
                 <td>
-                  <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>View</button>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>View</button>
+                    <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>Edit</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -176,6 +205,41 @@ export function AttendancePage({ showToast }: AttendancePageProps) {
               <div key={r.attendance_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)', fontSize: 13.5 }}>
                 <span>{r.player_name}</span>
                 <span className={statusTag(r.status)}>{r.status}</span>
+              </div>
+            ))}
+          </div>
+        </DialogShell>
+      )}
+
+      {editingSession && (
+        <DialogShell
+          title={`Edit attendance — ${editingSession.date}`}
+          onClose={() => setEditingSession(null)}
+          actions={
+            <>
+              <button type="button" className="btn btn-secondary" onClick={() => setEditingSession(null)}>Cancel</button>
+              <button type="button" className="btn btn-primary" onClick={saveEdit} disabled={savingEdit}>
+                {savingEdit ? 'Saving…' : 'Save changes'}
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {editingSession.records.map((r) => (
+              <div key={r.attendance_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-divider)' }}>
+                <span style={{ fontSize: 13.5, fontWeight: 600 }}>{r.player_name}</span>
+                <div className="seg">
+                  {(['present', 'late', 'absent'] as AttendanceStatus[]).map((s) => (
+                    <label key={s} className="seg-opt">
+                      <input
+                        type="radio"
+                        checked={editStatuses[r.attendance_id] === s}
+                        onChange={() => setEditStatuses((prev) => ({ ...prev, [r.attendance_id]: s }))}
+                      />
+                      {s}
+                    </label>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
