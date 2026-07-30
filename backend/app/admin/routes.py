@@ -99,6 +99,17 @@ def create_user():
     else:
         profile = Admin(**profile_kwargs)
     db.session.add(profile)
+    db.session.flush()
+
+    if role == "player":
+        db.session.add(
+            PlayerHealthRecord(
+                player_id=profile.player_id,
+                status="healthy",
+                notes="Baseline record created when the player account was set up.",
+            )
+        )
+
     db.session.commit()
     return jsonify({"message": "User created", "user_id": user.user_id}), 201
 

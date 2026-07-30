@@ -197,6 +197,20 @@ with app.app_context():
         )
     )
 
+    # Every other player gets a baseline "healthy" record so their history
+    # isn't empty, matching what happens automatically when an admin creates
+    # a new player account.
+    already_logged = {injured_player.player_id, recovering_player.player_id}
+    for p in basketball_players + volleyball_players:
+        if p.player_id not in already_logged:
+            db.session.add(
+                PlayerHealthRecord(
+                    player_id=p.player_id,
+                    status="healthy",
+                    notes="Baseline record created when the player account was set up.",
+                )
+            )
+
     db.session.commit()
 
     print("Seed complete.")
