@@ -23,33 +23,24 @@ interface AuthContextValue {
   refreshUser: () => Promise<void>;
 }
 
-const STORAGE_KEY = 'actibase.auth';
+// Legacy key from a previous version that persisted sessions in localStorage.
+// Cleared on startup so browsers with an old stored session don't skip the login screen.
+const LEGACY_STORAGE_KEY = 'actibase.auth';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const loading = false;
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const { token, user: storedUser } = JSON.parse(stored);
-        setAuthToken(token);
-        setUser(storedUser);
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-    setLoading(false);
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
   }, []);
 
   async function login(username: string, password: string) {
     const res = await api.post<LoginResponse>('/auth/login', { username, password });
     setAuthToken(res.access_token);
     setUser(res.user);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: res.access_token, user: res.user }));
   }
 
   async function logout() {
@@ -60,17 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setAuthToken(null);
     setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
   }
 
   async function refreshUser() {
     const me = await api.get<AuthUser & { last_login: string | null }>('/auth/me');
     setUser(me);
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...parsed, user: me }));
-    }
   }
 
   const value = useMemo(() => ({ user, loading, login, logout, refreshUser }), [user, loading]);
