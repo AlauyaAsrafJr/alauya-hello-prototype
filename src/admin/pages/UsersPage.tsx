@@ -4,6 +4,7 @@ import type { Sport, SystemUserSummary, UserRole } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import { ArchiveIcon, EyeIcon, PlusIcon } from '../../icons';
+import { Select } from '../../components/Select';
 
 interface UsersPageProps {
   showToast: (msg: string) => void;
@@ -106,12 +107,17 @@ export function UsersPage({ showToast }: UsersPageProps) {
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
         <input className="input" style={{ maxWidth: 280 }} placeholder="Search users by name, username, or email" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select className="input" style={{ maxWidth: 170 }} value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as 'all' | UserRole)}>
-          <option value="all">All roles</option>
-          <option value="player">Player</option>
-          <option value="coach">Coach</option>
-          <option value="admin">Admin</option>
-        </select>
+        <Select
+          style={{ maxWidth: 170 }}
+          value={roleFilter}
+          onChange={(v) => setRoleFilter(v as 'all' | UserRole)}
+          options={[
+            { value: 'all', label: 'All roles' },
+            { value: 'player', label: 'Player' },
+            { value: 'coach', label: 'Coach' },
+            { value: 'admin', label: 'Admin' },
+          ]}
+        />
         <div style={{ flex: 1 }} />
         <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>
           <PlusIcon />
@@ -196,21 +202,25 @@ export function UsersPage({ showToast }: UsersPageProps) {
             </div>
             <div className="field">
               <label>Role</label>
-              <select className="input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as UserRole })}>
-                <option value="coach">Coach</option>
-                <option value="admin">Admin</option>
-                <option value="player">Player</option>
-              </select>
+              <Select
+                value={form.role}
+                onChange={(v) => setForm({ ...form, role: v as UserRole })}
+                options={[
+                  { value: 'coach', label: 'Coach' },
+                  { value: 'admin', label: 'Admin' },
+                  { value: 'player', label: 'Player' },
+                ]}
+              />
             </div>
             {(form.role === 'coach' || form.role === 'player') && (
               <div className="field">
                 <label>{form.role === 'coach' ? 'Team / sport they coach' : 'Team'}</label>
-                <select className="input" value={form.team} onChange={(e) => setForm({ ...form, team: e.target.value })}>
-                  {!sports?.length && <option value="">No sports set up yet</option>}
-                  {sports?.map((s) => (
-                    <option key={s.sport_id} value={s.name}>{s.name}</option>
-                  ))}
-                </select>
+                <Select
+                  value={form.team}
+                  onChange={(v) => setForm({ ...form, team: v })}
+                  placeholder="No sports set up yet"
+                  options={(sports || []).map((s) => ({ value: s.name, label: s.name }))}
+                />
                 <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>
                   {form.role === 'coach'
                     ? 'This coach will only see and manage players on this team.'

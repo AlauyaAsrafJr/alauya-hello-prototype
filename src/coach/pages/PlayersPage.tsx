@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { CoachProfile, PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
+import { Select } from '../../components/Select';
 import { EyeIcon } from '../../icons';
 
 function membershipTag(status: string) {
@@ -177,11 +178,15 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
             </div>
             <div className="field">
               <label>Membership status</label>
-              <select className="input" value={form.membership_status} onChange={(e) => setForm({ ...form, membership_status: e.target.value })}>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
-              </select>
+              <Select
+                value={form.membership_status}
+                onChange={(v) => setForm({ ...form, membership_status: v })}
+                options={[
+                  { value: 'active', label: 'Active' },
+                  { value: 'inactive', label: 'Inactive' },
+                  { value: 'suspended', label: 'Suspended' },
+                ]}
+              />
             </div>
           </div>
         </DialogShell>

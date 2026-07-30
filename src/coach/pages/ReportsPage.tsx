@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { ReportRecord, ReportType } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
+import { Select } from '../../components/Select';
 import { PlusIcon } from '../../icons';
 
 interface ReportsPageProps {
@@ -80,11 +81,15 @@ export function ReportsPage({ showToast }: ReportsPageProps) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div className="field">
               <label>Report type</label>
-              <select className="input" value={reportType} onChange={(e) => setReportType(e.target.value as ReportType)}>
-                <option value="attendance">Attendance</option>
-                <option value="performance">Performance</option>
-                <option value="training">Training</option>
-              </select>
+              <Select
+                value={reportType}
+                onChange={(v) => setReportType(v as ReportType)}
+                options={[
+                  { value: 'attendance', label: 'Attendance' },
+                  { value: 'performance', label: 'Performance' },
+                  { value: 'training', label: 'Training' },
+                ]}
+              />
             </div>
             <div className="field">
               <label>Details (optional)</label>

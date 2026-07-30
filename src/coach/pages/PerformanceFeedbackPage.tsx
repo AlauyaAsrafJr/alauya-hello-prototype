@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { PerformanceFeedback, PlayerProfile } from '../../api/domain';
 import { StarIcon } from '../../icons';
+import { Select } from '../../components/Select';
 
 interface PerformanceFeedbackPageProps {
   showToast: (msg: string) => void;
@@ -58,12 +59,12 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
           <div className="field">
             <label>Player</label>
-            <select className="input" value={playerId} onChange={(e) => setPlayerId(Number(e.target.value))}>
-              <option value="">Select a player</option>
-              {players?.map((p) => (
-                <option key={p.player_id} value={p.player_id}>{p.first_name} {p.last_name}</option>
-              ))}
-            </select>
+            <Select
+              value={playerId === '' ? '' : String(playerId)}
+              onChange={(v) => setPlayerId(v ? Number(v) : '')}
+              placeholder="Select a player"
+              options={(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` }))}
+            />
           </div>
           <div className="field">
             <label>Rating</label>
