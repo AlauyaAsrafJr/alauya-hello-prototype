@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
-import type { PlayerProfile } from '../../api/domain';
+import type { CoachProfile, PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { EyeIcon } from '../../icons';
 
@@ -19,12 +19,12 @@ interface EditForm {
   last_name: string;
   email: string;
   contact_number: string;
-  team: string;
   membership_status: string;
 }
 
 export function PlayersPage({ showToast }: PlayersPageProps) {
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
+  const [coach, setCoach] = useState<CoachProfile | null>(null);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<PlayerProfile | null>(null);
   const [form, setForm] = useState<EditForm | null>(null);
@@ -37,6 +37,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
 
   useEffect(() => {
     load();
+    api.get<CoachProfile>('/coach/profile').then(setCoach);
   }, []);
 
   function openEdit(p: PlayerProfile) {
@@ -46,7 +47,6 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
       last_name: p.last_name,
       email: p.email,
       contact_number: p.contact_number || '',
-      team: p.team || '',
       membership_status: p.membership_status,
     });
   }
@@ -61,7 +61,12 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
 
   return (
     <>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        {coach && (
+          <span className={coach.specialization ? 'tag tag-info' : 'tag tag-warning'}>
+            {coach.specialization ? `Team: ${coach.specialization}` : 'No team assigned'}
+          </span>
+        )}
         <input
           className="input"
           style={{ maxWidth: 300 }}
@@ -73,6 +78,15 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
           }}
         />
       </div>
+
+      {coach && !coach.specialization && (
+        <div className="card elev-sm" style={{ padding: 16, marginBottom: 16 }}>
+          <p className="card-body" style={{ margin: 0 }}>
+            You don't have a team assigned yet, so no players are showing. Ask an administrator to set your
+            specialization from Manage Users.
+          </p>
+        </div>
+      )}
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
         <table className="table">
@@ -158,7 +172,8 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
             </div>
             <div className="field">
               <label>Team</label>
-              <input className="input" value={form.team} onChange={(e) => setForm({ ...form, team: e.target.value })} />
+              <input className="input" value={editing.team || '—'} disabled />
+              <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>Team assignment is managed by an administrator.</p>
             </div>
             <div className="field">
               <label>Membership status</label>

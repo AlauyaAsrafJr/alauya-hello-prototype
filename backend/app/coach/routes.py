@@ -23,6 +23,17 @@ def _current_coach():
     return Coach.query.filter_by(user_id=user_id).first()
 
 
+def _team_players_query(coach):
+    """Players on the coach's own team only. A coach with no team assigned sees none."""
+    if not coach.specialization:
+        return Player.query.filter(Player.player_id == -1)
+    return Player.query.filter_by(team=coach.specialization)
+
+
+def _team_player_ids(coach):
+    return {p.player_id for p in _team_players_query(coach).with_entities(Player.player_id).all()}
+
+
 @coach_bp.get("/profile")
 @roles_required("coach")
 def get_profile():
@@ -38,8 +49,11 @@ def get_profile():
 @coach_bp.get("/players")
 @roles_required("coach")
 def list_players():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     q = request.args.get("q", "").strip()
-    query = Player.query
+    query = _team_players_query(coach)
     if q:
         like = f"%{q}%"
         query = query.filter(
@@ -52,21 +66,31 @@ def list_players():
 @coach_bp.get("/players/<int:player_id>")
 @roles_required("coach")
 def get_player(player_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     player = Player.query.get_or_404(player_id)
+    if player.player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Player not found"}), 404
     return jsonify(player.to_dict())
 
 
 @coach_bp.patch("/players/<int:player_id>")
 @roles_required("coach")
 def edit_player_profile(player_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     player = Player.query.get_or_404(player_id)
+    if player.player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Player not found"}), 404
     data = request.get_json(force=True) or {}
+    # Team reassignment is an admin-only action, so coaches can't move a player off their roster.
     editable_fields = [
         "first_name",
         "last_name",
         "email",
         "contact_number",
-        "team",
         "membership_status",
         "profile_photo",
     ]
@@ -85,13 +109,16 @@ def edit_player_profile(player_id):
 @coach_bp.get("/attendance")
 @roles_required("coach")
 def list_attendance():
-    query = Attendance.query
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    query = Attendance.query.join(Player).filter(Player.player_id.in_(_team_player_ids(coach)))
     player_id = request.args.get("player_id", type=int)
     on_date = request.args.get("date")
     if player_id:
-        query = query.filter_by(player_id=player_id)
+        query = query.filter(Attendance.player_id == player_id)
     if on_date:
-        query = query.filter_by(date=date.fromisoformat(on_date))
+        query = query.filter(Attendance.date == date.fromisoformat(on_date))
     records = query.order_by(Attendance.date.desc()).all()
     return jsonify([r.to_dict() for r in records])
 
@@ -107,6 +134,11 @@ def record_attendance():
     session_date = data.get("date")
     if not entries or not session_date:
         return jsonify({"error": "date and records[] are required"}), 400
+
+    team_player_ids = _team_player_ids(coach)
+    invalid = [e["player_id"] for e in entries if e["player_id"] not in team_player_ids]
+    if invalid:
+        return jsonify({"error": "One or more players are not on your team"}), 400
 
     parsed_date = date.fromisoformat(session_date)
     created = []
@@ -126,7 +158,12 @@ def record_attendance():
 @coach_bp.patch("/attendance/<int:attendance_id>")
 @roles_required("coach")
 def edit_attendance(attendance_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     record = Attendance.query.get_or_404(attendance_id)
+    if record.player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Attendance record not found"}), 404
     data = request.get_json(force=True) or {}
     if "status" in data:
         record.status = data["status"]
@@ -140,7 +177,14 @@ def edit_attendance(attendance_id):
 @coach_bp.get("/training-activities")
 @roles_required("coach")
 def list_training_activities():
-    activities = TrainingActivity.query.order_by(TrainingActivity.activity_date.desc()).all()
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    activities = (
+        TrainingActivity.query.filter_by(coach_id=coach.coach_id)
+        .order_by(TrainingActivity.activity_date.desc())
+        .all()
+    )
     return jsonify([a.to_dict() for a in activities])
 
 
@@ -156,6 +200,12 @@ def log_training_activity():
     if missing:
         return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
+    participant_ids = data.get("participant_ids", [])
+    team_player_ids = _team_player_ids(coach)
+    invalid = [pid for pid in participant_ids if pid not in team_player_ids]
+    if invalid:
+        return jsonify({"error": "One or more participants are not on your team"}), 400
+
     activity = TrainingActivity(
         coach_id=coach.coach_id,
         activity_name=data["activity_name"],
@@ -166,7 +216,7 @@ def log_training_activity():
     db.session.add(activity)
     db.session.flush()
 
-    for player_id in data.get("participant_ids", []):
+    for player_id in participant_ids:
         db.session.add(
             Participation(player_id=player_id, activity_id=activity.activity_id, participation_status="joined")
         )
@@ -177,7 +227,12 @@ def log_training_activity():
 @coach_bp.patch("/training-activities/<int:activity_id>")
 @roles_required("coach")
 def edit_training_activity(activity_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     activity = TrainingActivity.query.get_or_404(activity_id)
+    if activity.coach_id != coach.coach_id:
+        return jsonify({"error": "Training activity not found"}), 404
     data = request.get_json(force=True) or {}
     editable_fields = ["activity_name", "duration", "notes"]
     for field in editable_fields:
@@ -192,6 +247,12 @@ def edit_training_activity(activity_id):
 @coach_bp.get("/training-activities/<int:activity_id>/participation")
 @roles_required("coach")
 def get_activity_participation(activity_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    activity = TrainingActivity.query.get_or_404(activity_id)
+    if activity.coach_id != coach.coach_id:
+        return jsonify({"error": "Training activity not found"}), 404
     records = Participation.query.filter_by(activity_id=activity_id).all()
     return jsonify([r.to_dict() for r in records])
 
@@ -199,7 +260,12 @@ def get_activity_participation(activity_id):
 @coach_bp.patch("/participation/<int:participation_id>")
 @roles_required("coach")
 def update_participation(participation_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     record = Participation.query.get_or_404(participation_id)
+    if record.activity.coach_id != coach.coach_id:
+        return jsonify({"error": "Participation record not found"}), 404
     data = request.get_json(force=True) or {}
     if "participation_status" in data:
         record.participation_status = data["participation_status"]
@@ -213,10 +279,15 @@ def update_participation(participation_id):
 @coach_bp.get("/performance-feedback")
 @roles_required("coach")
 def list_performance_feedback():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
     player_id = request.args.get("player_id", type=int)
-    query = PerformanceFeedback.query
+    query = PerformanceFeedback.query.filter(
+        PerformanceFeedback.player_id.in_(_team_player_ids(coach))
+    )
     if player_id:
-        query = query.filter_by(player_id=player_id)
+        query = query.filter(PerformanceFeedback.player_id == player_id)
     records = query.order_by(PerformanceFeedback.feedback_date.desc()).all()
     return jsonify([r.to_dict() for r in records])
 
@@ -232,6 +303,8 @@ def submit_performance_feedback():
     missing = [f for f in required if data.get(f) in (None, "")]
     if missing:
         return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
+    if data["player_id"] not in _team_player_ids(coach):
+        return jsonify({"error": "Player is not on your team"}), 400
     rating = int(data["rating"])
     if not 1 <= rating <= 5:
         return jsonify({"error": "rating must be between 1 and 5"}), 400
@@ -253,18 +326,26 @@ def submit_performance_feedback():
 @coach_bp.get("/analytics")
 @roles_required("coach")
 def get_analytics():
-    total_players = Player.query.count()
-    total_activities = TrainingActivity.query.count()
-    total_attendance = Attendance.query.count()
-    present_total = Attendance.query.filter_by(status="present").count()
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    team_player_ids = _team_player_ids(coach)
+
+    total_players = len(team_player_ids)
+    total_activities = TrainingActivity.query.filter_by(coach_id=coach.coach_id).count()
+
+    attendance_query = Attendance.query.filter(Attendance.player_id.in_(team_player_ids))
+    total_attendance = attendance_query.count()
+    present_total = attendance_query.filter(Attendance.status == "present").count()
     attendance_rate = round(present_total / total_attendance * 100, 1) if total_attendance else 0
 
-    feedback = PerformanceFeedback.query.all()
+    feedback = PerformanceFeedback.query.filter(PerformanceFeedback.player_id.in_(team_player_ids)).all()
     avg_rating = round(sum(f.rating for f in feedback) / len(feedback), 2) if feedback else None
 
     participation_by_activity = (
         db.session.query(TrainingActivity.activity_name, db.func.count(Participation.participation_id))
         .join(Participation)
+        .filter(TrainingActivity.coach_id == coach.coach_id)
         .group_by(TrainingActivity.activity_id)
         .all()
     )

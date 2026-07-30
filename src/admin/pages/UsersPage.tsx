@@ -4,6 +4,7 @@ import type { SystemUserSummary, UserRole } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import { ArchiveIcon, EyeIcon, PlusIcon } from '../../icons';
+import { TEAMS } from '../../constants/teams';
 
 interface UsersPageProps {
   showToast: (msg: string) => void;
@@ -16,6 +17,7 @@ interface NewUserForm {
   first_name: string;
   last_name: string;
   email: string;
+  team: string;
 }
 
 const EMPTY_FORM: NewUserForm = {
@@ -25,6 +27,7 @@ const EMPTY_FORM: NewUserForm = {
   first_name: '',
   last_name: '',
   email: '',
+  team: TEAMS[0],
 };
 
 export function UsersPage({ showToast }: UsersPageProps) {
@@ -56,7 +59,14 @@ export function UsersPage({ showToast }: UsersPageProps) {
   );
 
   async function submitAdd() {
-    await api.post('/admin/users', form);
+    const needsTeam = form.role === 'coach' || form.role === 'player';
+    await api.post('/admin/users', {
+      ...form,
+      // Coach accounts use `specialization`, player accounts use `team` — send both
+      // so the backend can pick the one relevant to the chosen role.
+      team: needsTeam ? form.team : undefined,
+      specialization: needsTeam ? form.team : undefined,
+    });
     setAddOpen(false);
     setForm(EMPTY_FORM);
     showToast(`${form.first_name} ${form.last_name} added as ${form.role}`);
@@ -182,6 +192,21 @@ export function UsersPage({ showToast }: UsersPageProps) {
                 <option value="player">Player</option>
               </select>
             </div>
+            {(form.role === 'coach' || form.role === 'player') && (
+              <div className="field">
+                <label>{form.role === 'coach' ? 'Team / sport they coach' : 'Team'}</label>
+                <select className="input" value={form.team} onChange={(e) => setForm({ ...form, team: e.target.value })}>
+                  {TEAMS.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+                {form.role === 'coach' && (
+                  <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>
+                    This coach will only see and manage players on this team.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </DialogShell>
       )}
