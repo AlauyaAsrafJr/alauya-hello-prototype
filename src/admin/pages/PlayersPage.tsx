@@ -13,22 +13,53 @@ function membershipTag(status: string) {
 export function PlayersPage() {
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
   const [search, setSearch] = useState('');
+  const [teamFilter, setTeamFilter] = useState('all');
   const [viewing, setViewing] = useState<PlayerProfile | null>(null);
 
   useEffect(() => {
     api.get<PlayerProfile[]>('/admin/players').then(setPlayers);
   }, []);
 
+  // Derived from whatever team values are actually on the roster, so the
+  // category bar always matches reality even if naming isn't perfectly
+  // consistent yet (e.g. "Basketball" vs "Varsity Basketball").
+  const teams = Array.from(new Set((players || []).map((p) => p.team).filter((t): t is string => !!t))).sort();
+
   const filtered = (players || []).filter(
     (p) =>
-      `${p.first_name} ${p.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
-      p.email.toLowerCase().includes(search.toLowerCase()),
+      (teamFilter === 'all' || p.team === teamFilter) &&
+      (`${p.first_name} ${p.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
+        p.email.toLowerCase().includes(search.toLowerCase())),
   );
+
+  function countFor(team: string) {
+    return (players || []).filter((p) => p.team === team).length;
+  }
 
   return (
     <>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
         <input className="input" style={{ maxWidth: 300 }} placeholder="Search players by name or email" value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <button
+          type="button"
+          className={teamFilter === 'all' ? 'btn btn-primary' : 'btn btn-secondary'}
+          onClick={() => setTeamFilter('all')}
+        >
+          All ({(players || []).length})
+        </button>
+        {teams.map((t) => (
+          <button
+            key={t}
+            type="button"
+            className={teamFilter === t ? 'btn btn-primary' : 'btn btn-secondary'}
+            onClick={() => setTeamFilter(t)}
+          >
+            {t} ({countFor(t)})
+          </button>
+        ))}
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
