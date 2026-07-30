@@ -22,6 +22,7 @@ export function SystemStatisticsPage() {
   const [playerHealth, setPlayerHealth] = useState<PlayerHealthOverview | null>(null);
   const [historyFor, setHistoryFor] = useState<{ playerId: number; name: string } | null>(null);
   const [history, setHistory] = useState<PlayerHealthRecord[] | null>(null);
+  const [viewMode, setViewMode] = useState<'health' | 'logins'>('health');
 
   useEffect(() => {
     api.get<SystemStatistics>('/admin/statistics').then(setStats);
@@ -64,73 +65,92 @@ export function SystemStatisticsPage() {
         </div>
       </div>
 
-      <div className="card-title" style={{ marginBottom: 10 }}>Player health</div>
-      {playerHealth && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
-          <StatCard label="Healthy" value={playerHealth.counts.healthy} icon={HeartPulseIcon} variant="success" />
-          <StatCard label="Recovering" value={playerHealth.counts.recovering} icon={HeartPulseIcon} variant="warning" />
-          <StatCard label="Injured" value={playerHealth.counts.injured} icon={HeartPulseIcon} variant="danger" />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+        <div className="seg">
+          <label className="seg-opt">
+            <input type="radio" checked={viewMode === 'health'} onChange={() => setViewMode('health')} />
+            Player health
+          </label>
+          <label className="seg-opt">
+            <input type="radio" checked={viewMode === 'logins'} onChange={() => setViewMode('logins')} />
+            Login history
+          </label>
         </div>
+      </div>
+
+      {viewMode === 'health' ? (
+        <>
+          <div className="card-title" style={{ marginBottom: 10 }}>Player health</div>
+          {playerHealth && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
+              <StatCard label="Healthy" value={playerHealth.counts.healthy} icon={HeartPulseIcon} variant="success" />
+              <StatCard label="Recovering" value={playerHealth.counts.recovering} icon={HeartPulseIcon} variant="warning" />
+              <StatCard label="Injured" value={playerHealth.counts.injured} icon={HeartPulseIcon} variant="danger" />
+            </div>
+          )}
+
+          <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Team</th>
+                  <th>Status</th>
+                  <th style={{ width: 100 }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {playerHealth?.players.map((p) => (
+                  <tr key={p.player_id}>
+                    <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
+                    <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                    <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
+                    <td>
+                      <button type="button" className="btn btn-secondary" onClick={() => openHistory(p.player_id, `${p.first_name} ${p.last_name}`)}>
+                        History
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {playerHealth && playerHealth.players.length === 0 && (
+                  <tr><td colSpan={4} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>Every player is healthy right now.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="card-title" style={{ marginBottom: 10 }}>Login history</div>
+          <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Login time</th>
+                  <th>Logout time</th>
+                  <th>IP address</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logins?.map((l) => (
+                  <tr key={l.log_id}>
+                    <td style={{ fontWeight: 600 }}>{l.username}</td>
+                    <td><span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>{l.role}</span></td>
+                    <td style={{ opacity: 0.75 }}>{new Date(l.login_time).toLocaleString()}</td>
+                    <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '—'}</td>
+                    <td style={{ opacity: 0.65 }}>{l.ip_address || '—'}</td>
+                  </tr>
+                ))}
+                {logins && logins.length === 0 && (
+                  <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No login history yet.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
-
-      <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden', marginBottom: 24 }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Team</th>
-              <th>Status</th>
-              <th style={{ width: 100 }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {playerHealth?.players.map((p) => (
-              <tr key={p.player_id}>
-                <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
-                <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
-                <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
-                <td>
-                  <button type="button" className="btn btn-secondary" onClick={() => openHistory(p.player_id, `${p.first_name} ${p.last_name}`)}>
-                    History
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {playerHealth && playerHealth.players.length === 0 && (
-              <tr><td colSpan={4} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>Every player is healthy right now.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="card-title" style={{ marginBottom: 10 }}>Login history</div>
-      <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Role</th>
-              <th>Login time</th>
-              <th>Logout time</th>
-              <th>IP address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {logins?.map((l) => (
-              <tr key={l.log_id}>
-                <td style={{ fontWeight: 600 }}>{l.username}</td>
-                <td><span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>{l.role}</span></td>
-                <td style={{ opacity: 0.75 }}>{new Date(l.login_time).toLocaleString()}</td>
-                <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '—'}</td>
-                <td style={{ opacity: 0.65 }}>{l.ip_address || '—'}</td>
-              </tr>
-            ))}
-            {logins && logins.length === 0 && (
-              <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No login history yet.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
 
       {historyFor && (
         <DialogShell
