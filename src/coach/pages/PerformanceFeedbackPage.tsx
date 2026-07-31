@@ -65,7 +65,7 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
     }
   }
 
-  const filteredFeedback = (feedback || []).filter((f) => historyFilter === '' || f.player_id === historyFilter);
+  const historyFeedback = (feedback || []).filter((f) => f.player_id === historyFilter);
 
   async function createCategory() {
     const name = newCategoryName.trim();
@@ -86,7 +86,8 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
   }
 
   return (
-    <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+    <>
+    <div style={{ display: 'flex', gap: 20, alignItems: 'stretch', flexWrap: 'wrap', marginBottom: 24 }}>
       <div className="card elev-sm" style={{ padding: 20, flex: '1 1 480px', maxWidth: 640 }}>
         <div className="card-kicker">Submit performance notes</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
@@ -183,11 +184,11 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
         </div>
       </div>
 
-      <div className="card elev-sm" style={{ padding: 20, flex: '1 1 360px', maxWidth: 480 }}>
+      <div className="card elev-sm" style={{ padding: 20, flex: '1 1 360px', maxWidth: 480, display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
           <div className="card-title" style={{ margin: 0 }}>
             {historyFilter === ''
-              ? 'Recent feedback'
+              ? 'Feedback history'
               : `Feedback history — ${players?.find((p) => p.player_id === historyFilter)?.first_name || ''} ${players?.find((p) => p.player_id === historyFilter)?.last_name || ''}`}
           </div>
           <div style={{ flex: 1 }} />
@@ -195,34 +196,54 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
             style={{ minWidth: 200 }}
             value={historyFilter === '' ? '' : String(historyFilter)}
             onChange={(v) => setHistoryFilter(v ? Number(v) : '')}
-            placeholder="All players"
-            options={[
-              { value: '', label: 'All players' },
-              ...(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` })),
-            ]}
+            placeholder="Select a player"
+            options={(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` }))}
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 520, overflowY: 'auto', paddingRight: 4 }}>
-          {filteredFeedback.map((f) => (
-            <div key={f.feedback_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
-                  {f.category && <span className="tag tag-info">{f.category}</span>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4, flex: 1 }}>
+          {historyFilter === '' ? (
+            <div style={{ opacity: 0.6, fontSize: 13.5 }}>Select a player to view their feedback history.</div>
+          ) : (
+            <>
+              {historyFeedback.map((f) => (
+                <div key={f.feedback_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+                      {f.category && <span className="tag tag-info">{f.category}</span>}
+                    </div>
+                    <Rating value={f.rating} />
+                  </div>
+                  <p className="card-body" style={{ marginBottom: 4 }}>{f.comments}</p>
+                  <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date} · {f.coach_name}</div>
                 </div>
-                <Rating value={f.rating} />
-              </div>
-              <p className="card-body" style={{ marginBottom: 4 }}>{f.comments}</p>
-              <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date} · {f.coach_name}</div>
-            </div>
-          ))}
-          {feedback && filteredFeedback.length === 0 && (
-            <div style={{ opacity: 0.6, fontSize: 13.5 }}>
-              {historyFilter === '' ? 'No feedback submitted yet.' : 'No feedback for this player yet.'}
-            </div>
+              ))}
+              {historyFeedback.length === 0 && (
+                <div style={{ opacity: 0.6, fontSize: 13.5 }}>No feedback for this player yet.</div>
+              )}
+            </>
           )}
         </div>
       </div>
     </div>
+
+    <div className="card-title" style={{ marginBottom: 10 }}>Recent feedback</div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {feedback?.map((f) => (
+        <div key={f.feedback_id} className="card elev-sm" style={{ padding: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+              {f.category && <span className="tag tag-info">{f.category}</span>}
+            </div>
+            <Rating value={f.rating} />
+          </div>
+          <p className="card-body" style={{ marginBottom: 4 }}>{f.comments}</p>
+          <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date} · {f.coach_name}</div>
+        </div>
+      ))}
+      {feedback && feedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No feedback submitted yet.</div>}
+    </div>
+    </>
   );
 }
