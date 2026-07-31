@@ -90,6 +90,7 @@ export interface AttendanceRecord {
   attendance_id: number;
   player_id: number;
   player_name: string | null;
+  team: string | null;
   coach_id: number;
   coach_name: string | null;
   date: string;

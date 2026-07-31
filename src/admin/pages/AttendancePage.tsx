@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import type { AttendanceRecord } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
+import { Select } from '../../components/Select';
 
 function statusTag(status: string) {
   if (status === 'present') return 'tag tag-success';
@@ -18,6 +19,7 @@ function isWithinLastWeek(dateStr: string) {
 
 interface SessionSummary {
   date: string;
+  team: string;
   total: number;
   present: number;
   late: number;
@@ -25,27 +27,30 @@ interface SessionSummary {
   records: AttendanceRecord[];
 }
 
-function groupByDate(records: AttendanceRecord[]): SessionSummary[] {
-  const byDate = new Map<string, AttendanceRecord[]>();
+function groupBySession(records: AttendanceRecord[]): SessionSummary[] {
+  const byKey = new Map<string, AttendanceRecord[]>();
   for (const r of records) {
-    if (!byDate.has(r.date)) byDate.set(r.date, []);
-    byDate.get(r.date)!.push(r);
+    const key = `${r.date}__${r.team || '—'}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key)!.push(r);
   }
-  return Array.from(byDate.entries())
-    .map(([date, recs]) => ({
-      date,
+  return Array.from(byKey.values())
+    .map((recs) => ({
+      date: recs[0].date,
+      team: recs[0].team || '—',
       total: recs.length,
       present: recs.filter((r) => r.status === 'present').length,
       late: recs.filter((r) => r.status === 'late').length,
       absent: recs.filter((r) => r.status === 'absent').length,
       records: recs,
     }))
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => b.date.localeCompare(a.date) || a.team.localeCompare(b.team));
 }
 
 interface PlayerSummary {
   player_id: number;
   player_name: string;
+  team: string;
   total: number;
   present: number;
   late: number;
@@ -62,6 +67,7 @@ function groupByPlayer(records: AttendanceRecord[]): PlayerSummary[] {
     .map(([player_id, recs]) => ({
       player_id,
       player_name: recs[0]?.player_name || '—',
+      team: recs[0]?.team || '—',
       total: recs.length,
       present: recs.filter((r) => r.status === 'present').length,
       late: recs.filter((r) => r.status === 'late').length,
@@ -73,6 +79,7 @@ function groupByPlayer(records: AttendanceRecord[]): PlayerSummary[] {
 export function AttendancePage() {
   const [records, setRecords] = useState<AttendanceRecord[] | null>(null);
   const [dateFilter, setDateFilter] = useState<'all' | 'week'>('all');
+  const [teamFilter, setTeamFilter] = useState('all');
   const [viewingSession, setViewingSession] = useState<SessionSummary | null>(null);
   const [viewMode, setViewMode] = useState<'session' | 'player'>('session');
 
@@ -80,16 +87,22 @@ export function AttendancePage() {
     api.get<AttendanceRecord[]>('/admin/attendance').then(setRecords);
   }, []);
 
-  const filtered = (records || []).filter((r) => dateFilter === 'all' || isWithinLastWeek(r.date));
+  const teams = Array.from(new Set((records || []).map((r) => r.team).filter((t): t is string => !!t))).sort();
+
+  const filtered = (records || []).filter(
+    (r) =>
+      (dateFilter === 'all' || isWithinLastWeek(r.date)) &&
+      (teamFilter === 'all' || r.team === teamFilter),
+  );
   const total = filtered.length;
   const present = filtered.filter((r) => r.status === 'present').length;
   const rate = total ? Math.round((present / total) * 100) : 0;
-  const sessions = groupByDate(filtered);
+  const sessions = groupBySession(filtered);
   const playerSummaries = groupByPlayer(filtered);
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
         <div className="seg">
           <label className="seg-opt">
             <input type="radio" checked={dateFilter === 'all'} onChange={() => setDateFilter('all')} />
@@ -100,6 +113,15 @@ export function AttendancePage() {
             This week
           </label>
         </div>
+        <Select
+          style={{ minWidth: 200 }}
+          value={teamFilter}
+          onChange={setTeamFilter}
+          options={[
+            { value: 'all', label: 'All sports/teams' },
+            ...teams.map((t) => ({ value: t, label: t })),
+          ]}
+        />
         <div style={{ flex: 1 }} />
         <span className="tag tag-info">{total} records · {rate}% present</span>
       </div>
@@ -123,6 +145,7 @@ export function AttendancePage() {
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Team</th>
                 <th>Present</th>
                 <th>Late</th>
                 <th>Absent</th>
@@ -133,8 +156,9 @@ export function AttendancePage() {
             </thead>
             <tbody>
               {sessions.map((s) => (
-                <tr key={s.date}>
+                <tr key={`${s.date}__${s.team}`}>
                   <td style={{ fontWeight: 600 }}>{s.date}</td>
+                  <td><span className="tag tag-neutral">{s.team}</span></td>
                   <td><span className="tag tag-success">{s.present}</span></td>
                   <td><span className="tag tag-warning">{s.late}</span></td>
                   <td><span className="tag tag-danger">{s.absent}</span></td>
@@ -146,7 +170,7 @@ export function AttendancePage() {
                 </tr>
               ))}
               {sessions.length === 0 && (
-                <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance records found.</td></tr>
+                <tr><td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance records found.</td></tr>
               )}
             </tbody>
           </table>
@@ -157,6 +181,7 @@ export function AttendancePage() {
             <thead>
               <tr>
                 <th>Player</th>
+                <th>Team</th>
                 <th>Present</th>
                 <th>Late</th>
                 <th>Absent</th>
@@ -168,6 +193,7 @@ export function AttendancePage() {
               {playerSummaries.map((p) => (
                 <tr key={p.player_id}>
                   <td style={{ fontWeight: 600 }}>{p.player_name}</td>
+                  <td style={{ opacity: 0.75 }}>{p.team}</td>
                   <td><span className="tag tag-success">{p.present}</span></td>
                   <td><span className="tag tag-warning">{p.late}</span></td>
                   <td><span className="tag tag-danger">{p.absent}</span></td>
@@ -176,7 +202,7 @@ export function AttendancePage() {
                 </tr>
               ))}
               {playerSummaries.length === 0 && (
-                <tr><td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance records found.</td></tr>
+                <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No attendance records found.</td></tr>
               )}
             </tbody>
           </table>
@@ -185,7 +211,7 @@ export function AttendancePage() {
 
       {viewingSession && (
         <DialogShell
-          title={`Attendance — ${viewingSession.date}`}
+          title={`Attendance — ${viewingSession.team} · ${viewingSession.date}`}
           onClose={() => setViewingSession(null)}
           actions={<button type="button" className="btn btn-secondary" onClick={() => setViewingSession(null)}>Close</button>}
         >

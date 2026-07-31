@@ -176,6 +176,7 @@ class Attendance(db.Model):
             "attendance_id": self.attendance_id,
             "player_id": self.player_id,
             "player_name": f"{self.player.first_name} {self.player.last_name}" if self.player else None,
+            "team": self.player.team if self.player else None,
             "coach_id": self.coach_id,
             "coach_name": f"{self.coach.first_name} {self.coach.last_name}" if self.coach else None,
             "date": self.date.isoformat() if self.date else None,
