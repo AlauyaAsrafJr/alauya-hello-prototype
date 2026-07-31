@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
+import { api, ApiError } from '../../api/client';
 import type { FeedbackCategory, PerformanceFeedback, PlayerProfile } from '../../api/domain';
 import { StarIcon } from '../../icons';
 import { Select } from '../../components/Select';
@@ -26,6 +26,9 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
   const [categories, setCategories] = useState<FeedbackCategory[] | null>(null);
   const [playerId, setPlayerId] = useState<number | ''>('');
   const [category, setCategory] = useState('');
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
   const [comments, setComments] = useState('');
   const [rating, setRating] = useState(5);
   const [submitting, setSubmitting] = useState(false);
@@ -35,9 +38,14 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
     setFeedback(data);
   }
 
+  async function loadCategories() {
+    const data = await api.get<FeedbackCategory[]>('/coach/feedback-categories');
+    setCategories(data);
+  }
+
   useEffect(() => {
     api.get<PlayerProfile[]>('/coach/players').then(setPlayers);
-    api.get<FeedbackCategory[]>('/coach/feedback-categories').then(setCategories);
+    loadCategories();
     loadFeedback();
   }, []);
 
@@ -56,6 +64,24 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
     }
   }
 
+  async function createCategory() {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    setCreatingCategory(true);
+    try {
+      const created = await api.post<FeedbackCategory>('/coach/feedback-categories', { name });
+      await loadCategories();
+      setCategory(created.name);
+      setNewCategoryName('');
+      setAddingCategory(false);
+      showToast(`"${created.name}" added as a category`);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to add category');
+    } finally {
+      setCreatingCategory(false);
+    }
+  }
+
   return (
     <>
       <div className="card elev-sm" style={{ padding: 20, marginBottom: 24, maxWidth: 640 }}>
@@ -70,20 +96,63 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
               options={(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` }))}
             />
           </div>
-          {categories && categories.length > 0 && (
-            <div className="field">
+          <div className="field">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label>Category</label>
+              {!addingCategory && (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  style={{ fontSize: 12, padding: '2px 0' }}
+                  onClick={() => setAddingCategory(true)}
+                >
+                  + New category
+                </button>
+              )}
+            </div>
+            {addingCategory ? (
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  className="input"
+                  placeholder="e.g. Free throws"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') createCategory();
+                  }}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={createCategory}
+                  disabled={creatingCategory || !newCategoryName.trim()}
+                >
+                  {creatingCategory ? 'Adding…' : 'Add'}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setAddingCategory(false);
+                    setNewCategoryName('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
               <Select
                 value={category}
                 onChange={setCategory}
                 placeholder="General (no specific category)"
                 options={[
                   { value: '', label: 'General (no specific category)' },
-                  ...categories.map((c) => ({ value: c.name, label: c.name })),
+                  ...(categories || []).map((c) => ({ value: c.name, label: c.name })),
                 ]}
               />
-            </div>
-          )}
+            )}
+          </div>
           <div className="field">
             <label>Rating</label>
             <div style={{ display: 'flex', gap: 6 }}>

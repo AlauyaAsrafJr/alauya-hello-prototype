@@ -342,6 +342,30 @@ def list_feedback_categories():
     return jsonify([c.to_dict() for c in categories])
 
 
+@coach_bp.post("/feedback-categories")
+@roles_required("coach")
+def create_feedback_category():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    if not coach.specialization:
+        return jsonify({"error": "You don't have a team assigned yet"}), 400
+    data = request.get_json(force=True) or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    existing = FeedbackCategory.query.filter(
+        FeedbackCategory.sport_name == coach.specialization,
+        db.func.lower(FeedbackCategory.name) == name.lower(),
+    ).first()
+    if existing:
+        return jsonify(existing.to_dict()), 200
+    category = FeedbackCategory(sport_name=coach.specialization, name=name)
+    db.session.add(category)
+    db.session.commit()
+    return jsonify(category.to_dict()), 201
+
+
 @coach_bp.get("/performance-feedback")
 @roles_required("coach")
 def list_performance_feedback():
