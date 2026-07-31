@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
-import type { ActivityType, FeedbackCategory, Sport } from '../../api/domain';
+import type { Sport } from '../../api/domain';
 import { TrashIcon } from '../../icons';
 import { PasswordRow } from '../../components/PasswordRow';
-import { Select } from '../../components/Select';
 
 interface SettingsPageProps {
   showToast: (msg: string) => void;
@@ -14,52 +13,14 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
   const [newSport, setNewSport] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const [categorySport, setCategorySport] = useState('');
-  const [categories, setCategories] = useState<FeedbackCategory[] | null>(null);
-  const [newCategory, setNewCategory] = useState('');
-  const [categorySubmitting, setCategorySubmitting] = useState(false);
-
-  const [typeSport, setTypeSport] = useState('');
-  const [activityTypes, setActivityTypes] = useState<ActivityType[] | null>(null);
-  const [newType, setNewType] = useState('');
-  const [typeSubmitting, setTypeSubmitting] = useState(false);
-
   async function load() {
     const data = await api.get<Sport[]>('/admin/sports');
     setSports(data);
-    setCategorySport((prev) => prev || data[0]?.name || '');
-    setTypeSport((prev) => prev || data[0]?.name || '');
-  }
-
-  async function loadCategories(sportName: string) {
-    if (!sportName) {
-      setCategories([]);
-      return;
-    }
-    const data = await api.get<FeedbackCategory[]>(`/admin/feedback-categories?sport=${encodeURIComponent(sportName)}`);
-    setCategories(data);
-  }
-
-  async function loadActivityTypes(sportName: string) {
-    if (!sportName) {
-      setActivityTypes([]);
-      return;
-    }
-    const data = await api.get<ActivityType[]>(`/admin/activity-types?sport=${encodeURIComponent(sportName)}`);
-    setActivityTypes(data);
   }
 
   useEffect(() => {
     load();
   }, []);
-
-  useEffect(() => {
-    loadCategories(categorySport);
-  }, [categorySport]);
-
-  useEffect(() => {
-    loadActivityTypes(typeSport);
-  }, [typeSport]);
 
   async function addSport() {
     const name = newSport.trim();
@@ -84,58 +45,6 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
       load();
     } catch (err) {
       showToast(err instanceof ApiError ? err.message : 'Unable to remove sport');
-    }
-  }
-
-  async function addCategory() {
-    const name = newCategory.trim();
-    if (!name || !categorySport) return;
-    setCategorySubmitting(true);
-    try {
-      await api.post('/admin/feedback-categories', { sport_name: categorySport, name });
-      setNewCategory('');
-      showToast(`${name} added to ${categorySport}`);
-      loadCategories(categorySport);
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : 'Unable to add category');
-    } finally {
-      setCategorySubmitting(false);
-    }
-  }
-
-  async function removeCategory(category: FeedbackCategory) {
-    try {
-      await api.delete(`/admin/feedback-categories/${category.category_id}`);
-      showToast(`${category.name} removed`);
-      loadCategories(categorySport);
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : 'Unable to remove category');
-    }
-  }
-
-  async function addActivityType() {
-    const name = newType.trim();
-    if (!name || !typeSport) return;
-    setTypeSubmitting(true);
-    try {
-      await api.post('/admin/activity-types', { sport_name: typeSport, name });
-      setNewType('');
-      showToast(`${name} added to ${typeSport}`);
-      loadActivityTypes(typeSport);
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : 'Unable to add activity type');
-    } finally {
-      setTypeSubmitting(false);
-    }
-  }
-
-  async function removeActivityType(type: ActivityType) {
-    try {
-      await api.delete(`/admin/activity-types/${type.activity_type_id}`);
-      showToast(`${type.name} removed`);
-      loadActivityTypes(typeSport);
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : 'Unable to remove activity type');
     }
   }
 
@@ -177,127 +86,6 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
             </div>
           ))}
           {sports.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>No sports set up yet.</div>}
-        </div>
-      )}
-    </div>
-
-    <div className="card elev-sm" style={{ padding: 24, maxWidth: 560, marginBottom: 20 }}>
-      <div className="card-kicker">System configuration</div>
-      <div className="card-title" style={{ marginBottom: 6 }}>Manage feedback categories</div>
-      <p className="card-body" style={{ marginBottom: 16 }}>
-        Skill categories coaches can rate players on, specific to each sport (e.g. "Shooting" for Basketball,
-        "Serving" for Volleyball), so feedback stays relevant no matter how many sports the program runs.
-      </p>
-
-      <div className="field" style={{ marginBottom: 14 }}>
-        <label>Sport</label>
-        <Select
-          value={categorySport}
-          onChange={setCategorySport}
-          placeholder="No sports set up yet"
-          options={(sports || []).map((s) => ({ value: s.name, label: s.name }))}
-        />
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
-        <input
-          className="input"
-          placeholder="e.g. Shooting"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') addCategory();
-          }}
-          disabled={!categorySport}
-        />
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={addCategory}
-          disabled={categorySubmitting || !newCategory.trim() || !categorySport}
-        >
-          {categorySubmitting ? 'Adding…' : 'Add category'}
-        </button>
-      </div>
-
-      {categories === null ? (
-        <div className="card-body">Loading categories…</div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {categories.map((c) => (
-            <div key={c.category_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--color-divider)' }}>
-              <span style={{ fontSize: 13.5, fontWeight: 600 }}>{c.name}</span>
-              <button type="button" className="btn btn-ghost btn-icon" aria-label={`Remove ${c.name}`} onClick={() => removeCategory(c)}>
-                <TrashIcon />
-              </button>
-            </div>
-          ))}
-          {categories.length === 0 && (
-            <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>
-              {categorySport ? `No categories set up for ${categorySport} yet.` : 'Add a sport first.'}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-
-    <div className="card elev-sm" style={{ padding: 24, maxWidth: 560, marginBottom: 20 }}>
-      <div className="card-kicker">System configuration</div>
-      <div className="card-title" style={{ marginBottom: 6 }}>Manage activity types</div>
-      <p className="card-body" style={{ marginBottom: 16 }}>
-        Training activity types specific to each sport (e.g. "Scrimmage" or "Conditioning" for Basketball,
-        "Endurance" for Swimming), so training logs stay consistent and reportable no matter how many sports
-        the program runs.
-      </p>
-
-      <div className="field" style={{ marginBottom: 14 }}>
-        <label>Sport</label>
-        <Select
-          value={typeSport}
-          onChange={setTypeSport}
-          placeholder="No sports set up yet"
-          options={(sports || []).map((s) => ({ value: s.name, label: s.name }))}
-        />
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
-        <input
-          className="input"
-          placeholder="e.g. Conditioning"
-          value={newType}
-          onChange={(e) => setNewType(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') addActivityType();
-          }}
-          disabled={!typeSport}
-        />
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={addActivityType}
-          disabled={typeSubmitting || !newType.trim() || !typeSport}
-        >
-          {typeSubmitting ? 'Adding…' : 'Add type'}
-        </button>
-      </div>
-
-      {activityTypes === null ? (
-        <div className="card-body">Loading activity types…</div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {activityTypes.map((t) => (
-            <div key={t.activity_type_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--color-divider)' }}>
-              <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
-              <button type="button" className="btn btn-ghost btn-icon" aria-label={`Remove ${t.name}`} onClick={() => removeActivityType(t)}>
-                <TrashIcon />
-              </button>
-            </div>
-          ))}
-          {activityTypes.length === 0 && (
-            <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>
-              {typeSport ? `No activity types set up for ${typeSport} yet.` : 'Add a sport first.'}
-            </div>
-          )}
         </div>
       )}
     </div>
