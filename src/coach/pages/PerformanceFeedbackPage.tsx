@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
-import type { PerformanceFeedback, PlayerProfile } from '../../api/domain';
+import type { FeedbackCategory, PerformanceFeedback, PlayerProfile } from '../../api/domain';
 import { StarIcon } from '../../icons';
 import { Select } from '../../components/Select';
 
@@ -23,7 +23,9 @@ function Rating({ value }: { value: number }) {
 export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPageProps) {
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
   const [feedback, setFeedback] = useState<PerformanceFeedback[] | null>(null);
+  const [categories, setCategories] = useState<FeedbackCategory[] | null>(null);
   const [playerId, setPlayerId] = useState<number | ''>('');
+  const [category, setCategory] = useState('');
   const [comments, setComments] = useState('');
   const [rating, setRating] = useState(5);
   const [submitting, setSubmitting] = useState(false);
@@ -35,6 +37,7 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
 
   useEffect(() => {
     api.get<PlayerProfile[]>('/coach/players').then(setPlayers);
+    api.get<FeedbackCategory[]>('/coach/feedback-categories').then(setCategories);
     loadFeedback();
   }, []);
 
@@ -42,9 +45,10 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
     if (!playerId || !comments.trim()) return;
     setSubmitting(true);
     try {
-      await api.post('/coach/performance-feedback', { player_id: playerId, comments, rating });
+      await api.post('/coach/performance-feedback', { player_id: playerId, comments, rating, category: category || undefined });
       setComments('');
       setRating(5);
+      setCategory('');
       showToast('Performance feedback submitted');
       loadFeedback();
     } finally {
@@ -66,6 +70,20 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
               options={(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` }))}
             />
           </div>
+          {categories && categories.length > 0 && (
+            <div className="field">
+              <label>Category</label>
+              <Select
+                value={category}
+                onChange={setCategory}
+                placeholder="General (no specific category)"
+                options={[
+                  { value: '', label: 'General (no specific category)' },
+                  ...categories.map((c) => ({ value: c.name, label: c.name })),
+                ]}
+              />
+            </div>
+          )}
           <div className="field">
             <label>Rating</label>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -98,7 +116,10 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
         {feedback?.map((f) => (
           <div key={f.feedback_id} className="card elev-sm" style={{ padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+                {f.category && <span className="tag tag-info">{f.category}</span>}
+              </div>
               <Rating value={f.rating} />
             </div>
             <p className="card-body" style={{ marginBottom: 4 }}>{f.comments}</p>

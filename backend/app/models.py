@@ -213,6 +213,7 @@ class PerformanceFeedback(db.Model):
     feedback_date = db.Column(db.Date, default=date.today)
     comments = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer, nullable=False)  # 1-5
+    category = db.Column(db.String(80), nullable=True)  # e.g. "Shooting", "Serving" — sport-specific skill
 
     player = db.relationship("Player", back_populates="feedback")
     coach = db.relationship("Coach", back_populates="feedback_given")
@@ -227,6 +228,7 @@ class PerformanceFeedback(db.Model):
             "feedback_date": self.feedback_date.isoformat() if self.feedback_date else None,
             "comments": self.comments,
             "rating": self.rating,
+            "category": self.category,
         }
 
 
@@ -401,3 +403,23 @@ class Sport(db.Model):
 
     def to_dict(self):
         return {"sport_id": self.sport_id, "name": self.name}
+
+
+class FeedbackCategory(db.Model):
+    """Sport-specific skill categories a coach can rate a player on
+    (e.g. "Shooting"/"Defense" for Basketball, "Serving"/"Blocking" for
+    Volleyball), managed by admins so feedback stays sport-appropriate
+    without hardcoding categories per sport in code.
+    """
+
+    __tablename__ = "feedback_categories"
+
+    category_id = db.Column(db.Integer, primary_key=True)
+    sport_name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint("sport_name", "name", name="uq_feedback_category_sport_name"),)
+
+    def to_dict(self):
+        return {"category_id": self.category_id, "sport_name": self.sport_name, "name": self.name}

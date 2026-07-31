@@ -23,6 +23,7 @@ from app.models import (
     PerformanceFeedback,
     PlayerHealthRecord,
     Sport,
+    FeedbackCategory,
 )
 
 app = create_app()
@@ -37,6 +38,11 @@ DEFAULT_SPORTS = [
     "Softball",
     "Tennis",
 ]
+
+DEFAULT_FEEDBACK_CATEGORIES = {
+    "Basketball": ["Shooting", "Defense", "Ball Handling", "Teamwork"],
+    "Volleyball": ["Serving", "Blocking", "Passing", "Teamwork"],
+}
 
 
 def hash_pw(pw):
@@ -107,6 +113,10 @@ with app.app_context():
 
     for name in DEFAULT_SPORTS:
         db.session.add(Sport(name=name))
+
+    for sport_name, categories in DEFAULT_FEEDBACK_CATEGORIES.items():
+        for category_name in categories:
+            db.session.add(FeedbackCategory(sport_name=sport_name, name=category_name))
 
     admin_user = make_user("admin", "Admin@123", "admin")
     admin = Admin(user_id=admin_user.user_id, first_name="Ilham", last_name="Gamal", email="admin@actibase.msu.edu.ph")

@@ -13,6 +13,7 @@ from app.models import (
     Participation,
     PerformanceFeedback,
     PlayerHealthRecord,
+    FeedbackCategory,
     Report,
 )
 
@@ -327,6 +328,20 @@ def update_participation(participation_id):
 # ---- Performance Evaluation ----
 
 
+@coach_bp.get("/feedback-categories")
+@roles_required("coach")
+def list_feedback_categories():
+    coach = _current_coach()
+    if not coach or not coach.specialization:
+        return jsonify([])
+    categories = (
+        FeedbackCategory.query.filter_by(sport_name=coach.specialization)
+        .order_by(FeedbackCategory.name)
+        .all()
+    )
+    return jsonify([c.to_dict() for c in categories])
+
+
 @coach_bp.get("/performance-feedback")
 @roles_required("coach")
 def list_performance_feedback():
@@ -360,11 +375,18 @@ def submit_performance_feedback():
     if not 1 <= rating <= 5:
         return jsonify({"error": "rating must be between 1 and 5"}), 400
 
+    category = (data.get("category") or "").strip() or None
+    if category and not FeedbackCategory.query.filter_by(
+        sport_name=coach.specialization, name=category
+    ).first():
+        return jsonify({"error": "That category isn't set up for your team's sport"}), 400
+
     feedback = PerformanceFeedback(
         player_id=data["player_id"],
         coach_id=coach.coach_id,
         comments=data["comments"],
         rating=rating,
+        category=category,
     )
     db.session.add(feedback)
     db.session.commit()

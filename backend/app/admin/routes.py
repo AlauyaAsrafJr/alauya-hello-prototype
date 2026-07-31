@@ -19,6 +19,7 @@ from app.models import (
     Report,
     Statistic,
     Sport,
+    FeedbackCategory,
 )
 
 admin_bp = Blueprint("admin", __name__)
@@ -423,3 +424,49 @@ def delete_sport(sport_id):
     db.session.delete(sport)
     db.session.commit()
     return jsonify({"message": "Sport removed"})
+
+
+# ---- Manage Feedback Categories ----
+# Sport-specific skill categories (e.g. "Shooting" for Basketball, "Serving"
+# for Volleyball) coaches can rate players on, kept admin-manageable per
+# sport instead of hardcoded so feedback stays relevant across all sports.
+
+
+@admin_bp.get("/feedback-categories")
+@roles_required("admin")
+def list_feedback_categories():
+    sport = request.args.get("sport")
+    query = FeedbackCategory.query
+    if sport:
+        query = query.filter_by(sport_name=sport)
+    categories = query.order_by(FeedbackCategory.sport_name, FeedbackCategory.name).all()
+    return jsonify([c.to_dict() for c in categories])
+
+
+@admin_bp.post("/feedback-categories")
+@roles_required("admin")
+def create_feedback_category():
+    data = request.get_json(force=True) or {}
+    sport_name = (data.get("sport_name") or "").strip()
+    name = (data.get("name") or "").strip()
+    if not sport_name or not name:
+        return jsonify({"error": "sport_name and name are required"}), 400
+    exists = FeedbackCategory.query.filter(
+        db.func.lower(FeedbackCategory.sport_name) == sport_name.lower(),
+        db.func.lower(FeedbackCategory.name) == name.lower(),
+    ).first()
+    if exists:
+        return jsonify({"error": "That category already exists for this sport"}), 409
+    category = FeedbackCategory(sport_name=sport_name, name=name)
+    db.session.add(category)
+    db.session.commit()
+    return jsonify(category.to_dict()), 201
+
+
+@admin_bp.delete("/feedback-categories/<int:category_id>")
+@roles_required("admin")
+def delete_feedback_category(category_id):
+    category = FeedbackCategory.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    return jsonify({"message": "Category removed"})

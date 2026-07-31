@@ -3,6 +3,12 @@ export interface Sport {
   name: string;
 }
 
+export interface FeedbackCategory {
+  category_id: number;
+  sport_name: string;
+  name: string;
+}
+
 export type UserRole = 'player' | 'coach' | 'admin';
 export type MembershipStatus = 'active' | 'inactive' | 'suspended';
 export type HealthStatus = 'healthy' | 'injured' | 'recovering';
@@ -112,6 +118,7 @@ export interface PerformanceFeedback {
   feedback_date: string;
   comments: string;
   rating: number;
+  category: string | null;
 }
 
 export interface PlayerNote {

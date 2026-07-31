@@ -33,7 +33,10 @@ export function PerformanceFeedbackPage() {
       {records.map((f) => (
         <div key={f.feedback_id} className="card elev-sm" style={{ padding: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <div style={{ fontWeight: 600, fontSize: 14 }}>{f.coach_name}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{f.coach_name}</div>
+              {f.category && <span className="tag tag-info">{f.category}</span>}
+            </div>
             <Rating value={f.rating} />
           </div>
           <p className="card-body" style={{ marginBottom: 6 }}>{f.comments}</p>
