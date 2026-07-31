@@ -1,9 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import { useAuth } from './AuthContext';
 import { ApiError } from '../api/client';
+import { useTheme } from '../theme/ThemeContext';
+import { MoonIcon, SunIcon } from '../icons';
 
 export function LoginPage() {
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -32,8 +35,19 @@ export function LoginPage() {
         background: 'var(--color-bg)',
         fontFamily: 'var(--font-body)',
         color: 'var(--color-text)',
+        position: 'relative',
       }}
     >
+      <button
+        type="button"
+        onClick={toggleTheme}
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        className="btn btn-secondary btn-icon"
+        style={{ position: 'absolute', top: 24, right: 24 }}
+      >
+        {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+      </button>
+
       <div className="card elev-md" style={{ width: 380, padding: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
           <div

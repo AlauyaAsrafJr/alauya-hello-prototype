@@ -1,7 +1,8 @@
-/* Light design tokens and component classes for ACTIBASE. */
+/* Light/dark design tokens and component classes for ACTIBASE. */
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap');
 
 :root {
+  color-scheme: light;
   --color-bg: #ffffff;
   --color-surface: #ffffff;
   --color-surface-2: #f4f5f8;
@@ -10,6 +11,10 @@
   --color-accent: #9c2242;
   --color-accent-2: #c6a44d;
   --color-divider: rgba(15, 23, 42, 0.1);
+  --color-backdrop: rgba(15, 23, 42, 0.45);
+  --color-overlay-hover: rgba(15, 23, 42, 0.05);
+  --color-tag-neutral-bg: rgba(15, 23, 42, 0.06);
+  --color-link-hover: var(--color-accent-600);
 
   --color-neutral-100: #12151f;
   --color-neutral-200: #262b36;
@@ -76,6 +81,42 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
   --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.12);
   --shadow-lg: 0 20px 48px rgba(15, 23, 42, 0.2);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0b0e14;
+  --color-surface: #12151f;
+  --color-surface-2: #1a1f2b;
+  --color-surface-3: #232937;
+  --color-text: #e7e9ee;
+  --color-divider: rgba(255, 255, 255, 0.09);
+  --color-backdrop: rgba(2, 3, 6, 0.65);
+  --color-overlay-hover: rgba(255, 255, 255, 0.06);
+  --color-tag-neutral-bg: rgba(255, 255, 255, 0.07);
+  --color-link-hover: var(--color-accent-200);
+
+  --color-neutral-100: #eef0f4;
+  --color-neutral-200: #d6dae2;
+  --color-neutral-300: #b8c0cc;
+  --color-neutral-400: #8b93a3;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #545c6b;
+  --color-neutral-700: #3d4453;
+  --color-neutral-800: #262c38;
+  --color-neutral-900: #05060a;
+
+  --color-accent-400: #bf6f84;
+  --color-accent-2-400: #dac48b;
+
+  --color-success-text: #4ade80;
+  --color-warning-text: #fbbf24;
+  --color-danger-text: #f87171;
+  --color-info-text: #60a5fa;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -234,7 +275,7 @@ img { display: block; max-width: 100%; }
 }
 .tag-accent { background: var(--color-accent-100); color: var(--color-accent-400); }
 .tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-400); }
-.tag-neutral { background: rgba(15, 23, 42, 0.06); color: var(--color-neutral-300); }
+.tag-neutral { background: var(--color-tag-neutral-bg); color: var(--color-neutral-300); }
 .tag-outline { border: 1px solid var(--color-divider); color: var(--color-neutral-300); }
 .tag-success { background: var(--color-success-bg); color: var(--color-success-text); }
 .tag-warning { background: var(--color-warning-bg); color: var(--color-warning-text); }
@@ -259,7 +300,7 @@ img { display: block; max-width: 100%; }
 .dialog-backdrop {
   position: fixed; inset: 0; display: grid; place-items: center;
   padding: var(--space-4); z-index: 50;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--color-backdrop);
 }
 .dialog {
   width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);

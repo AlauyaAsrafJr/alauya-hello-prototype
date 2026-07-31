@@ -4,8 +4,8 @@ body { margin: 0; }
 ::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: var(--radius-pill); }
 ::-webkit-scrollbar-track { background: transparent; }
 a { color: var(--color-accent-400); }
-a:hover { color: var(--color-accent-600); }
+a:hover { color: var(--color-link-hover); }
 
-.sidebar-nav-btn:hover { background: rgba(15, 23, 42, 0.05) !important; }
-.sidebar-logout-btn:hover { background: rgba(15, 23, 42, 0.05) !important; }
+.sidebar-nav-btn:hover { background: var(--color-overlay-hover) !important; }
+.sidebar-logout-btn:hover { background: var(--color-overlay-hover) !important; }
 .menu-item:hover { background: var(--color-surface-3); }

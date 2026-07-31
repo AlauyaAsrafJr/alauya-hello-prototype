@@ -1,4 +1,5 @@
-import { BellIcon, ChevronDownIcon } from '../icons';
+import { BellIcon, ChevronDownIcon, MoonIcon, SunIcon } from '../icons';
+import { useTheme } from '../theme/ThemeContext';
 
 interface TopbarProps {
   pageTitle: string;
@@ -33,6 +34,8 @@ export function Topbar({
   onAccountSettings,
   onLogout,
 }: TopbarProps) {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <header
       style={{
@@ -52,6 +55,15 @@ export function Topbar({
         <h1 style={{ fontSize: 21, margin: 0, color: 'var(--color-neutral-100)' }}>{pageTitle}</h1>
         <div style={{ fontSize: 12, color: 'var(--color-neutral-400)', marginTop: 2 }}>{pageSubtitle}</div>
       </div>
+
+      <button
+        type="button"
+        onClick={toggleTheme}
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        className="btn btn-secondary btn-icon"
+      >
+        {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+      </button>
 
       <div style={{ position: 'relative' }}>
         <button

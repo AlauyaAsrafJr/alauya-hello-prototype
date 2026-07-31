@@ -3,12 +3,15 @@ import { createRoot } from 'react-dom/client'
 import './styles/tokens.css'
 import './styles/global.css'
 import { AuthProvider } from './auth/AuthContext'
+import { ThemeProvider } from './theme/ThemeContext'
 import { RootApp } from './RootApp'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <RootApp />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RootApp />
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 )
