@@ -82,6 +82,8 @@ def create_user():
         return jsonify({"error": "role must be player, coach, or admin"}), 400
     if SystemUser.query.filter_by(username=data["username"]).first():
         return jsonify({"error": "Username already taken"}), 409
+    if role == "player" and data.get("year_level") not in (None, "") and not 1 <= int(data["year_level"]) <= 4:
+        return jsonify({"error": "year_level must be between 1 and 4"}), 400
 
     password_hash = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
     user = SystemUser(username=data["username"], password_hash=password_hash, role=role)

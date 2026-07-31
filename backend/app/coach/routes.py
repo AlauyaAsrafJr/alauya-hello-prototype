@@ -88,6 +88,8 @@ def edit_player_profile(player_id):
     if player.player_id not in _team_player_ids(coach):
         return jsonify({"error": "Player not found"}), 404
     data = request.get_json(force=True) or {}
+    if data.get("year_level") not in (None, "") and not 1 <= int(data["year_level"]) <= 4:
+        return jsonify({"error": "year_level must be between 1 and 4"}), 400
     # Team reassignment is an admin-only action, so coaches can't move a player off their roster.
     editable_fields = [
         "first_name",

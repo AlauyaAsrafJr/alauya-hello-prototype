@@ -179,7 +179,7 @@ with app.app_context():
             contact_number=f"0917-100-000{i}",
             date_of_birth=date(2003, (i % 12) + 1, 10),
             team=team,
-            year_level=((i - 1) % 5) + 1,
+            year_level=((i - 1) % 4) + 1,
             membership_status="active",
         )
         db.session.add(p)

@@ -4,7 +4,7 @@ export function formatYearLevel(year: number | null | undefined): string {
   return `${year}${suffix} Year`;
 }
 
-export const YEAR_LEVEL_OPTIONS = [1, 2, 3, 4, 5].map((year) => ({
+export const YEAR_LEVEL_OPTIONS = [1, 2, 3, 4].map((year) => ({
   value: String(year),
   label: formatYearLevel(year),
 }));
