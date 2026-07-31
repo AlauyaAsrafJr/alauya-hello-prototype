@@ -95,7 +95,12 @@ def create_user():
         email=data["email"],
     )
     if role == "player":
-        profile = Player(contact_number=data.get("contact_number"), team=data.get("team"), **profile_kwargs)
+        profile = Player(
+            contact_number=data.get("contact_number"),
+            team=data.get("team"),
+            year_level=data.get("year_level") or None,
+            **profile_kwargs,
+        )
     elif role == "coach":
         profile = Coach(contact_number=data.get("contact_number"), specialization=data.get("specialization"), **profile_kwargs)
     else:

@@ -4,6 +4,7 @@ import type { PlayerProfile } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
 import { EyeIcon } from '../../icons';
+import { formatYearLevel } from '../../utils/yearLevel';
 
 function membershipTag(status: string) {
   if (status === 'active') return 'tag tag-success';
@@ -65,6 +66,7 @@ export function PlayersPage() {
             <tr>
               <th>Name</th>
               <th>Team</th>
+              <th>Year</th>
               <th>Email</th>
               <th>Membership</th>
               <th>Health</th>
@@ -77,6 +79,7 @@ export function PlayersPage() {
               <tr key={p.player_id}>
                 <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
                 <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
                 <td style={{ opacity: 0.75 }}>{p.email}</td>
                 <td><span className={membershipTag(p.membership_status)}>{p.membership_status}</span></td>
                 <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
@@ -87,7 +90,7 @@ export function PlayersPage() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
+              <tr><td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
             )}
           </tbody>
         </table>
@@ -101,6 +104,7 @@ export function PlayersPage() {
               ['Email', viewing.email],
               ['Contact number', viewing.contact_number || '—'],
               ['Team', viewing.team || '—'],
+              ['Year level', formatYearLevel(viewing.year_level)],
               ['Date of birth', viewing.date_of_birth || '—'],
               ['Membership status', viewing.membership_status],
               ['Health status', viewing.health_status],

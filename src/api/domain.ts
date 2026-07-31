@@ -33,6 +33,7 @@ export interface PlayerProfile {
   contact_number: string | null;
   date_of_birth: string | null;
   team: string | null;
+  year_level: number | null;
   profile_photo: string | null;
   membership_status: MembershipStatus;
   health_status: HealthStatus;

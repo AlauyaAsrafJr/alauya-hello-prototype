@@ -38,6 +38,7 @@ class Player(db.Model):
     contact_number = db.Column(db.String(30))
     date_of_birth = db.Column(db.Date)
     team = db.Column(db.String(80))
+    year_level = db.Column(db.Integer)  # 1-5+, a student's current year level
     profile_photo = db.Column(db.String(255))
     membership_status = db.Column(
         db.Enum("active", "inactive", "suspended", name="membership_status"), default="active"
@@ -68,6 +69,7 @@ class Player(db.Model):
             "contact_number": self.contact_number,
             "date_of_birth": self.date_of_birth.isoformat() if self.date_of_birth else None,
             "team": self.team,
+            "year_level": self.year_level,
             "profile_photo": self.profile_photo,
             "membership_status": self.membership_status,
             "health_status": self.health_status,

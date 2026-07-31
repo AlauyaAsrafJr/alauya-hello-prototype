@@ -96,6 +96,7 @@ def edit_player_profile(player_id):
         "contact_number",
         "membership_status",
         "profile_photo",
+        "year_level",
     ]
     for field in editable_fields:
         if field in data:

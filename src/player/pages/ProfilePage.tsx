@@ -5,6 +5,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { StatCard } from '../../components/StatCard';
 import { PasswordRow } from '../../components/PasswordRow';
 import { AttendanceIcon, SessionsIcon, ActivitiesIcon, StarIcon } from '../../icons';
+import { formatYearLevel } from '../../utils/yearLevel';
 
 interface ProfilePageProps {
   showToast: (msg: string) => void;
@@ -142,6 +143,7 @@ export function ProfilePage({ showToast }: ProfilePageProps) {
             ['Username', profile.username || '—'],
             ['Email', profile.email],
             ['Team', profile.team || '—'],
+            ['Year level', formatYearLevel(profile.year_level)],
             ['Date of birth', profile.date_of_birth || '—'],
             ['Membership status', profile.membership_status],
           ].map(([k, v]) => (

@@ -4,6 +4,7 @@ import type { CoachProfile, HealthStatus, PlayerHealthRecord, PlayerProfile } fr
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
 import { EyeIcon, HeartPulseIcon } from '../../icons';
+import { formatYearLevel, YEAR_LEVEL_OPTIONS } from '../../utils/yearLevel';
 
 function membershipTag(status: string) {
   if (status === 'active') return 'tag tag-success';
@@ -27,6 +28,7 @@ interface EditForm {
   email: string;
   contact_number: string;
   membership_status: string;
+  year_level: string;
 }
 
 interface HealthForm {
@@ -68,12 +70,16 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
       email: p.email,
       contact_number: p.contact_number || '',
       membership_status: p.membership_status,
+      year_level: p.year_level ? String(p.year_level) : '',
     });
   }
 
   async function submitEdit() {
     if (!editing || !form) return;
-    await api.patch(`/coach/players/${editing.player_id}`, form);
+    await api.patch(`/coach/players/${editing.player_id}`, {
+      ...form,
+      year_level: form.year_level ? Number(form.year_level) : null,
+    });
     setEditing(null);
     showToast(`${form.first_name} ${form.last_name} updated`);
     load(search);
@@ -140,6 +146,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
             <tr>
               <th>Name</th>
               <th>Team</th>
+              <th>Year</th>
               <th>Email</th>
               <th>Membership</th>
               <th>Health</th>
@@ -151,6 +158,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               <tr key={p.player_id}>
                 <td style={{ fontWeight: 600 }}>{p.first_name} {p.last_name}</td>
                 <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
                 <td style={{ opacity: 0.75 }}>{p.email}</td>
                 <td><span className={membershipTag(p.membership_status)}>{p.membership_status}</span></td>
                 <td><span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>{p.health_status}</span></td>
@@ -164,7 +172,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               </tr>
             ))}
             {players && players.length === 0 && (
-              <tr><td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
+              <tr><td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No players found.</td></tr>
             )}
           </tbody>
         </table>
@@ -177,6 +185,7 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               ['Email', viewing.email],
               ['Contact number', viewing.contact_number || '—'],
               ['Team', viewing.team || '—'],
+              ['Year level', formatYearLevel(viewing.year_level)],
               ['Date of birth', viewing.date_of_birth || '—'],
               ['Membership status', viewing.membership_status],
               ['Health status', viewing.health_status],
@@ -224,6 +233,15 @@ export function PlayersPage({ showToast }: PlayersPageProps) {
               <label>Team</label>
               <input className="input" value={editing.team || '—'} disabled />
               <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>Team assignment is managed by an administrator.</p>
+            </div>
+            <div className="field">
+              <label>Year level</label>
+              <Select
+                value={form.year_level}
+                onChange={(v) => setForm({ ...form, year_level: v })}
+                placeholder="Not set"
+                options={YEAR_LEVEL_OPTIONS}
+              />
             </div>
             <div className="field">
               <label>Membership status</label>

@@ -5,6 +5,7 @@ import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import { ArchiveIcon, EyeIcon, PlusIcon } from '../../icons';
 import { Select } from '../../components/Select';
+import { YEAR_LEVEL_OPTIONS } from '../../utils/yearLevel';
 
 interface UsersPageProps {
   showToast: (msg: string) => void;
@@ -18,6 +19,7 @@ interface NewUserForm {
   last_name: string;
   email: string;
   team: string;
+  year_level: string;
 }
 
 const EMPTY_FORM: NewUserForm = {
@@ -28,6 +30,7 @@ const EMPTY_FORM: NewUserForm = {
   last_name: '',
   email: '',
   team: '',
+  year_level: '',
 };
 
 export function UsersPage({ showToast }: UsersPageProps) {
@@ -77,6 +80,7 @@ export function UsersPage({ showToast }: UsersPageProps) {
       // so the backend can pick the one relevant to the chosen role.
       team: needsTeam ? form.team : undefined,
       specialization: needsTeam ? form.team : undefined,
+      year_level: form.role === 'player' && form.year_level ? Number(form.year_level) : undefined,
     });
     setAddOpen(false);
     setForm(EMPTY_FORM);
@@ -229,6 +233,17 @@ export function UsersPage({ showToast }: UsersPageProps) {
                     : ''}
                   {' '}Don't see the right sport? Add it from Settings → Manage Sports.
                 </p>
+              </div>
+            )}
+            {form.role === 'player' && (
+              <div className="field">
+                <label>Year level</label>
+                <Select
+                  value={form.year_level}
+                  onChange={(v) => setForm({ ...form, year_level: v })}
+                  placeholder="Not set"
+                  options={YEAR_LEVEL_OPTIONS}
+                />
               </div>
             )}
           </div>
