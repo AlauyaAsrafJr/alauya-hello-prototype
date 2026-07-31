@@ -86,7 +86,7 @@ export function ProfilePage({ showToast }) {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
+      <div className="stat-grid-4" style={{ marginBottom: 28 }}>
         {statCards.map((c) => (
           <StatCard key={c.label} label={c.label} value={c.value} icon={c.icon} variant={c.variant} />
         ))}

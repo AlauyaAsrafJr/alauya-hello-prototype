@@ -10,13 +10,13 @@ function initialsOf(name) {
   );
 }
 
-export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displayName }) {
+export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displayName, mobileOpen }) {
   let lastGroup;
 
   return (
     <aside
+      className={mobileOpen ? 'app-sidebar open' : 'app-sidebar'}
       style={{
-        width: 250,
         flex: 'none',
         background: 'var(--color-bg)',
         borderRight: '1px solid var(--color-divider)',

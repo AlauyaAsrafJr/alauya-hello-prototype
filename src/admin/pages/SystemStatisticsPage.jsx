@@ -40,7 +40,7 @@ export function SystemStatisticsPage() {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 16, marginBottom: 24 }}>
+      <div className="stat-grid-2" style={{ marginBottom: 24 }}>
         <div className="card elev-sm" style={{ padding: 18 }}>
           <div className="card-kicker">Accounts</div>
           {stats && (
@@ -89,7 +89,7 @@ export function SystemStatisticsPage() {
             Player health
           </div>
           {playerHealth && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
+            <div className="stat-grid-3" style={{ marginBottom: 16 }}>
               <StatCard label="Healthy" value={playerHealth.counts.healthy} icon={HeartPulseIcon} variant="success" />
               <StatCard label="Recovering" value={playerHealth.counts.recovering} icon={HeartPulseIcon} variant="warning" />
               <StatCard label="Injured" value={playerHealth.counts.injured} icon={HeartPulseIcon} variant="danger" />
@@ -107,56 +107,58 @@ export function SystemStatisticsPage() {
           </div>
 
           <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Team</th>
-                  <th>Status</th>
-                  <th>Since</th>
-                  <th style={{ width: 100 }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredHealthPlayers.map((p) => (
-                  <tr key={p.player_id}>
-                    <td style={{ fontWeight: 600 }}>
-                      {p.first_name} {p.last_name}
-                    </td>
-                    <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
-                    <td>
-                      <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
-                        {p.health_status}
-                      </span>
-                    </td>
-                    <td style={{ opacity: 0.75 }}>{p.latest_reported_date || '—'}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => openHistory(p.player_id, `${p.first_name} ${p.last_name}`)}
-                      >
-                        History
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {playerHealth && playerHealth.players.length === 0 && (
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
                   <tr>
-                    <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                      No players found.
-                    </td>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Status</th>
+                    <th>Since</th>
+                    <th style={{ width: 100 }}>Actions</th>
                   </tr>
-                )}
-                {playerHealth && playerHealth.players.length > 0 && filteredHealthPlayers.length === 0 && (
-                  <tr>
-                    <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                      No matching players found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredHealthPlayers.map((p) => (
+                    <tr key={p.player_id}>
+                      <td style={{ fontWeight: 600 }}>
+                        {p.first_name} {p.last_name}
+                      </td>
+                      <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                      <td>
+                        <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
+                          {p.health_status}
+                        </span>
+                      </td>
+                      <td style={{ opacity: 0.75 }}>{p.latest_reported_date || '—'}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={() => openHistory(p.player_id, `${p.first_name} ${p.last_name}`)}
+                        >
+                          History
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {playerHealth && playerHealth.players.length === 0 && (
+                    <tr>
+                      <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                        No players found.
+                      </td>
+                    </tr>
+                  )}
+                  {playerHealth && playerHealth.players.length > 0 && filteredHealthPlayers.length === 0 && (
+                    <tr>
+                      <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                        No matching players found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       ) : (
@@ -165,39 +167,41 @@ export function SystemStatisticsPage() {
             Login history
           </div>
           <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th>Login time</th>
-                  <th>Logout time</th>
-                  <th>IP address</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logins?.map((l) => (
-                  <tr key={l.log_id}>
-                    <td style={{ fontWeight: 600 }}>{l.username}</td>
-                    <td>
-                      <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
-                        {l.role}
-                      </span>
-                    </td>
-                    <td style={{ opacity: 0.75 }}>{new Date(l.login_time).toLocaleString()}</td>
-                    <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '—'}</td>
-                    <td style={{ opacity: 0.65 }}>{l.ip_address || '—'}</td>
-                  </tr>
-                ))}
-                {logins && logins.length === 0 && (
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
                   <tr>
-                    <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                      No login history yet.
-                    </td>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Login time</th>
+                    <th>Logout time</th>
+                    <th>IP address</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {logins?.map((l) => (
+                    <tr key={l.log_id}>
+                      <td style={{ fontWeight: 600 }}>{l.username}</td>
+                      <td>
+                        <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
+                          {l.role}
+                        </span>
+                      </td>
+                      <td style={{ opacity: 0.75 }}>{new Date(l.login_time).toLocaleString()}</td>
+                      <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '—'}</td>
+                      <td style={{ opacity: 0.65 }}>{l.ip_address || '—'}</td>
+                    </tr>
+                  ))}
+                  {logins && logins.length === 0 && (
+                    <tr>
+                      <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                        No login history yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       )}

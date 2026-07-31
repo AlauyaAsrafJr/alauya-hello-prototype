@@ -120,68 +120,70 @@ export function UsersPage({ showToast }) {
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflowX: 'auto', overflowY: 'hidden' }}>
-        <table className="table" style={{ minWidth: 1080 }}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Team</th>
-              <th>Status</th>
-              <th>Last login</th>
-              <th style={{ width: 250 }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((u) => (
-              <tr key={u.user_id}>
-                <td style={{ fontWeight: 600 }}>{u.display_name}</td>
-                <td style={{ opacity: 0.75 }}>{u.username}</td>
-                <td style={{ opacity: 0.75 }}>{u.email || '—'}</td>
-                <td>
-                  <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
-                    {u.role}
-                  </span>
-                </td>
-                <td style={{ opacity: 0.75 }}>{u.team || '—'}</td>
-                <td>
-                  <span className={u.is_active ? 'tag tag-success' : 'tag tag-danger'}>{u.is_active ? 'Active' : 'Inactive'}</span>
-                </td>
-                <td style={{ opacity: 0.65 }}>{u.last_login ? new Date(u.last_login).toLocaleString() : 'Never'}</td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
-                    <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(u)}>
-                      <EyeIcon />
-                    </button>
-                    <button type="button" className="btn btn-ghost" style={{ whiteSpace: 'nowrap' }} onClick={() => setResetTarget(u)}>
-                      Reset PW
-                    </button>
-                    <button type="button" className="btn btn-secondary" style={{ whiteSpace: 'nowrap' }} onClick={() => toggleActive(u)}>
-                      {u.is_active ? 'Deactivate' : 'Activate'}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-icon"
-                      aria-label="Archive"
-                      style={{ marginLeft: 'auto' }}
-                      onClick={() => setArchiveTarget(u)}
-                    >
-                      <ArchiveIcon size={15} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
+        <div className="table-wrap">
+          <table className="table" style={{ minWidth: 1080 }}>
+            <thead>
               <tr>
-                <td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                  No users found.
-                </td>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Team</th>
+                <th>Status</th>
+                <th>Last login</th>
+                <th style={{ width: 250 }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((u) => (
+                <tr key={u.user_id}>
+                  <td style={{ fontWeight: 600 }}>{u.display_name}</td>
+                  <td style={{ opacity: 0.75 }}>{u.username}</td>
+                  <td style={{ opacity: 0.75 }}>{u.email || '—'}</td>
+                  <td>
+                    <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td style={{ opacity: 0.75 }}>{u.team || '—'}</td>
+                  <td>
+                    <span className={u.is_active ? 'tag tag-success' : 'tag tag-danger'}>{u.is_active ? 'Active' : 'Inactive'}</span>
+                  </td>
+                  <td style={{ opacity: 0.65 }}>{u.last_login ? new Date(u.last_login).toLocaleString() : 'Never'}</td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
+                      <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(u)}>
+                        <EyeIcon />
+                      </button>
+                      <button type="button" className="btn btn-ghost" style={{ whiteSpace: 'nowrap' }} onClick={() => setResetTarget(u)}>
+                        Reset PW
+                      </button>
+                      <button type="button" className="btn btn-secondary" style={{ whiteSpace: 'nowrap' }} onClick={() => toggleActive(u)}>
+                        {u.is_active ? 'Deactivate' : 'Activate'}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-icon"
+                        aria-label="Archive"
+                        style={{ marginLeft: 'auto' }}
+                        onClick={() => setArchiveTarget(u)}
+                      >
+                        <ArchiveIcon size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    No users found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {addOpen && (
@@ -200,7 +202,7 @@ export function UsersPage({ showToast }) {
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="form-grid-2">
               <div className="field">
                 <label>First name</label>
                 <input className="input" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} />
@@ -214,7 +216,7 @@ export function UsersPage({ showToast }) {
               <label>Email</label>
               <input className="input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="form-grid-2">
               <div className="field">
                 <label>Username</label>
                 <input className="input" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />

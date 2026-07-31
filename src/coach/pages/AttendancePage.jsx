@@ -191,94 +191,98 @@ export function AttendancePage({ showToast }) {
 
       {viewMode === 'session' ? (
         <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Present</th>
-                <th>Late</th>
-                <th>Absent</th>
-                <th>Total</th>
-                <th>Rate</th>
-                <th style={{ width: 150 }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sessions?.map((s) => (
-                <tr key={s.date}>
-                  <td style={{ fontWeight: 600 }}>{s.date}</td>
-                  <td>
-                    <span className="tag tag-success">{s.present}</span>
-                  </td>
-                  <td>
-                    <span className="tag tag-warning">{s.late}</span>
-                  </td>
-                  <td>
-                    <span className="tag tag-danger">{s.absent}</span>
-                  </td>
-                  <td style={{ opacity: 0.75 }}>{s.total}</td>
-                  <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
-                  <td>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>
-                        View
-                      </button>
-                      <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>
-                        Edit
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {sessions && sessions.length === 0 && (
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
                 <tr>
-                  <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                    No attendance recorded yet.
-                  </td>
+                  <th>Date</th>
+                  <th>Present</th>
+                  <th>Late</th>
+                  <th>Absent</th>
+                  <th>Total</th>
+                  <th>Rate</th>
+                  <th style={{ width: 150 }}>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sessions?.map((s) => (
+                  <tr key={s.date}>
+                    <td style={{ fontWeight: 600 }}>{s.date}</td>
+                    <td>
+                      <span className="tag tag-success">{s.present}</span>
+                    </td>
+                    <td>
+                      <span className="tag tag-warning">{s.late}</span>
+                    </td>
+                    <td>
+                      <span className="tag tag-danger">{s.absent}</span>
+                    </td>
+                    <td style={{ opacity: 0.75 }}>{s.total}</td>
+                    <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>
+                          View
+                        </button>
+                        <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>
+                          Edit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {sessions && sessions.length === 0 && (
+                  <tr>
+                    <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                      No attendance recorded yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th>Present</th>
-                <th>Late</th>
-                <th>Absent</th>
-                <th>Total sessions</th>
-                <th>Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {playerSummaries?.map((p) => (
-                <tr key={p.player_id}>
-                  <td style={{ fontWeight: 600 }}>{p.player_name}</td>
-                  <td>
-                    <span className="tag tag-success">{p.present}</span>
-                  </td>
-                  <td>
-                    <span className="tag tag-warning">{p.late}</span>
-                  </td>
-                  <td>
-                    <span className="tag tag-danger">{p.absent}</span>
-                  </td>
-                  <td style={{ opacity: 0.75 }}>{p.total}</td>
-                  <td style={{ opacity: 0.75 }}>{p.total ? Math.round(((p.present + p.late) / p.total) * 100) : 0}%</td>
-                </tr>
-              ))}
-              {playerSummaries && playerSummaries.length === 0 && (
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
                 <tr>
-                  <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                    No attendance recorded yet.
-                  </td>
+                  <th>Player</th>
+                  <th>Present</th>
+                  <th>Late</th>
+                  <th>Absent</th>
+                  <th>Total sessions</th>
+                  <th>Rate</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {playerSummaries?.map((p) => (
+                  <tr key={p.player_id}>
+                    <td style={{ fontWeight: 600 }}>{p.player_name}</td>
+                    <td>
+                      <span className="tag tag-success">{p.present}</span>
+                    </td>
+                    <td>
+                      <span className="tag tag-warning">{p.late}</span>
+                    </td>
+                    <td>
+                      <span className="tag tag-danger">{p.absent}</span>
+                    </td>
+                    <td style={{ opacity: 0.75 }}>{p.total}</td>
+                    <td style={{ opacity: 0.75 }}>{p.total ? Math.round(((p.present + p.late) / p.total) * 100) : 0}%</td>
+                  </tr>
+                ))}
+                {playerSummaries && playerSummaries.length === 0 && (
+                  <tr>
+                    <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                      No attendance recorded yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

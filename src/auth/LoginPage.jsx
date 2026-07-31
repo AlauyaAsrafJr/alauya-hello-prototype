@@ -36,6 +36,7 @@ export function LoginPage() {
         fontFamily: 'var(--font-body)',
         color: 'var(--color-text)',
         position: 'relative',
+        padding: 16,
       }}
     >
       <button
@@ -43,12 +44,12 @@ export function LoginPage() {
         onClick={toggleTheme}
         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         className="btn btn-secondary btn-icon"
-        style={{ position: 'absolute', top: 24, right: 24 }}
+        style={{ position: 'absolute', top: 16, right: 16 }}
       >
         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
       </button>
 
-      <div className="card elev-md" style={{ width: 380, padding: 32 }}>
+      <div className="card elev-md" style={{ width: 'min(380px, 100%)', padding: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
           <div
             style={{

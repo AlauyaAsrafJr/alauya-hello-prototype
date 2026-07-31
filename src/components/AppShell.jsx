@@ -18,6 +18,7 @@ export function AppShell({
 }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   function closeMenus() {
     if (profileOpen || notifOpen) {
@@ -30,6 +31,7 @@ export function AppShell({
     onNavigate(key);
     setProfileOpen(false);
     setNotifOpen(false);
+    setSidebarOpen(false);
   }
 
   return (
@@ -50,7 +52,9 @@ export function AppShell({
         onLogout={onLogout}
         roleLabel={roleLabel}
         displayName={displayName}
+        mobileOpen={sidebarOpen}
       />
+      <div className={sidebarOpen ? 'sidebar-backdrop open' : 'sidebar-backdrop'} onClick={() => setSidebarOpen(false)} />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%', overflowY: 'auto' }}>
         <Topbar
@@ -62,6 +66,7 @@ export function AppShell({
           profileOpen={profileOpen}
           notifCount={notifCount}
           notifMessage={notifMessage}
+          onMenuClick={() => setSidebarOpen(true)}
           onToggleNotif={(e) => {
             e.stopPropagation();
             setNotifOpen((v) => !v);
@@ -79,7 +84,7 @@ export function AppShell({
           onLogout={onLogout}
         />
 
-        <main style={{ flex: 1, padding: '28px 32px 60px', minWidth: 0 }} onClick={closeMenus}>
+        <main className="app-main" style={{ flex: 1, minWidth: 0 }} onClick={closeMenus}>
           {children}
         </main>
       </div>

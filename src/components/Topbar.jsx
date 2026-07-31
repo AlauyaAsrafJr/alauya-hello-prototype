@@ -1,4 +1,4 @@
-import { BellIcon, ChevronDownIcon, MoonIcon, SunIcon } from '../icons';
+import { BellIcon, ChevronDownIcon, MenuIcon, MoonIcon, SunIcon } from '../icons';
 import { useTheme } from '../theme/ThemeContext';
 
 function initialsOf(name) {
@@ -19,6 +19,7 @@ export function Topbar({
   profileOpen,
   notifCount = 0,
   notifMessage,
+  onMenuClick,
   onToggleNotif,
   onToggleProfile,
   onAccountSettings,
@@ -28,11 +29,11 @@ export function Topbar({
 
   return (
     <header
+      className="app-topbar"
       style={{
         display: 'flex',
         alignItems: 'center',
         gap: 16,
-        padding: '18px 32px',
         borderBottom: '1px solid var(--color-divider)',
         background: 'var(--color-bg)',
         position: 'sticky',
@@ -41,6 +42,10 @@ export function Topbar({
         flex: 'none',
       }}
     >
+      <button type="button" onClick={onMenuClick} aria-label="Open menu" className="menu-btn btn btn-secondary btn-icon">
+        <MenuIcon />
+      </button>
+
       <div style={{ flex: 1, minWidth: 0 }}>
         <h1 style={{ fontSize: 21, margin: 0, color: 'var(--color-neutral-100)' }}>{pageTitle}</h1>
         <div style={{ fontSize: 12, color: 'var(--color-neutral-400)', marginTop: 2 }}>{pageSubtitle}</div>

@@ -120,59 +120,61 @@ export function PlayersPage({ showToast }) {
       )}
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Team</th>
-              <th>Year</th>
-              <th>Email</th>
-              <th>Membership</th>
-              <th>Health</th>
-              <th style={{ width: 160 }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players?.map((p) => (
-              <tr key={p.player_id}>
-                <td style={{ fontWeight: 600 }}>
-                  {p.first_name} {p.last_name}
-                </td>
-                <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
-                <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
-                <td style={{ opacity: 0.75 }}>{p.email}</td>
-                <td>
-                  <span className={membershipTag(p.membership_status)}>{p.membership_status}</span>
-                </td>
-                <td>
-                  <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
-                    {p.health_status}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}>
-                      <EyeIcon />
-                    </button>
-                    <button type="button" className="btn btn-ghost btn-icon" aria-label="Log health" onClick={() => openHealth(p)}>
-                      <HeartPulseIcon />
-                    </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => openEdit(p)}>
-                      Edit
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {players && players.length === 0 && (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                  No players found.
-                </td>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Year</th>
+                <th>Email</th>
+                <th>Membership</th>
+                <th>Health</th>
+                <th style={{ width: 160 }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {players?.map((p) => (
+                <tr key={p.player_id}>
+                  <td style={{ fontWeight: 600 }}>
+                    {p.first_name} {p.last_name}
+                  </td>
+                  <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
+                  <td style={{ opacity: 0.75 }}>{p.email}</td>
+                  <td>
+                    <span className={membershipTag(p.membership_status)}>{p.membership_status}</span>
+                  </td>
+                  <td>
+                    <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
+                      {p.health_status}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}>
+                        <EyeIcon />
+                      </button>
+                      <button type="button" className="btn btn-ghost btn-icon" aria-label="Log health" onClick={() => openHealth(p)}>
+                        <HeartPulseIcon />
+                      </button>
+                      <button type="button" className="btn btn-secondary" onClick={() => openEdit(p)}>
+                        Edit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {players && players.length === 0 && (
+                <tr>
+                  <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    No players found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {viewing && (
@@ -229,7 +231,7 @@ export function PlayersPage({ showToast }) {
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="form-grid-2">
               <div className="field">
                 <label>First name</label>
                 <input className="input" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} />

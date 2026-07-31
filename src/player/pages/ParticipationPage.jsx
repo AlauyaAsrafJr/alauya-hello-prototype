@@ -18,33 +18,35 @@ export function ParticipationPage() {
 
   return (
     <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Activity</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map((r) => (
-            <tr key={r.participation_id}>
-              <td style={{ fontWeight: 600 }}>{r.activity_name}</td>
-              <td style={{ opacity: 0.75 }}>{r.activity_date}</td>
-              <td>
-                <span className={statusTag(r.participation_status)}>{r.participation_status.replace('_', ' ')}</span>
-              </td>
-            </tr>
-          ))}
-          {records.length === 0 && (
+      <div className="table-wrap">
+        <table className="table">
+          <thead>
             <tr>
-              <td colSpan={3} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                No participation history yet.
-              </td>
+              <th>Activity</th>
+              <th>Date</th>
+              <th>Status</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {records.map((r) => (
+              <tr key={r.participation_id}>
+                <td style={{ fontWeight: 600 }}>{r.activity_name}</td>
+                <td style={{ opacity: 0.75 }}>{r.activity_date}</td>
+                <td>
+                  <span className={statusTag(r.participation_status)}>{r.participation_status.replace('_', ' ')}</span>
+                </td>
+              </tr>
+            ))}
+            {records.length === 0 && (
+              <tr>
+                <td colSpan={3} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                  No participation history yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

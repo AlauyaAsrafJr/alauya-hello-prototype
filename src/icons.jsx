@@ -90,6 +90,16 @@ export function LogoutIcon({ size = 18 }) {
   );
 }
 
+export function MenuIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+      <path d="M3 6h18" />
+      <path d="M3 12h18" />
+      <path d="M3 18h18" />
+    </svg>
+  );
+}
+
 export function BellIcon({ size = 17 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}>

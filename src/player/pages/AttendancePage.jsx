@@ -24,40 +24,42 @@ export function AttendancePage() {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 24, maxWidth: 640 }}>
+      <div className="stat-grid-3" style={{ marginBottom: 24, maxWidth: 640 }}>
         <StatCard label="Present" value={present} icon={AttendanceIcon} variant="success" />
         <StatCard label="Late" value={late} icon={AttendanceIcon} variant="warning" />
         <StatCard label="Absent" value={absent} icon={AttendanceIcon} variant="danger" />
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Recorded by</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((r) => (
-              <tr key={r.attendance_id}>
-                <td>{r.date}</td>
-                <td style={{ opacity: 0.75 }}>{r.coach_name}</td>
-                <td>
-                  <span className={statusTag(r.status)}>{r.status}</span>
-                </td>
-              </tr>
-            ))}
-            {records.length === 0 && (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={3} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                  No attendance records yet.
-                </td>
+                <th>Date</th>
+                <th>Recorded by</th>
+                <th>Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {records.map((r) => (
+                <tr key={r.attendance_id}>
+                  <td>{r.date}</td>
+                  <td style={{ opacity: 0.75 }}>{r.coach_name}</td>
+                  <td>
+                    <span className={statusTag(r.status)}>{r.status}</span>
+                  </td>
+                </tr>
+              ))}
+              {records.length === 0 && (
+                <tr>
+                  <td colSpan={3} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    No attendance records yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

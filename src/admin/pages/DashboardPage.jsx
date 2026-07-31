@@ -53,7 +53,7 @@ export function DashboardPage({ onNavigate }) {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
+      <div className="stat-grid-4" style={{ marginBottom: 28 }}>
         {cards.map((c) => (
           <StatCard key={c.label} label={c.label} value={c.value} icon={c.Icon} variant={c.variant} onView={c.onView} />
         ))}

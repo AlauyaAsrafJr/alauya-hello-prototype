@@ -37,35 +37,37 @@ export function ReportsPage({ showToast }) {
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Details</th>
-              <th>Generated</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reports?.map((r) => (
-              <tr key={r.report_id}>
-                <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type}</td>
-                <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '—'}</td>
-                <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
-                <td>
-                  <span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span>
-                </td>
-              </tr>
-            ))}
-            {reports && reports.length === 0 && (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={4} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                  No reports generated yet.
-                </td>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Generated</th>
+                <th>Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reports?.map((r) => (
+                <tr key={r.report_id}>
+                  <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type}</td>
+                  <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '—'}</td>
+                  <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
+                  <td>
+                    <span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span>
+                  </td>
+                </tr>
+              ))}
+              {reports && reports.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    No reports generated yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {open && (

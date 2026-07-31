@@ -66,55 +66,57 @@ export function PlayersPage() {
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Team</th>
-              <th>Year</th>
-              <th>Email</th>
-              <th>Membership</th>
-              <th>Health</th>
-              <th>Account status</th>
-              <th style={{ width: 80 }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((p) => (
-              <tr key={p.player_id}>
-                <td style={{ fontWeight: 600 }}>
-                  {p.first_name} {p.last_name}
-                </td>
-                <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
-                <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
-                <td style={{ opacity: 0.75 }}>{p.email}</td>
-                <td>
-                  <span className={membershipTag(p.membership_status)}>{p.membership_status}</span>
-                </td>
-                <td>
-                  <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
-                    {p.health_status}
-                  </span>
-                </td>
-                <td>
-                  <span className={p.is_active ? 'tag tag-success' : 'tag tag-danger'}>{p.is_active ? 'Active' : 'Inactive'}</span>
-                </td>
-                <td>
-                  <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}>
-                    <EyeIcon />
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                  No players found.
-                </td>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Year</th>
+                <th>Email</th>
+                <th>Membership</th>
+                <th>Health</th>
+                <th>Account status</th>
+                <th style={{ width: 80 }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((p) => (
+                <tr key={p.player_id}>
+                  <td style={{ fontWeight: 600 }}>
+                    {p.first_name} {p.last_name}
+                  </td>
+                  <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
+                  <td style={{ opacity: 0.75 }}>{p.email}</td>
+                  <td>
+                    <span className={membershipTag(p.membership_status)}>{p.membership_status}</span>
+                  </td>
+                  <td>
+                    <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
+                      {p.health_status}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={p.is_active ? 'tag tag-success' : 'tag tag-danger'}>{p.is_active ? 'Active' : 'Inactive'}</span>
+                  </td>
+                  <td>
+                    <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(p)}>
+                      <EyeIcon />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    No players found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {viewing && (

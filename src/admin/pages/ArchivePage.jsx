@@ -53,54 +53,56 @@ export function ArchivePage({ showToast }) {
         </div>
       </div>
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Record</th>
-              <th>Type</th>
-              <th>Archived on</th>
-              <th>Archived by</th>
-              <th style={{ width: 150 }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((r) => (
-              <tr key={r.archive_id}>
-                <td style={{ fontWeight: 600 }}>{recordLabel(r)}</td>
-                <td>
-                  <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
-                    {r.record_type}
-                  </span>
-                </td>
-                <td style={{ opacity: 0.65 }}>{new Date(r.archived_at).toLocaleString()}</td>
-                <td style={{ opacity: 0.65 }}>{r.archived_by_name}</td>
-                <td>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button type="button" className="btn btn-secondary" onClick={() => restore(r)}>
-                      <RestoreIcon />
-                      Restore
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-icon"
-                      aria-label="Delete permanently"
-                      onClick={() => deleteForever(r)}
-                    >
-                      <TrashIcon />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
-                  No archived records.
-                </td>
+                <th>Record</th>
+                <th>Type</th>
+                <th>Archived on</th>
+                <th>Archived by</th>
+                <th style={{ width: 150 }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((r) => (
+                <tr key={r.archive_id}>
+                  <td style={{ fontWeight: 600 }}>{recordLabel(r)}</td>
+                  <td>
+                    <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
+                      {r.record_type}
+                    </span>
+                  </td>
+                  <td style={{ opacity: 0.65 }}>{new Date(r.archived_at).toLocaleString()}</td>
+                  <td style={{ opacity: 0.65 }}>{r.archived_by_name}</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button type="button" className="btn btn-secondary" onClick={() => restore(r)}>
+                        <RestoreIcon />
+                        Restore
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-icon"
+                        aria-label="Delete permanently"
+                        onClick={() => deleteForever(r)}
+                      >
+                        <TrashIcon />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    No archived records.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
