@@ -1,30 +1,30 @@
-/* Dark design tokens and component classes for ACTIBASE. */
+/* Light design tokens and component classes for ACTIBASE. */
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap');
 
 :root {
-  --color-bg: #0b0e14;
-  --color-surface: #12151f;
-  --color-surface-2: #1a1f2b;
-  --color-surface-3: #232937;
-  --color-text: #e7e9ee;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f5f8;
+  --color-surface-3: #eaecf1;
+  --color-text: #1a1d24;
   --color-accent: #9c2242;
   --color-accent-2: #c6a44d;
-  --color-divider: rgba(255, 255, 255, 0.09);
+  --color-divider: rgba(15, 23, 42, 0.1);
 
-  --color-neutral-100: #eef0f4;
-  --color-neutral-200: #d6dae2;
-  --color-neutral-300: #b8c0cc;
-  --color-neutral-400: #8b93a3;
-  --color-neutral-500: #6b7280;
-  --color-neutral-600: #545c6b;
-  --color-neutral-700: #3d4453;
-  --color-neutral-800: #262c38;
-  --color-neutral-900: #05060a;
+  --color-neutral-100: #12151f;
+  --color-neutral-200: #262b36;
+  --color-neutral-300: #3d4453;
+  --color-neutral-400: #5b6472;
+  --color-neutral-500: #78818f;
+  --color-neutral-600: #98a1ad;
+  --color-neutral-700: #b9c0cb;
+  --color-neutral-800: #d8dce2;
+  --color-neutral-900: #eef0f4;
 
   --color-accent-100: rgba(156, 34, 66, 0.14);
   --color-accent-200: rgba(156, 34, 66, 0.22);
   --color-accent-300: rgba(156, 34, 66, 0.32);
-  --color-accent-400: #bf6f84;
+  --color-accent-400: #7a1c34;
   --color-accent-500: #9c2242;
   --color-accent-600: #851d38;
   --color-accent-700: #6d182e;
@@ -34,7 +34,7 @@
   --color-accent-2-100: rgba(198, 164, 77, 0.14);
   --color-accent-2-200: rgba(198, 164, 77, 0.22);
   --color-accent-2-300: rgba(198, 164, 77, 0.32);
-  --color-accent-2-400: #dac48b;
+  --color-accent-2-400: #6b592a;
   --color-accent-2-500: #c6a44d;
   --color-accent-2-600: #a88b41;
   --color-accent-2-700: #8b7336;
@@ -43,19 +43,19 @@
 
   --color-success: #22c55e;
   --color-success-bg: rgba(34, 197, 94, 0.14);
-  --color-success-text: #4ade80;
+  --color-success-text: #15803d;
 
   --color-warning: #f59e0b;
   --color-warning-bg: rgba(245, 158, 11, 0.14);
-  --color-warning-text: #fbbf24;
+  --color-warning-text: #92400e;
 
   --color-danger: #ef4444;
   --color-danger-bg: rgba(239, 68, 68, 0.14);
-  --color-danger-text: #f87171;
+  --color-danger-text: #b91c1c;
 
   --color-info: #3b82f6;
   --color-info-bg: rgba(59, 130, 246, 0.14);
-  --color-info-text: #60a5fa;
+  --color-info-text: #1d4ed8;
 
   --font-heading: "Archivo", system-ui, sans-serif;
   --font-heading-weight: 800;
@@ -73,9 +73,9 @@
   --radius-lg: 18px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.36);
-  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 20px 48px rgba(15, 23, 42, 0.2);
 }
 
 body {
@@ -234,7 +234,7 @@ img { display: block; max-width: 100%; }
 }
 .tag-accent { background: var(--color-accent-100); color: var(--color-accent-400); }
 .tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-400); }
-.tag-neutral { background: rgba(255, 255, 255, 0.07); color: var(--color-neutral-300); }
+.tag-neutral { background: rgba(15, 23, 42, 0.06); color: var(--color-neutral-300); }
 .tag-outline { border: 1px solid var(--color-divider); color: var(--color-neutral-300); }
 .tag-success { background: var(--color-success-bg); color: var(--color-success-text); }
 .tag-warning { background: var(--color-warning-bg); color: var(--color-warning-text); }
@@ -259,7 +259,7 @@ img { display: block; max-width: 100%; }
 .dialog-backdrop {
   position: fixed; inset: 0; display: grid; place-items: center;
   padding: var(--space-4); z-index: 50;
-  background: rgba(2, 3, 6, 0.65);
+  background: rgba(15, 23, 42, 0.45);
 }
 .dialog {
   width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
