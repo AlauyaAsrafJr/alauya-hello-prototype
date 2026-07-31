@@ -3,7 +3,7 @@ import { api, ApiError } from '../../api/client';
 import type { ActivityType, ParticipationRecord, PlayerProfile, TrainingActivity } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
-import { PlusIcon } from '../../icons';
+import { PencilIcon, PlusIcon, TrashIcon } from '../../icons';
 
 interface TrainingActivitiesPageProps {
   showToast: (msg: string) => void;
@@ -35,6 +35,9 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
   const [addingType, setAddingType] = useState(false);
   const [newTypeName, setNewTypeName] = useState('');
   const [creatingType, setCreatingType] = useState(false);
+  const [editingTypeId, setEditingTypeId] = useState<number | null>(null);
+  const [editingTypeName, setEditingTypeName] = useState('');
+  const [savingType, setSavingType] = useState(false);
 
   async function loadActivities() {
     const data = await api.get<TrainingActivity[]>('/coach/training-activities');
@@ -61,6 +64,8 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
     setParticipantIds([]);
     setAddingType(false);
     setNewTypeName('');
+    setEditingTypeId(null);
+    setEditingTypeName('');
   }
 
   async function submitLog() {
@@ -87,6 +92,8 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
     setActivityType(a.activity_type || '');
     setAddingType(false);
     setNewTypeName('');
+    setEditingTypeId(null);
+    setEditingTypeName('');
   }
 
   async function submitEdit() {
@@ -117,12 +124,50 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
       await loadActivityTypes();
       setActivityType(created.name);
       setNewTypeName('');
-      setAddingType(false);
       showToast(`"${created.name}" added as an activity type`);
     } catch (err) {
       showToast(err instanceof ApiError ? err.message : 'Unable to add activity type');
     } finally {
       setCreatingType(false);
+    }
+  }
+
+  function startEditType(t: ActivityType) {
+    setEditingTypeId(t.activity_type_id);
+    setEditingTypeName(t.name);
+  }
+
+  function cancelEditType() {
+    setEditingTypeId(null);
+    setEditingTypeName('');
+  }
+
+  async function saveEditType() {
+    const name = editingTypeName.trim();
+    if (!name || editingTypeId == null) return;
+    const wasSelected = activityTypes?.find((t) => t.activity_type_id === editingTypeId)?.name === activityType;
+    setSavingType(true);
+    try {
+      const updated = await api.patch<ActivityType>(`/coach/activity-types/${editingTypeId}`, { name });
+      await loadActivityTypes();
+      if (wasSelected) setActivityType(updated.name);
+      cancelEditType();
+      showToast(`Renamed to "${updated.name}"`);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to rename activity type');
+    } finally {
+      setSavingType(false);
+    }
+  }
+
+  async function deleteActivityType(t: ActivityType) {
+    try {
+      await api.delete(`/coach/activity-types/${t.activity_type_id}`);
+      if (activityType === t.name) setActivityType('');
+      await loadActivityTypes();
+      showToast(`"${t.name}" removed`);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to remove activity type');
     }
   }
 
@@ -143,35 +188,86 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
           )}
         </div>
         {addingType ? (
-          <div style={{ display: 'flex', gap: 6 }}>
-            <input
-              className="input"
-              placeholder="e.g. Conditioning"
-              value={newTypeName}
-              onChange={(e) => setNewTypeName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') createActivityType();
-              }}
-              autoFocus
-            />
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={createActivityType}
-              disabled={creatingType || !newTypeName.trim()}
-            >
-              {creatingType ? 'Adding…' : 'Add'}
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => {
-                setAddingType(false);
-                setNewTypeName('');
-              }}
-            >
-              Cancel
-            </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                className="input"
+                placeholder="e.g. Conditioning"
+                value={newTypeName}
+                onChange={(e) => setNewTypeName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') createActivityType();
+                }}
+                autoFocus
+              />
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={createActivityType}
+                disabled={creatingType || !newTypeName.trim()}
+              >
+                {creatingType ? 'Adding…' : 'Add'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setAddingType(false);
+                  setNewTypeName('');
+                  cancelEditType();
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+            {activityTypes && activityTypes.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 180, overflowY: 'auto', border: '1px solid var(--color-divider)', borderRadius: 'var(--radius-sm)' }}>
+                {activityTypes.map((t) => (
+                  <div
+                    key={t.activity_type_id}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderBottom: '1px solid var(--color-divider)' }}
+                  >
+                    {editingTypeId === t.activity_type_id ? (
+                      <>
+                        <input
+                          className="input"
+                          style={{ flex: 1, minHeight: 30, fontSize: 13 }}
+                          value={editingTypeName}
+                          onChange={(e) => setEditingTypeName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') saveEditType();
+                            if (e.key === 'Escape') cancelEditType();
+                          }}
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-ghost"
+                          style={{ fontSize: 12, padding: '2px 6px' }}
+                          onClick={saveEditType}
+                          disabled={savingType || !editingTypeName.trim()}
+                        >
+                          Save
+                        </button>
+                        <button type="button" className="btn btn-ghost" style={{ fontSize: 12, padding: '2px 6px' }} onClick={cancelEditType}>
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ flex: 1, fontSize: 13 }}>{t.name}</span>
+                        <button type="button" className="btn btn-ghost btn-icon" aria-label={`Edit ${t.name}`} onClick={() => startEditType(t)}>
+                          <PencilIcon />
+                        </button>
+                        <button type="button" className="btn btn-ghost btn-icon" aria-label={`Remove ${t.name}`} onClick={() => deleteActivityType(t)}>
+                          <TrashIcon />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <Select

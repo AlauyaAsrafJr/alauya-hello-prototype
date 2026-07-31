@@ -311,6 +311,45 @@ def create_activity_type():
     return jsonify(activity_type.to_dict()), 201
 
 
+@coach_bp.patch("/activity-types/<int:activity_type_id>")
+@roles_required("coach")
+def update_activity_type(activity_type_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    activity_type = ActivityType.query.get_or_404(activity_type_id)
+    if activity_type.sport_name != coach.specialization:
+        return jsonify({"error": "Activity type not found"}), 404
+    data = request.get_json(force=True) or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    existing = ActivityType.query.filter(
+        ActivityType.sport_name == coach.specialization,
+        db.func.lower(ActivityType.name) == name.lower(),
+        ActivityType.activity_type_id != activity_type_id,
+    ).first()
+    if existing:
+        return jsonify({"error": "That activity type already exists for this sport"}), 409
+    activity_type.name = name
+    db.session.commit()
+    return jsonify(activity_type.to_dict())
+
+
+@coach_bp.delete("/activity-types/<int:activity_type_id>")
+@roles_required("coach")
+def delete_activity_type(activity_type_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    activity_type = ActivityType.query.get_or_404(activity_type_id)
+    if activity_type.sport_name != coach.specialization:
+        return jsonify({"error": "Activity type not found"}), 404
+    db.session.delete(activity_type)
+    db.session.commit()
+    return jsonify({"message": "Activity type removed"})
+
+
 @coach_bp.get("/training-activities")
 @roles_required("coach")
 def list_training_activities():
@@ -450,6 +489,45 @@ def create_feedback_category():
     db.session.add(category)
     db.session.commit()
     return jsonify(category.to_dict()), 201
+
+
+@coach_bp.patch("/feedback-categories/<int:category_id>")
+@roles_required("coach")
+def update_feedback_category(category_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    category = FeedbackCategory.query.get_or_404(category_id)
+    if category.sport_name != coach.specialization:
+        return jsonify({"error": "Category not found"}), 404
+    data = request.get_json(force=True) or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    existing = FeedbackCategory.query.filter(
+        FeedbackCategory.sport_name == coach.specialization,
+        db.func.lower(FeedbackCategory.name) == name.lower(),
+        FeedbackCategory.category_id != category_id,
+    ).first()
+    if existing:
+        return jsonify({"error": "That category already exists for this sport"}), 409
+    category.name = name
+    db.session.commit()
+    return jsonify(category.to_dict())
+
+
+@coach_bp.delete("/feedback-categories/<int:category_id>")
+@roles_required("coach")
+def delete_feedback_category(category_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    category = FeedbackCategory.query.get_or_404(category_id)
+    if category.sport_name != coach.specialization:
+        return jsonify({"error": "Category not found"}), 404
+    db.session.delete(category)
+    db.session.commit()
+    return jsonify({"message": "Category removed"})
 
 
 @coach_bp.get("/performance-feedback")

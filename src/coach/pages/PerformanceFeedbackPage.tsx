@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
 import type { FeedbackCategory, PerformanceFeedback, PlayerProfile } from '../../api/domain';
-import { StarIcon } from '../../icons';
+import { PencilIcon, StarIcon, TrashIcon } from '../../icons';
 import { Select } from '../../components/Select';
 
 interface PerformanceFeedbackPageProps {
@@ -29,6 +29,9 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
   const [addingCategory, setAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [creatingCategory, setCreatingCategory] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState('');
+  const [savingCategory, setSavingCategory] = useState(false);
   const [comments, setComments] = useState('');
   const [rating, setRating] = useState(5);
   const [submitting, setSubmitting] = useState(false);
@@ -76,12 +79,50 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
       await loadCategories();
       setCategory(created.name);
       setNewCategoryName('');
-      setAddingCategory(false);
       showToast(`"${created.name}" added as a category`);
     } catch (err) {
       showToast(err instanceof ApiError ? err.message : 'Unable to add category');
     } finally {
       setCreatingCategory(false);
+    }
+  }
+
+  function startEditCategory(c: FeedbackCategory) {
+    setEditingCategoryId(c.category_id);
+    setEditingCategoryName(c.name);
+  }
+
+  function cancelEditCategory() {
+    setEditingCategoryId(null);
+    setEditingCategoryName('');
+  }
+
+  async function saveEditCategory() {
+    const name = editingCategoryName.trim();
+    if (!name || editingCategoryId == null) return;
+    const wasSelected = categories?.find((c) => c.category_id === editingCategoryId)?.name === category;
+    setSavingCategory(true);
+    try {
+      const updated = await api.patch<FeedbackCategory>(`/coach/feedback-categories/${editingCategoryId}`, { name });
+      await loadCategories();
+      if (wasSelected) setCategory(updated.name);
+      cancelEditCategory();
+      showToast(`Renamed to "${updated.name}"`);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to rename category');
+    } finally {
+      setSavingCategory(false);
+    }
+  }
+
+  async function deleteCategory(c: FeedbackCategory) {
+    try {
+      await api.delete(`/coach/feedback-categories/${c.category_id}`);
+      if (category === c.name) setCategory('');
+      await loadCategories();
+      showToast(`"${c.name}" removed`);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to remove category');
     }
   }
 
@@ -115,35 +156,86 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
               )}
             </div>
             {addingCategory ? (
-              <div style={{ display: 'flex', gap: 6 }}>
-                <input
-                  className="input"
-                  placeholder="e.g. Free throws"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') createCategory();
-                  }}
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={createCategory}
-                  disabled={creatingCategory || !newCategoryName.trim()}
-                >
-                  {creatingCategory ? 'Adding…' : 'Add'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setAddingCategory(false);
-                    setNewCategoryName('');
-                  }}
-                >
-                  Cancel
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input
+                    className="input"
+                    placeholder="e.g. Free throws"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') createCategory();
+                    }}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={createCategory}
+                    disabled={creatingCategory || !newCategoryName.trim()}
+                  >
+                    {creatingCategory ? 'Adding…' : 'Add'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setAddingCategory(false);
+                      setNewCategoryName('');
+                      cancelEditCategory();
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                {categories && categories.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 180, overflowY: 'auto', border: '1px solid var(--color-divider)', borderRadius: 'var(--radius-sm)' }}>
+                    {categories.map((c) => (
+                      <div
+                        key={c.category_id}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderBottom: '1px solid var(--color-divider)' }}
+                      >
+                        {editingCategoryId === c.category_id ? (
+                          <>
+                            <input
+                              className="input"
+                              style={{ flex: 1, minHeight: 30, fontSize: 13 }}
+                              value={editingCategoryName}
+                              onChange={(e) => setEditingCategoryName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveEditCategory();
+                                if (e.key === 'Escape') cancelEditCategory();
+                              }}
+                              autoFocus
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-ghost"
+                              style={{ fontSize: 12, padding: '2px 6px' }}
+                              onClick={saveEditCategory}
+                              disabled={savingCategory || !editingCategoryName.trim()}
+                            >
+                              Save
+                            </button>
+                            <button type="button" className="btn btn-ghost" style={{ fontSize: 12, padding: '2px 6px' }} onClick={cancelEditCategory}>
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ flex: 1, fontSize: 13 }}>{c.name}</span>
+                            <button type="button" className="btn btn-ghost btn-icon" aria-label={`Edit ${c.name}`} onClick={() => startEditCategory(c)}>
+                              <PencilIcon />
+                            </button>
+                            <button type="button" className="btn btn-ghost btn-icon" aria-label={`Remove ${c.name}`} onClick={() => deleteCategory(c)}>
+                              <TrashIcon />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <Select
