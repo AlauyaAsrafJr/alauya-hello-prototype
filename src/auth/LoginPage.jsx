@@ -80,7 +80,16 @@ export function LoginPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="field">
             <label>Username</label>
-            <input className="input" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <input
+              className="input"
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
           </div>
           <div className="field">
             <label>Password</label>
@@ -88,6 +97,9 @@ export function LoginPage() {
               className="input"
               type="password"
               autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
