@@ -32,6 +32,7 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
   const [comments, setComments] = useState('');
   const [rating, setRating] = useState(5);
   const [submitting, setSubmitting] = useState(false);
+  const [historyFilter, setHistoryFilter] = useState<number | ''>('');
 
   async function loadFeedback() {
     const data = await api.get<PerformanceFeedback[]>('/coach/performance-feedback');
@@ -63,6 +64,8 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
       setSubmitting(false);
     }
   }
+
+  const filteredFeedback = (feedback || []).filter((f) => historyFilter === '' || f.player_id === historyFilter);
 
   async function createCategory() {
     const name = newCategoryName.trim();
@@ -180,9 +183,26 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
         </div>
       </div>
 
-      <div className="card-title" style={{ marginBottom: 10 }}>Recent feedback</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
+        <div className="card-title" style={{ margin: 0 }}>
+          {historyFilter === ''
+            ? 'Recent feedback'
+            : `Feedback history — ${players?.find((p) => p.player_id === historyFilter)?.first_name || ''} ${players?.find((p) => p.player_id === historyFilter)?.last_name || ''}`}
+        </div>
+        <div style={{ flex: 1 }} />
+        <Select
+          style={{ minWidth: 220 }}
+          value={historyFilter === '' ? '' : String(historyFilter)}
+          onChange={(v) => setHistoryFilter(v ? Number(v) : '')}
+          placeholder="All players"
+          options={[
+            { value: '', label: 'All players' },
+            ...(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` })),
+          ]}
+        />
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {feedback?.map((f) => (
+        {filteredFeedback.map((f) => (
           <div key={f.feedback_id} className="card elev-sm" style={{ padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -195,7 +215,11 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
             <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date} · {f.coach_name}</div>
           </div>
         ))}
-        {feedback && feedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No feedback submitted yet.</div>}
+        {feedback && filteredFeedback.length === 0 && (
+          <div style={{ opacity: 0.6, fontSize: 13.5 }}>
+            {historyFilter === '' ? 'No feedback submitted yet.' : 'No feedback for this player yet.'}
+          </div>
+        )}
       </div>
     </>
   );
