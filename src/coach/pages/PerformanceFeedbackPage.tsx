@@ -86,8 +86,8 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
   }
 
   return (
-    <>
-      <div className="card elev-sm" style={{ padding: 20, marginBottom: 24, maxWidth: 640 }}>
+    <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div className="card elev-sm" style={{ padding: 20, flex: '1 1 480px', maxWidth: 640 }}>
         <div className="card-kicker">Submit performance notes</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
           <div className="field">
@@ -183,44 +183,46 @@ export function PerformanceFeedbackPage({ showToast }: PerformanceFeedbackPagePr
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
-        <div className="card-title" style={{ margin: 0 }}>
-          {historyFilter === ''
-            ? 'Recent feedback'
-            : `Feedback history — ${players?.find((p) => p.player_id === historyFilter)?.first_name || ''} ${players?.find((p) => p.player_id === historyFilter)?.last_name || ''}`}
+      <div className="card elev-sm" style={{ padding: 20, flex: '1 1 360px', maxWidth: 480 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+          <div className="card-title" style={{ margin: 0 }}>
+            {historyFilter === ''
+              ? 'Recent feedback'
+              : `Feedback history — ${players?.find((p) => p.player_id === historyFilter)?.first_name || ''} ${players?.find((p) => p.player_id === historyFilter)?.last_name || ''}`}
+          </div>
+          <div style={{ flex: 1 }} />
+          <Select
+            style={{ minWidth: 200 }}
+            value={historyFilter === '' ? '' : String(historyFilter)}
+            onChange={(v) => setHistoryFilter(v ? Number(v) : '')}
+            placeholder="All players"
+            options={[
+              { value: '', label: 'All players' },
+              ...(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` })),
+            ]}
+          />
         </div>
-        <div style={{ flex: 1 }} />
-        <Select
-          style={{ minWidth: 220 }}
-          value={historyFilter === '' ? '' : String(historyFilter)}
-          onChange={(v) => setHistoryFilter(v ? Number(v) : '')}
-          placeholder="All players"
-          options={[
-            { value: '', label: 'All players' },
-            ...(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` })),
-          ]}
-        />
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {filteredFeedback.map((f) => (
-          <div key={f.feedback_id} className="card elev-sm" style={{ padding: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
-                {f.category && <span className="tag tag-info">{f.category}</span>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 520, overflowY: 'auto', paddingRight: 4 }}>
+          {filteredFeedback.map((f) => (
+            <div key={f.feedback_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+                  {f.category && <span className="tag tag-info">{f.category}</span>}
+                </div>
+                <Rating value={f.rating} />
               </div>
-              <Rating value={f.rating} />
+              <p className="card-body" style={{ marginBottom: 4 }}>{f.comments}</p>
+              <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date} · {f.coach_name}</div>
             </div>
-            <p className="card-body" style={{ marginBottom: 4 }}>{f.comments}</p>
-            <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date} · {f.coach_name}</div>
-          </div>
-        ))}
-        {feedback && filteredFeedback.length === 0 && (
-          <div style={{ opacity: 0.6, fontSize: 13.5 }}>
-            {historyFilter === '' ? 'No feedback submitted yet.' : 'No feedback for this player yet.'}
-          </div>
-        )}
+          ))}
+          {feedback && filteredFeedback.length === 0 && (
+            <div style={{ opacity: 0.6, fontSize: 13.5 }}>
+              {historyFilter === '' ? 'No feedback submitted yet.' : 'No feedback for this player yet.'}
+            </div>
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
