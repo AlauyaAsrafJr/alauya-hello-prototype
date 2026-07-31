@@ -14,6 +14,7 @@ from app.models import (
     PerformanceFeedback,
     PlayerHealthRecord,
     FeedbackCategory,
+    ActivityType,
     Report,
 )
 
@@ -226,6 +227,44 @@ def edit_attendance(attendance_id):
 # ---- Track Participation: Log / Edit Training Activity ----
 
 
+@coach_bp.get("/activity-types")
+@roles_required("coach")
+def list_activity_types():
+    coach = _current_coach()
+    if not coach or not coach.specialization:
+        return jsonify([])
+    types = (
+        ActivityType.query.filter_by(sport_name=coach.specialization)
+        .order_by(ActivityType.name)
+        .all()
+    )
+    return jsonify([t.to_dict() for t in types])
+
+
+@coach_bp.post("/activity-types")
+@roles_required("coach")
+def create_activity_type():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    if not coach.specialization:
+        return jsonify({"error": "You don't have a team assigned yet"}), 400
+    data = request.get_json(force=True) or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    existing = ActivityType.query.filter(
+        ActivityType.sport_name == coach.specialization,
+        db.func.lower(ActivityType.name) == name.lower(),
+    ).first()
+    if existing:
+        return jsonify(existing.to_dict()), 200
+    activity_type = ActivityType(sport_name=coach.specialization, name=name)
+    db.session.add(activity_type)
+    db.session.commit()
+    return jsonify(activity_type.to_dict()), 201
+
+
 @coach_bp.get("/training-activities")
 @roles_required("coach")
 def list_training_activities():
@@ -264,6 +303,7 @@ def log_training_activity():
         activity_date=date.fromisoformat(data["activity_date"]),
         duration=data.get("duration"),
         notes=data.get("notes"),
+        activity_type=(data.get("activity_type") or "").strip() or None,
     )
     db.session.add(activity)
     db.session.flush()
@@ -286,7 +326,7 @@ def edit_training_activity(activity_id):
     if activity.coach_id != coach.coach_id:
         return jsonify({"error": "Training activity not found"}), 404
     data = request.get_json(force=True) or {}
-    editable_fields = ["activity_name", "duration", "notes"]
+    editable_fields = ["activity_name", "duration", "notes", "activity_type"]
     for field in editable_fields:
         if field in data:
             setattr(activity, field, data[field])

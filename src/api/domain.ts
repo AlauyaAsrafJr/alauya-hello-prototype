@@ -9,6 +9,12 @@ export interface FeedbackCategory {
   name: string;
 }
 
+export interface ActivityType {
+  activity_type_id: number;
+  sport_name: string;
+  name: string;
+}
+
 export type UserRole = 'player' | 'coach' | 'admin';
 export type MembershipStatus = 'active' | 'inactive' | 'suspended';
 export type HealthStatus = 'healthy' | 'injured' | 'recovering';
@@ -97,6 +103,7 @@ export interface TrainingActivity {
   activity_date: string;
   duration: number | null;
   notes: string | null;
+  activity_type: string | null;
 }
 
 export interface ParticipationRecord {

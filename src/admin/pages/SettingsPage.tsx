@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
-import type { FeedbackCategory, Sport } from '../../api/domain';
+import type { ActivityType, FeedbackCategory, Sport } from '../../api/domain';
 import { TrashIcon } from '../../icons';
 import { PasswordRow } from '../../components/PasswordRow';
 import { Select } from '../../components/Select';
@@ -19,10 +19,16 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
   const [newCategory, setNewCategory] = useState('');
   const [categorySubmitting, setCategorySubmitting] = useState(false);
 
+  const [typeSport, setTypeSport] = useState('');
+  const [activityTypes, setActivityTypes] = useState<ActivityType[] | null>(null);
+  const [newType, setNewType] = useState('');
+  const [typeSubmitting, setTypeSubmitting] = useState(false);
+
   async function load() {
     const data = await api.get<Sport[]>('/admin/sports');
     setSports(data);
     setCategorySport((prev) => prev || data[0]?.name || '');
+    setTypeSport((prev) => prev || data[0]?.name || '');
   }
 
   async function loadCategories(sportName: string) {
@@ -34,6 +40,15 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
     setCategories(data);
   }
 
+  async function loadActivityTypes(sportName: string) {
+    if (!sportName) {
+      setActivityTypes([]);
+      return;
+    }
+    const data = await api.get<ActivityType[]>(`/admin/activity-types?sport=${encodeURIComponent(sportName)}`);
+    setActivityTypes(data);
+  }
+
   useEffect(() => {
     load();
   }, []);
@@ -41,6 +56,10 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
   useEffect(() => {
     loadCategories(categorySport);
   }, [categorySport]);
+
+  useEffect(() => {
+    loadActivityTypes(typeSport);
+  }, [typeSport]);
 
   async function addSport() {
     const name = newSport.trim();
@@ -91,6 +110,32 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
       loadCategories(categorySport);
     } catch (err) {
       showToast(err instanceof ApiError ? err.message : 'Unable to remove category');
+    }
+  }
+
+  async function addActivityType() {
+    const name = newType.trim();
+    if (!name || !typeSport) return;
+    setTypeSubmitting(true);
+    try {
+      await api.post('/admin/activity-types', { sport_name: typeSport, name });
+      setNewType('');
+      showToast(`${name} added to ${typeSport}`);
+      loadActivityTypes(typeSport);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to add activity type');
+    } finally {
+      setTypeSubmitting(false);
+    }
+  }
+
+  async function removeActivityType(type: ActivityType) {
+    try {
+      await api.delete(`/admin/activity-types/${type.activity_type_id}`);
+      showToast(`${type.name} removed`);
+      loadActivityTypes(typeSport);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to remove activity type');
     }
   }
 
@@ -190,6 +235,67 @@ export function SettingsPage({ showToast }: SettingsPageProps) {
           {categories.length === 0 && (
             <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>
               {categorySport ? `No categories set up for ${categorySport} yet.` : 'Add a sport first.'}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+
+    <div className="card elev-sm" style={{ padding: 24, maxWidth: 560, marginBottom: 20 }}>
+      <div className="card-kicker">System configuration</div>
+      <div className="card-title" style={{ marginBottom: 6 }}>Manage activity types</div>
+      <p className="card-body" style={{ marginBottom: 16 }}>
+        Training activity types specific to each sport (e.g. "Scrimmage" or "Conditioning" for Basketball,
+        "Endurance" for Swimming), so training logs stay consistent and reportable no matter how many sports
+        the program runs.
+      </p>
+
+      <div className="field" style={{ marginBottom: 14 }}>
+        <label>Sport</label>
+        <Select
+          value={typeSport}
+          onChange={setTypeSport}
+          placeholder="No sports set up yet"
+          options={(sports || []).map((s) => ({ value: s.name, label: s.name }))}
+        />
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+        <input
+          className="input"
+          placeholder="e.g. Conditioning"
+          value={newType}
+          onChange={(e) => setNewType(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') addActivityType();
+          }}
+          disabled={!typeSport}
+        />
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={addActivityType}
+          disabled={typeSubmitting || !newType.trim() || !typeSport}
+        >
+          {typeSubmitting ? 'Adding…' : 'Add type'}
+        </button>
+      </div>
+
+      {activityTypes === null ? (
+        <div className="card-body">Loading activity types…</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {activityTypes.map((t) => (
+            <div key={t.activity_type_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--color-divider)' }}>
+              <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
+              <button type="button" className="btn btn-ghost btn-icon" aria-label={`Remove ${t.name}`} onClick={() => removeActivityType(t)}>
+                <TrashIcon />
+              </button>
+            </div>
+          ))}
+          {activityTypes.length === 0 && (
+            <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>
+              {typeSport ? `No activity types set up for ${typeSport} yet.` : 'Add a sport first.'}
             </div>
           )}
         </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
-import type { ParticipationRecord, PlayerProfile, TrainingActivity } from '../../api/domain';
+import { api, ApiError } from '../../api/client';
+import type { ActivityType, ParticipationRecord, PlayerProfile, TrainingActivity } from '../../api/domain';
 import { DialogShell } from '../../components/modals/DialogShell';
+import { Select } from '../../components/Select';
 import { PlusIcon } from '../../icons';
 
 interface TrainingActivitiesPageProps {
@@ -19,6 +20,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProps) {
   const [activities, setActivities] = useState<TrainingActivity[] | null>(null);
   const [players, setPlayers] = useState<PlayerProfile[] | null>(null);
+  const [activityTypes, setActivityTypes] = useState<ActivityType[] | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [editing, setEditing] = useState<TrainingActivity | null>(null);
   const [viewing, setViewing] = useState<{ activity: TrainingActivity; participants: ParticipationRecord[] } | null>(null);
@@ -27,15 +29,26 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
   const [date, setDate] = useState(today());
   const [duration, setDuration] = useState('120');
   const [notes, setNotes] = useState('');
+  const [activityType, setActivityType] = useState('');
   const [participantIds, setParticipantIds] = useState<number[]>([]);
+
+  const [addingType, setAddingType] = useState(false);
+  const [newTypeName, setNewTypeName] = useState('');
+  const [creatingType, setCreatingType] = useState(false);
 
   async function loadActivities() {
     const data = await api.get<TrainingActivity[]>('/coach/training-activities');
     setActivities(data);
   }
 
+  async function loadActivityTypes() {
+    const data = await api.get<ActivityType[]>('/coach/activity-types');
+    setActivityTypes(data);
+  }
+
   useEffect(() => {
     loadActivities();
+    loadActivityTypes();
     api.get<PlayerProfile[]>('/coach/players').then(setPlayers);
   }, []);
 
@@ -44,7 +57,10 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
     setDate(today());
     setDuration('120');
     setNotes('');
+    setActivityType('');
     setParticipantIds([]);
+    setAddingType(false);
+    setNewTypeName('');
   }
 
   async function submitLog() {
@@ -53,6 +69,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
       activity_date: date,
       duration: Number(duration) || null,
       notes,
+      activity_type: activityType || undefined,
       participant_ids: participantIds,
     });
     setLogOpen(false);
@@ -67,6 +84,9 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
     setDate(a.activity_date);
     setDuration(String(a.duration ?? ''));
     setNotes(a.notes || '');
+    setActivityType(a.activity_type || '');
+    setAddingType(false);
+    setNewTypeName('');
   }
 
   async function submitEdit() {
@@ -76,6 +96,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
       activity_date: date,
       duration: Number(duration) || null,
       notes,
+      activity_type: activityType || null,
     });
     setEditing(null);
     showToast(`"${name}" updated`);
@@ -85,6 +106,86 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
   async function openView(a: TrainingActivity) {
     const participants = await api.get<ParticipationRecord[]>(`/coach/training-activities/${a.activity_id}/participation`);
     setViewing({ activity: a, participants });
+  }
+
+  async function createActivityType() {
+    const name = newTypeName.trim();
+    if (!name) return;
+    setCreatingType(true);
+    try {
+      const created = await api.post<ActivityType>('/coach/activity-types', { name });
+      await loadActivityTypes();
+      setActivityType(created.name);
+      setNewTypeName('');
+      setAddingType(false);
+      showToast(`"${created.name}" added as an activity type`);
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to add activity type');
+    } finally {
+      setCreatingType(false);
+    }
+  }
+
+  function typeField() {
+    return (
+      <div className="field">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label>Activity type</label>
+          {!addingType && (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              style={{ fontSize: 12, padding: '2px 0' }}
+              onClick={() => setAddingType(true)}
+            >
+              + New type
+            </button>
+          )}
+        </div>
+        {addingType ? (
+          <div style={{ display: 'flex', gap: 6 }}>
+            <input
+              className="input"
+              placeholder="e.g. Conditioning"
+              value={newTypeName}
+              onChange={(e) => setNewTypeName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') createActivityType();
+              }}
+              autoFocus
+            />
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={createActivityType}
+              disabled={creatingType || !newTypeName.trim()}
+            >
+              {creatingType ? 'Adding…' : 'Add'}
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setAddingType(false);
+                setNewTypeName('');
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <Select
+            value={activityType}
+            onChange={setActivityType}
+            placeholder="General (no specific type)"
+            options={[
+              { value: '', label: 'General (no specific type)' },
+              ...(activityTypes || []).map((t) => ({ value: t.name, label: t.name })),
+            ]}
+          />
+        )}
+      </div>
+    );
   }
 
   return (
@@ -108,6 +209,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
           <thead>
             <tr>
               <th>Activity</th>
+              <th>Type</th>
               <th>Date</th>
               <th>Duration</th>
               <th>Notes</th>
@@ -118,6 +220,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
             {activities?.map((a) => (
               <tr key={a.activity_id}>
                 <td style={{ fontWeight: 600 }}>{a.activity_name}</td>
+                <td>{a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>—</span>}</td>
                 <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
                 <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '—'}</td>
                 <td style={{ opacity: 0.65, maxWidth: 220 }}>{a.notes || '—'}</td>
@@ -130,7 +233,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
               </tr>
             ))}
             {activities && activities.length === 0 && (
-              <tr><td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No training activities logged yet.</td></tr>
+              <tr><td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No training activities logged yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -152,6 +255,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
               <label>Activity name</label>
               <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
+            {typeField()}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="field">
                 <label>Date</label>
@@ -205,6 +309,7 @@ export function TrainingActivitiesPage({ showToast }: TrainingActivitiesPageProp
               <label>Activity name</label>
               <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
+            {typeField()}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="field">
                 <label>Date</label>

@@ -138,6 +138,7 @@ class TrainingActivity(db.Model):
     activity_date = db.Column(db.Date, nullable=False)
     duration = db.Column(db.Integer)  # minutes
     notes = db.Column(db.Text)
+    activity_type = db.Column(db.String(80), nullable=True)  # e.g. "Scrimmage", "Conditioning" — sport-specific
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     coach = db.relationship("Coach", back_populates="activities")
@@ -152,6 +153,7 @@ class TrainingActivity(db.Model):
             "activity_date": self.activity_date.isoformat() if self.activity_date else None,
             "duration": self.duration,
             "notes": self.notes,
+            "activity_type": self.activity_type,
         }
 
 
@@ -423,3 +425,23 @@ class FeedbackCategory(db.Model):
 
     def to_dict(self):
         return {"category_id": self.category_id, "sport_name": self.sport_name, "name": self.name}
+
+
+class ActivityType(db.Model):
+    """Sport-specific training activity types (e.g. "Scrimmage"/"Conditioning"
+    for Basketball, "Serve Practice"/"Endurance" for Swimming), managed by
+    admins the same way as feedback categories so training logs stay
+    consistent and reportable across every sport.
+    """
+
+    __tablename__ = "activity_types"
+
+    activity_type_id = db.Column(db.Integer, primary_key=True)
+    sport_name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint("sport_name", "name", name="uq_activity_type_sport_name"),)
+
+    def to_dict(self):
+        return {"activity_type_id": self.activity_type_id, "sport_name": self.sport_name, "name": self.name}

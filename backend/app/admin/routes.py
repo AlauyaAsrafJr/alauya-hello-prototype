@@ -20,6 +20,7 @@ from app.models import (
     Statistic,
     Sport,
     FeedbackCategory,
+    ActivityType,
 )
 
 admin_bp = Blueprint("admin", __name__)
@@ -470,3 +471,49 @@ def delete_feedback_category(category_id):
     db.session.delete(category)
     db.session.commit()
     return jsonify({"message": "Category removed"})
+
+
+# ---- Manage Activity Types ----
+# Sport-specific training activity types (e.g. "Scrimmage" for Basketball,
+# "Endurance" for Swimming), kept admin-manageable per sport so training
+# logs stay consistent and reportable across every sport.
+
+
+@admin_bp.get("/activity-types")
+@roles_required("admin")
+def list_activity_types():
+    sport = request.args.get("sport")
+    query = ActivityType.query
+    if sport:
+        query = query.filter_by(sport_name=sport)
+    types = query.order_by(ActivityType.sport_name, ActivityType.name).all()
+    return jsonify([t.to_dict() for t in types])
+
+
+@admin_bp.post("/activity-types")
+@roles_required("admin")
+def create_activity_type():
+    data = request.get_json(force=True) or {}
+    sport_name = (data.get("sport_name") or "").strip()
+    name = (data.get("name") or "").strip()
+    if not sport_name or not name:
+        return jsonify({"error": "sport_name and name are required"}), 400
+    exists = ActivityType.query.filter(
+        db.func.lower(ActivityType.sport_name) == sport_name.lower(),
+        db.func.lower(ActivityType.name) == name.lower(),
+    ).first()
+    if exists:
+        return jsonify({"error": "That activity type already exists for this sport"}), 409
+    activity_type = ActivityType(sport_name=sport_name, name=name)
+    db.session.add(activity_type)
+    db.session.commit()
+    return jsonify(activity_type.to_dict()), 201
+
+
+@admin_bp.delete("/activity-types/<int:activity_type_id>")
+@roles_required("admin")
+def delete_activity_type(activity_type_id):
+    activity_type = ActivityType.query.get_or_404(activity_type_id)
+    db.session.delete(activity_type)
+    db.session.commit()
+    return jsonify({"message": "Activity type removed"})

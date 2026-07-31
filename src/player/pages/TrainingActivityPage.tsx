@@ -17,6 +17,7 @@ export function TrainingActivityPage() {
         <thead>
           <tr>
             <th>Activity</th>
+            <th>Type</th>
             <th>Date</th>
             <th>Duration</th>
             <th>Coach</th>
@@ -27,6 +28,7 @@ export function TrainingActivityPage() {
           {activities.map((a) => (
             <tr key={a.activity_id}>
               <td style={{ fontWeight: 600 }}>{a.activity_name}</td>
+              <td>{a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>—</span>}</td>
               <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
               <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '—'}</td>
               <td style={{ opacity: 0.75 }}>{a.coach_name}</td>
@@ -35,7 +37,7 @@ export function TrainingActivityPage() {
           ))}
           {activities.length === 0 && (
             <tr>
-              <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No training activities logged yet.</td>
+              <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>No training activities logged yet.</td>
             </tr>
           )}
         </tbody>
