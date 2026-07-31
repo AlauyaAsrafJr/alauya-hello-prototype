@@ -10,7 +10,7 @@ centralized, role-based web system for **Players**, **Coaches**, and
 
 - **Backend**: Python (Flask), SQLAlchemy, JWT authentication
 - **Database**: MySQL
-- **Frontend**: React + TypeScript + Vite
+- **Frontend**: HTML, CSS, JavaScript, React + Vite
 
 ## Project structure
 
@@ -26,7 +26,7 @@ backend/            Flask API (auth, player, coach, admin blueprints)
   wsgi.py             Dev server entrypoint
 
 src/                 React frontend
-  api/                Fetch client + shared domain types
+  api/                Fetch client
   auth/               Auth context, Login page
   player/ coach/ admin/  Per-role dashboards and pages
   components/         Shared UI (Sidebar, Topbar, modals, design tokens)
@@ -65,7 +65,7 @@ Demo accounts created by `seed.py`:
 npm install
 cp .env.example .env   # VITE_API_URL defaults to http://localhost:5000/api
 npm run dev             # start dev server
-npm run build           # typecheck + production build
+npm run build           # production build
 npm run lint             # oxlint
 ```
 
