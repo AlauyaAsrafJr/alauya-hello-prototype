@@ -1,6 +1,8 @@
+import os
+import uuid
 from datetime import date, datetime
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 
 from app.decorators import roles_required
@@ -19,6 +21,8 @@ from app.models import (
 )
 
 coach_bp = Blueprint("coach", __name__)
+
+ALLOWED_PHOTO_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
 def _current_coach():
@@ -43,6 +47,45 @@ def get_profile():
     coach = _current_coach()
     if not coach:
         return jsonify({"error": "Coach profile not found"}), 404
+    return jsonify(coach.to_dict())
+
+
+@coach_bp.patch("/profile")
+@roles_required("coach")
+def update_profile():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    data = request.get_json(force=True) or {}
+    # Coaches may only update limited, non-sensitive fields of their own profile.
+    editable_fields = ["contact_number", "profile_photo"]
+    for field in editable_fields:
+        if field in data:
+            setattr(coach, field, data[field])
+    db.session.commit()
+    return jsonify(coach.to_dict())
+
+
+@coach_bp.post("/profile/photo")
+@roles_required("coach")
+def upload_profile_photo():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    file = request.files.get("photo")
+    if not file or not file.filename:
+        return jsonify({"error": "No photo file provided"}), 400
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_PHOTO_EXTENSIONS:
+        return jsonify({"error": "Unsupported image type. Use JPG, PNG, WEBP, or GIF."}), 400
+
+    upload_dir = os.path.join(current_app.config["UPLOAD_FOLDER"], "coaches")
+    os.makedirs(upload_dir, exist_ok=True)
+    filename = f"coach_{coach.coach_id}_{uuid.uuid4().hex[:8]}{ext}"
+    file.save(os.path.join(upload_dir, filename))
+
+    coach.profile_photo = f"/api/uploads/coaches/{filename}"
+    db.session.commit()
     return jsonify(coach.to_dict())
 
 

@@ -62,6 +62,7 @@ export interface CoachProfile {
   email: string;
   contact_number: string | null;
   specialization: string | null;
+  profile_photo: string | null;
   is_active: boolean;
 }
 

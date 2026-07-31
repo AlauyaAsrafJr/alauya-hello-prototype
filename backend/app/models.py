@@ -87,6 +87,7 @@ class Coach(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     contact_number = db.Column(db.String(30))
     specialization = db.Column(db.String(120))
+    profile_photo = db.Column(db.String(255))
 
     user = db.relationship("SystemUser", back_populates="coach")
     attendances_recorded = db.relationship("Attendance", back_populates="coach")
@@ -104,6 +105,7 @@ class Coach(db.Model):
             "email": self.email,
             "contact_number": self.contact_number,
             "specialization": self.specialization,
+            "profile_photo": self.profile_photo,
             "is_active": self.user.is_active if self.user else True,
         }
 
