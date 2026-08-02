@@ -53,8 +53,8 @@ export function LoginPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
           <div
             style={{
-              width: 34,
-              height: 34,
+              width: 48,
+              height: 48,
               background: '#fff',
               borderRadius: 'var(--radius-sm)',
               display: 'flex',
@@ -63,7 +63,7 @@ export function LoginPage() {
               flex: 'none',
             }}
           >
-            <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+            <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 38, height: 38, objectFit: 'contain' }} />
           </div>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18 }}>ACTIBASE</div>
         </div>

@@ -37,8 +37,8 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
       >
         <div
           style={{
-            width: 34,
-            height: 34,
+            width: 48,
+            height: 48,
             background: '#fff',
             borderRadius: 'var(--radius-sm)',
             display: 'flex',
@@ -47,7 +47,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
             flex: 'none',
           }}
         >
-          <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+          <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 38, height: 38, objectFit: 'contain' }} />
         </div>
         <div>
           <div
