@@ -47,8 +47,8 @@ export function Topbar({
       </button>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <h1 style={{ fontSize: 21, margin: 0, color: 'var(--color-neutral-100)' }}>{pageTitle}</h1>
-        <div style={{ fontSize: 12, color: 'var(--color-neutral-400)', marginTop: 2 }}>{pageSubtitle}</div>
+        <h1 style={{ fontSize: 22.5, margin: 0, color: 'var(--color-neutral-100)' }}>{pageTitle}</h1>
+        <div style={{ fontSize: 13.5, color: 'var(--color-neutral-400)', marginTop: 2 }}>{pageSubtitle}</div>
       </div>
 
       <button
@@ -105,13 +105,13 @@ export function Topbar({
                 borderBottom: '1px solid var(--color-divider)',
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 800,
-                fontSize: 13,
+                fontSize: 14.5,
                 color: 'var(--color-neutral-100)',
               }}
             >
               Notifications
             </div>
-            <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--color-neutral-300)', opacity: notifCount > 0 ? 1 : 0.7 }}>
+            <div style={{ padding: '12px 14px', fontSize: 14.5, color: 'var(--color-neutral-300)', opacity: notifCount > 0 ? 1 : 0.7 }}>
               {notifMessage || "You're all caught up."}
             </div>
           </div>
@@ -167,7 +167,7 @@ export function Topbar({
                 padding: '10px 14px',
                 background: 'transparent',
                 border: 0,
-                fontSize: 13,
+                fontSize: 14.5,
                 cursor: 'pointer',
                 color: 'var(--color-neutral-200)',
                 fontFamily: 'var(--font-body)',
@@ -185,7 +185,7 @@ export function Topbar({
                 padding: '10px 14px',
                 background: 'transparent',
                 border: 0,
-                fontSize: 13,
+                fontSize: 14.5,
                 cursor: 'pointer',
                 color: 'var(--color-accent-400)',
                 fontFamily: 'var(--font-body)',

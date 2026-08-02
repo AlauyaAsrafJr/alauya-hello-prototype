@@ -85,13 +85,13 @@ export function SettingsPage({ showToast }) {
                   borderBottom: '1px solid var(--color-divider)',
                 }}
               >
-                <span style={{ fontSize: 13.5, fontWeight: 600 }}>{s.name}</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>{s.name}</span>
                 <button type="button" className="btn btn-ghost btn-icon" aria-label={`Remove ${s.name}`} onClick={() => removeSport(s)}>
                   <TrashIcon />
                 </button>
               </div>
             ))}
-            {sports.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>No sports set up yet.</div>}
+            {sports.length === 0 && <div style={{ opacity: 0.6, fontSize: 15, padding: '8px 0' }}>No sports set up yet.</div>}
           </div>
         )}
       </div>

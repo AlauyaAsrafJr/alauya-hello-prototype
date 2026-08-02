@@ -96,7 +96,7 @@ export function ProfilePage({ showToast }) {
                   width: 72,
                   height: 72,
                   borderRadius: '50%',
-                  fontSize: 22,
+                  fontSize: 23.5,
                   background: 'var(--color-accent-100)',
                   color: 'var(--color-accent-400)',
                 }}
@@ -112,7 +112,7 @@ export function ProfilePage({ showToast }) {
             <button
               type="button"
               className="btn btn-ghost"
-              style={{ fontSize: 12, marginTop: 4, padding: '4px 0' }}
+              style={{ fontSize: 13.5, marginTop: 4, padding: '4px 0' }}
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadingPhoto}
             >
@@ -141,7 +141,7 @@ export function ProfilePage({ showToast }) {
                 justifyContent: 'space-between',
                 padding: '8px 0',
                 borderBottom: '1px solid var(--color-divider)',
-                fontSize: 13.5,
+                fontSize: 15,
               }}
             >
               <span style={{ opacity: 0.6 }}>{k}</span>
@@ -156,7 +156,7 @@ export function ProfilePage({ showToast }) {
               alignItems: 'center',
               padding: '8px 0',
               borderBottom: '1px solid var(--color-divider)',
-              fontSize: 13.5,
+              fontSize: 15,
             }}
           >
             <span style={{ opacity: 0.6 }}>Contact number</span>
@@ -173,7 +173,7 @@ export function ProfilePage({ showToast }) {
             ) : (
               <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontWeight: 600 }}>{profile.contact_number || '—'}</span>
-                <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setEditing(true)}>
+                <button type="button" className="btn btn-ghost" style={{ fontSize: 13.5 }} onClick={() => setEditing(true)}>
                   Edit
                 </button>
               </span>
@@ -186,7 +186,7 @@ export function ProfilePage({ showToast }) {
               justifyContent: 'space-between',
               padding: '8px 0',
               borderBottom: '1px solid var(--color-divider)',
-              fontSize: 13.5,
+              fontSize: 15,
             }}
           >
             <span style={{ opacity: 0.6 }}>Account status</span>

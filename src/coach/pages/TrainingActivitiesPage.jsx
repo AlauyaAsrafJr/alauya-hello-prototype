@@ -172,7 +172,7 @@ export function TrainingActivitiesPage({ showToast }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label>Activity type</label>
           {!addingType && (
-            <button type="button" className="btn btn-ghost" style={{ fontSize: 12, padding: '2px 0' }} onClick={() => setAddingType(true)}>
+            <button type="button" className="btn btn-ghost" style={{ fontSize: 13.5, padding: '2px 0' }} onClick={() => setAddingType(true)}>
               + New type
             </button>
           )}
@@ -231,7 +231,7 @@ export function TrainingActivitiesPage({ showToast }) {
                       <>
                         <input
                           className="input"
-                          style={{ flex: 1, minHeight: 30, fontSize: 13 }}
+                          style={{ flex: 1, minHeight: 30, fontSize: 14.5 }}
                           value={editingTypeName}
                           onChange={(e) => setEditingTypeName(e.target.value)}
                           onKeyDown={(e) => {
@@ -243,7 +243,7 @@ export function TrainingActivitiesPage({ showToast }) {
                         <button
                           type="button"
                           className="btn btn-ghost"
-                          style={{ fontSize: 12, padding: '2px 6px' }}
+                          style={{ fontSize: 13.5, padding: '2px 6px' }}
                           onClick={saveEditType}
                           disabled={savingType || !editingTypeName.trim()}
                         >
@@ -252,7 +252,7 @@ export function TrainingActivitiesPage({ showToast }) {
                         <button
                           type="button"
                           className="btn btn-ghost"
-                          style={{ fontSize: 12, padding: '2px 6px' }}
+                          style={{ fontSize: 13.5, padding: '2px 6px' }}
                           onClick={cancelEditType}
                         >
                           Cancel
@@ -260,7 +260,7 @@ export function TrainingActivitiesPage({ showToast }) {
                       </>
                     ) : (
                       <>
-                        <span style={{ flex: 1, fontSize: 13 }}>{t.name}</span>
+                        <span style={{ flex: 1, fontSize: 14.5 }}>{t.name}</span>
                         <button
                           type="button"
                           className="btn btn-ghost btn-icon"
@@ -401,7 +401,7 @@ export function TrainingActivitiesPage({ showToast }) {
               <label>Participants</label>
               <div style={{ maxHeight: 160, overflowY: 'auto', border: '1px solid var(--color-divider)', padding: 8 }}>
                 {players?.map((p) => (
-                  <label key={p.player_id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, padding: '4px 0' }}>
+                  <label key={p.player_id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14.5, padding: '4px 0' }}>
                     <input
                       type="checkbox"
                       checked={participantIds.includes(p.player_id)}
@@ -476,14 +476,14 @@ export function TrainingActivitiesPage({ showToast }) {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <span>{p.player_name}</span>
                 <span className={participationTag(p.participation_status)}>{p.participation_status}</span>
               </div>
             ))}
-            {viewing.participants.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No participants recorded.</div>}
+            {viewing.participants.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No participants recorded.</div>}
           </div>
         </DialogShell>
       )}

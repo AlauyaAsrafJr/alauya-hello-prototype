@@ -121,7 +121,7 @@ export function AttendancePage({ showToast }) {
       <div className="card elev-sm" style={{ padding: 20, marginBottom: 24 }}>
         <div className="card-kicker">Record attendance</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 16px', flexWrap: 'wrap' }}>
-          <label style={{ fontSize: 13, fontWeight: 600 }}>Session date</label>
+          <label style={{ fontSize: 14.5, fontWeight: 600 }}>Session date</label>
           <input className="input" style={{ maxWidth: 180 }} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           <div style={{ flex: 1 }} />
           <button type="button" className="btn btn-secondary" onClick={() => markAll('present')}>
@@ -150,7 +150,7 @@ export function AttendancePage({ showToast }) {
                   borderBottom: '1px solid var(--color-divider)',
                 }}
               >
-                <span style={{ fontSize: 13.5, fontWeight: 600 }}>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>
                   {p.first_name} {p.last_name}
                 </span>
                 <div className="seg">
@@ -305,7 +305,7 @@ export function AttendancePage({ showToast }) {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <span>{r.player_name}</span>
@@ -343,7 +343,7 @@ export function AttendancePage({ showToast }) {
                   borderBottom: '1px solid var(--color-divider)',
                 }}
               >
-                <span style={{ fontSize: 13.5, fontWeight: 600 }}>{r.player_name}</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>{r.player_name}</span>
                 <div className="seg">
                   {['present', 'late', 'absent'].map((s) => (
                     <label key={s} className="seg-opt">

@@ -66,7 +66,7 @@ export function DashboardPage({ onNavigate }) {
             type="button"
             onClick={() => onNavigate('reports')}
             className="btn btn-ghost"
-            style={{ paddingInline: 0, fontSize: 12.5 }}
+            style={{ paddingInline: 0, fontSize: 15.5 }}
           >
             View all →
           </button>
@@ -84,15 +84,15 @@ export function DashboardPage({ onNavigate }) {
               }}
             >
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type} report</div>
-                <div style={{ fontSize: 11.5, opacity: 0.55 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type} report</div>
+                <div style={{ fontSize: 14.5, opacity: 0.55 }}>
                   {new Date(r.generated_date).toLocaleDateString()} · {r.generated_by_name}
                 </div>
               </div>
               <span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span>
             </div>
           ))}
-          {reports && reports.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>No reports yet.</div>}
+          {reports && reports.length === 0 && <div style={{ opacity: 0.6, fontSize: 15, padding: '8px 0' }}>No reports yet.</div>}
         </div>
       </div>
     </>

@@ -65,7 +65,7 @@ export function LoginPage() {
           >
             <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 38, height: 38, objectFit: 'contain' }} />
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18 }}>ACTIBASE</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 19.5 }}>ACTIBASE</div>
         </div>
 
         <div className="card-title" style={{ marginBottom: 4 }}>
@@ -104,14 +104,14 @@ export function LoginPage() {
             />
           </div>
 
-          {error && <div style={{ fontSize: 13, color: 'var(--color-accent-700)' }}>{error}</div>}
+          {error && <div style={{ fontSize: 14.5, color: 'var(--color-accent-700)' }}>{error}</div>}
 
           <button type="submit" className="btn btn-primary" disabled={submitting} style={{ marginTop: 4 }}>
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <p style={{ marginTop: 18, fontSize: 12.5, textAlign: 'center', opacity: 0.6 }}>
+        <p style={{ marginTop: 18, fontSize: 15.5, textAlign: 'center', opacity: 0.6 }}>
           Accounts are created by the sports office administrator. Contact your coach or the admin office if you need access.
         </p>
       </div>

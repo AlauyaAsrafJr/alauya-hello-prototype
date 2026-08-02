@@ -43,7 +43,7 @@ export function PasswordRow({ showToast }) {
 
   if (editing) {
     return (
-      <div style={{ padding: '8px 0', fontSize: 13.5 }}>
+      <div style={{ padding: '8px 0', fontSize: 15 }}>
         <div style={{ opacity: 0.6, marginBottom: 8 }}>Password</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <input
@@ -67,7 +67,7 @@ export function PasswordRow({ showToast }) {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          {error && <div style={{ color: 'var(--color-danger)', fontSize: 12 }}>{error}</div>}
+          {error && <div style={{ color: 'var(--color-danger)', fontSize: 13.5 }}>{error}</div>}
           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
             <button type="button" className="btn btn-secondary" onClick={cancel}>
               Cancel
@@ -82,11 +82,11 @@ export function PasswordRow({ showToast }) {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: 13.5 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', fontSize: 15 }}>
       <span style={{ opacity: 0.6 }}>Password</span>
       <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontWeight: 600, letterSpacing: 2 }}>{MASK}</span>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setEditing(true)}>
+        <button type="button" className="btn btn-ghost" style={{ fontSize: 13.5 }} onClick={() => setEditing(true)}>
           Edit
         </button>
       </span>

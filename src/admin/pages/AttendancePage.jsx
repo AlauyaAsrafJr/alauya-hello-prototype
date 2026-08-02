@@ -232,12 +232,12 @@ export function AttendancePage() {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <div>
                   <div style={{ fontWeight: 600 }}>{r.player_name}</div>
-                  <div style={{ fontSize: 11.5, opacity: 0.55 }}>Recorded by {r.coach_name}</div>
+                  <div style={{ fontSize: 14.5, opacity: 0.55 }}>Recorded by {r.coach_name}</div>
                 </div>
                 <span className={statusTag(r.status)}>{r.status}</span>
               </div>

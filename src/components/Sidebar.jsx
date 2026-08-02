@@ -54,14 +54,14 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
             style={{
               fontFamily: 'var(--font-heading)',
               fontWeight: 800,
-              fontSize: 16.5,
+              fontSize: 19.5,
               letterSpacing: '-0.01em',
               color: 'var(--color-neutral-100)',
             }}
           >
             ACTIBASE
           </div>
-          <div style={{ fontSize: 10.5, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{roleLabel}</div>
+          <div style={{ fontSize: 13.5, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{roleLabel}</div>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
               {showGroupHeader && (
                 <div
                   style={{
-                    fontSize: 10.5,
+                    fontSize: 13.5,
                     fontWeight: 700,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
@@ -101,7 +101,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
                   borderRadius: 'var(--radius-sm)',
                   color: isActive ? 'var(--color-accent-400)' : 'var(--color-neutral-300)',
                   fontFamily: 'var(--font-body)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                   fontWeight: 600,
                   cursor: 'pointer',
                   textAlign: 'left',
@@ -122,7 +122,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
             <div style={{ minWidth: 0 }}>
               <div
                 style={{
-                  fontSize: 12.5,
+                  fontSize: 15.5,
                   fontWeight: 600,
                   color: 'var(--color-neutral-100)',
                   overflow: 'hidden',
@@ -132,7 +132,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
               >
                 {displayName}
               </div>
-              <div style={{ fontSize: 10.5, opacity: 0.55 }}>{roleLabel}</div>
+              <div style={{ fontSize: 13.5, opacity: 0.55 }}>{roleLabel}</div>
             </div>
           </div>
         )}
@@ -151,7 +151,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
             borderRadius: 'var(--radius-sm)',
             color: 'var(--color-neutral-300)',
             fontFamily: 'var(--font-body)',
-            fontSize: 13.5,
+            fontSize: 15,
             fontWeight: 600,
             cursor: 'pointer',
             textAlign: 'left',

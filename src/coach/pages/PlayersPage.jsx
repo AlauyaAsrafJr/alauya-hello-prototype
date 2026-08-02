@@ -204,7 +204,7 @@ export function PlayersPage({ showToast }) {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <span style={{ opacity: 0.6 }}>{k}</span>
@@ -252,7 +252,7 @@ export function PlayersPage({ showToast }) {
             <div className="field">
               <label>Team</label>
               <input className="input" value={editing.team || '—'} disabled />
-              <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>Team assignment is managed by an administrator.</p>
+              <p style={{ fontSize: 14.5, opacity: 0.6, marginTop: 4 }}>Team assignment is managed by an administrator.</p>
             </div>
             <div className="field">
               <label>Year level</label>
@@ -346,7 +346,7 @@ export function PlayersPage({ showToast }) {
           {healthHistory === null ? (
             <div className="card-body">Loading…</div>
           ) : healthHistory.length === 0 ? (
-            <div style={{ opacity: 0.6, fontSize: 13 }}>No health records logged yet.</div>
+            <div style={{ opacity: 0.6, fontSize: 14.5 }}>No health records logged yet.</div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 180, overflowY: 'auto' }}>
               {healthHistory.map((r) => (
@@ -355,10 +355,10 @@ export function PlayersPage({ showToast }) {
                     <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
                     </span>
-                    <span style={{ fontSize: 11, opacity: 0.55 }}>{r.reported_date}</span>
+                    <span style={{ fontSize: 12.5, opacity: 0.55 }}>{r.reported_date}</span>
                   </div>
-                  {r.injury_type && <div style={{ fontSize: 13, fontWeight: 600, marginTop: 2 }}>{r.injury_type}</div>}
-                  {r.notes && <div style={{ fontSize: 12.5, opacity: 0.8 }}>{r.notes}</div>}
+                  {r.injury_type && <div style={{ fontSize: 14.5, fontWeight: 600, marginTop: 2 }}>{r.injury_type}</div>}
+                  {r.notes && <div style={{ fontSize: 15.5, opacity: 0.8 }}>{r.notes}</div>}
                 </div>
               ))}
             </div>

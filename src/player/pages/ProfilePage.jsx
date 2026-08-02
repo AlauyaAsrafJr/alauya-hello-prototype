@@ -111,7 +111,7 @@ export function ProfilePage({ showToast }) {
                     width: 72,
                     height: 72,
                     borderRadius: '50%',
-                    fontSize: 22,
+                    fontSize: 23.5,
                     background: 'var(--color-accent-100)',
                     color: 'var(--color-accent-400)',
                   }}
@@ -127,7 +127,7 @@ export function ProfilePage({ showToast }) {
               <button
                 type="button"
                 className="btn btn-ghost"
-                style={{ fontSize: 12, marginTop: 4, padding: '4px 0' }}
+                style={{ fontSize: 13.5, marginTop: 4, padding: '4px 0' }}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingPhoto}
               >
@@ -159,7 +159,7 @@ export function ProfilePage({ showToast }) {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <span style={{ opacity: 0.6 }}>{k}</span>
@@ -173,7 +173,7 @@ export function ProfilePage({ showToast }) {
                 justifyContent: 'space-between',
                 padding: '8px 0',
                 borderBottom: '1px solid var(--color-divider)',
-                fontSize: 13.5,
+                fontSize: 15,
               }}
             >
               <span style={{ opacity: 0.6 }}>Health status</span>
@@ -189,7 +189,7 @@ export function ProfilePage({ showToast }) {
                 alignItems: 'center',
                 padding: '8px 0',
                 borderBottom: '1px solid var(--color-divider)',
-                fontSize: 13.5,
+                fontSize: 15,
               }}
             >
               <span style={{ opacity: 0.6 }}>Contact number</span>
@@ -211,7 +211,7 @@ export function ProfilePage({ showToast }) {
               ) : (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontWeight: 600 }}>{profile.contact_number || '—'}</span>
-                  <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={() => setEditing(true)}>
+                  <button type="button" className="btn btn-ghost" style={{ fontSize: 13.5 }} onClick={() => setEditing(true)}>
                     Edit
                   </button>
                 </span>
@@ -240,12 +240,12 @@ export function ProfilePage({ showToast }) {
                     <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
                     </span>
-                    <span style={{ fontSize: 11.5, opacity: 0.55 }}>{r.reported_date}</span>
+                    <span style={{ fontSize: 14.5, opacity: 0.55 }}>{r.reported_date}</span>
                   </div>
-                  {r.injury_type && <div style={{ fontSize: 13.5, fontWeight: 600 }}>{r.injury_type}</div>}
-                  {r.notes && <div style={{ fontSize: 13, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}
+                  {r.injury_type && <div style={{ fontSize: 15, fontWeight: 600 }}>{r.injury_type}</div>}
+                  {r.notes && <div style={{ fontSize: 14.5, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}
                   {r.expected_return_date && (
-                    <div style={{ fontSize: 11.5, opacity: 0.55, marginTop: 4 }}>Expected return: {r.expected_return_date}</div>
+                    <div style={{ fontSize: 14.5, opacity: 0.55, marginTop: 4 }}>Expected return: {r.expected_return_date}</div>
                   )}
                 </div>
               ))}

@@ -37,7 +37,7 @@ export function PerformanceFeedbackPage() {
         <div key={f.feedback_id} className="card elev-sm" style={{ padding: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontWeight: 600, fontSize: 14 }}>{f.coach_name}</div>
+              <div style={{ fontWeight: 600, fontSize: 15.5 }}>{f.coach_name}</div>
               {f.category && <span className="tag tag-info">{f.category}</span>}
             </div>
             <Rating value={f.rating} />
@@ -45,7 +45,7 @@ export function PerformanceFeedbackPage() {
           <p className="card-body" style={{ marginBottom: 6 }}>
             {f.comments}
           </p>
-          <div style={{ fontSize: 11.5, opacity: 0.55 }}>{f.feedback_date}</div>
+          <div style={{ fontSize: 14.5, opacity: 0.55 }}>{f.feedback_date}</div>
         </div>
       ))}
     </div>

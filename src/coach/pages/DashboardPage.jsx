@@ -58,7 +58,7 @@ export function DashboardPage({ onNavigate }) {
                 justifyContent: 'space-between',
                 padding: '8px 0',
                 borderBottom: '1px solid var(--color-divider)',
-                fontSize: 13.5,
+                fontSize: 15,
               }}
             >
               <span>{row.activity_name}</span>
@@ -66,7 +66,7 @@ export function DashboardPage({ onNavigate }) {
             </div>
           ))}
           {analytics.participation_by_activity.length === 0 && (
-            <div style={{ opacity: 0.6, fontSize: 13.5, padding: '8px 0' }}>No activity data yet.</div>
+            <div style={{ opacity: 0.6, fontSize: 15, padding: '8px 0' }}>No activity data yet.</div>
           )}
         </div>
       </div>

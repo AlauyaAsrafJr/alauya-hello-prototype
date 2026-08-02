@@ -148,7 +148,7 @@ export function PlayersPage() {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <span style={{ opacity: 0.6 }}>{k}</span>

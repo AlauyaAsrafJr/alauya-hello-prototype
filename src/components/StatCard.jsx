@@ -4,12 +4,12 @@ export function StatCard({ label, value, icon: Icon, variant = 'accent', onView 
       <div className={`icon-chip icon-chip-${variant}`}>
         <Icon />
       </div>
-      <div className="card-title" style={{ fontSize: 28, marginTop: 10 }}>
+      <div className="card-title" style={{ fontSize: 30, marginTop: 10 }}>
         {value}
       </div>
-      <div style={{ fontSize: 12.5, opacity: 0.65, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 15.5, opacity: 0.65, fontWeight: 600 }}>{label}</div>
       {onView && (
-        <button type="button" onClick={onView} className="btn btn-ghost" style={{ paddingInline: 0, marginTop: 2, fontSize: 12.5 }}>
+        <button type="button" onClick={onView} className="btn btn-ghost" style={{ paddingInline: 0, marginTop: 2, fontSize: 15.5 }}>
           Quick view →
         </button>
       )}

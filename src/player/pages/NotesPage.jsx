@@ -62,10 +62,10 @@ export function NotesPage({ showToast }) {
               <p className="card-body" style={{ marginBottom: 6 }}>
                 {n.content}
               </p>
-              <div style={{ fontSize: 11.5, opacity: 0.55 }}>{new Date(n.note_date).toLocaleString()}</div>
+              <div style={{ fontSize: 14.5, opacity: 0.55 }}>{new Date(n.note_date).toLocaleString()}</div>
             </div>
           ))}
-          {notes.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>You haven't submitted any notes yet.</div>}
+          {notes.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>You haven't submitted any notes yet.</div>}
         </div>
       )}
     </>

@@ -9,7 +9,7 @@ export function Toast({ message }) {
         border: '1px solid var(--color-divider)',
         color: 'var(--color-text)',
         padding: '12px 18px',
-        fontSize: 13.5,
+        fontSize: 15,
         fontWeight: 600,
         borderRadius: 'var(--radius-md)',
         boxShadow: 'var(--shadow-lg)',

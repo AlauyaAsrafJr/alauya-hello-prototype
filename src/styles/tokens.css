@@ -127,7 +127,7 @@ body {
 h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
 
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; }
+body { margin: 0; font-size: 16.5px; line-height: 1.55; font-weight: 400; }
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 var(--space-2);
@@ -137,7 +137,7 @@ h2 { font-size: 32px; }
 h3 { font-size: 25px; }
 h4 { font-size: 20px; }
 h5 { font-size: 16px; }
-h6 { font-size: 13px; }
+h6 { font-size: 14.5px; }
 h6 { letter-spacing: 0.08em; text-transform: uppercase; }
 p { margin: 0 0 var(--space-3); }
 a { color: var(--color-accent); text-underline-offset: 3px; }
@@ -152,7 +152,7 @@ img { display: block; max-width: 100%; }
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   cursor: pointer; text-decoration: none;
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
-  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  font-size: 15.5px; line-height: 1.2; color: var(--color-text);
   background: transparent; border: 1px solid transparent;
   padding: var(--space-2) calc(var(--space-3) * 1.2);
   border-radius: var(--radius-md);
@@ -173,12 +173,12 @@ img { display: block; max-width: 100%; }
 
 /* — forms — */
 .field > label {
-  display: block; font-size: 12px; margin-bottom: 5px;
+  display: block; font-size: 13.5px; margin-bottom: 5px;
   color: color-mix(in srgb, var(--color-text) 70%, transparent);
 }
 .input {
   width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
-  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  font-size: 15.5px; color: var(--color-text); caret-color: var(--color-accent);
   background: var(--color-surface-2);
   border: 1px solid var(--color-divider); border-radius: var(--radius-sm);
 }
@@ -190,7 +190,7 @@ img { display: block; max-width: 100%; }
 .select-trigger {
   width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  font-size: 14px; color: var(--color-text); text-align: left; cursor: pointer;
+  font-size: 15.5px; color: var(--color-text); text-align: left; cursor: pointer;
   background: var(--color-surface-2);
   border: 1px solid var(--color-divider); border-radius: var(--radius-sm);
 }
@@ -206,13 +206,13 @@ img { display: block; max-width: 100%; }
 }
 .select-option {
   display: block; width: 100%; text-align: left; padding: 8px 10px;
-  font: inherit; font-size: 13.5px; color: var(--color-neutral-200);
+  font: inherit; font-size: 15px; color: var(--color-neutral-200);
   background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer;
 }
 .select-option:hover { background: var(--color-surface-3); }
 .select-option-active { background: var(--color-accent); color: #fff; }
 .select-option-active:hover { background: var(--color-accent-600); }
-.select-empty { padding: 8px 10px; font-size: 13px; opacity: 0.6; }
+.select-empty { padding: 8px 10px; font-size: 14.5px; opacity: 0.6; }
 
 .radio, .seg-opt { position: relative; }
 .radio input, .seg-opt input {
@@ -225,7 +225,7 @@ img { display: block; max-width: 100%; }
 }
 .seg-opt {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--color-neutral-300);
+  padding: 7px 14px; font-size: 14.5px; cursor: pointer; color: var(--color-neutral-300);
 }
 .seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
 .seg-opt:has(input:checked) { background: var(--color-accent); color: #fff; }
@@ -239,12 +239,12 @@ img { display: block; max-width: 100%; }
   background: var(--color-surface);
   border: 1px solid var(--color-divider);
 }
-.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-400); }
+.card-kicker { font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-400); }
 .card-title {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
-  font-size: 17px; line-height: 1.2;
+  font-size: 18.5px; line-height: 1.2;
 }
-.card-body { margin: 0; font-size: 13px; opacity: 0.75; flex: 1; }
+.card-body { margin: 0; font-size: 14.5px; opacity: 0.75; flex: 1; }
 .elev-sm { box-shadow: var(--shadow-sm); }
 .elev-md { box-shadow: var(--shadow-md); }
 .elev-lg { box-shadow: var(--shadow-lg); }
@@ -263,13 +263,13 @@ img { display: block; max-width: 100%; }
 .avatar-chip {
   width: 30px; height: 30px; border-radius: var(--radius-sm); flex: none;
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-heading); font-weight: 800; font-size: 11.5px;
+  font-family: var(--font-heading); font-weight: 800; font-size: 13px;
   background: var(--color-surface-3); color: var(--color-neutral-200);
 }
 
 /* — tags / status pills — */
 .tag {
-  display: inline-flex; align-items: center; font-size: 11px; font-weight: 600;
+  display: inline-flex; align-items: center; font-size: 12.5px; font-weight: 600;
   letter-spacing: 0.02em; padding: 3px 11px;
   border-radius: var(--radius-pill);
 }
@@ -283,9 +283,9 @@ img { display: block; max-width: 100%; }
 .tag-info { background: var(--color-info-bg); color: var(--color-info-text); }
 
 /* — tables — */
-.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
 .table th {
-  text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  text-align: left; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--color-neutral-400);
   padding: var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-divider);
   background: var(--color-surface-2);
@@ -312,7 +312,7 @@ img { display: block; max-width: 100%; }
 }
 .dialog-title {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
-  font-size: 20px;
+  font-size: 21.5px;
 }
-.dialog-body { font-size: 14px; opacity: 0.8; }
+.dialog-body { font-size: 15.5px; opacity: 0.8; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }

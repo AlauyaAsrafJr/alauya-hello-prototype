@@ -45,11 +45,11 @@ export function SystemStatisticsPage() {
           <div className="card-kicker">Accounts</div>
           {stats && (
             <>
-              <div className="card-title" style={{ fontSize: 24, marginTop: 6 }}>
+              <div className="card-title" style={{ fontSize: 26, marginTop: 6 }}>
                 {stats.total_users}
               </div>
-              <div style={{ fontSize: 12.5, opacity: 0.65 }}>total users · {stats.active_users} active</div>
-              <div style={{ fontSize: 11.5, opacity: 0.5, marginTop: 4 }}>
+              <div style={{ fontSize: 15.5, opacity: 0.65 }}>total users · {stats.active_users} active</div>
+              <div style={{ fontSize: 14.5, opacity: 0.5, marginTop: 4 }}>
                 {stats.total_players} players · {stats.total_coaches} coaches · {stats.total_admins} admins
               </div>
             </>
@@ -60,11 +60,11 @@ export function SystemStatisticsPage() {
           <div className="card-kicker">Reports</div>
           {stats && (
             <>
-              <div className="card-title" style={{ fontSize: 24, marginTop: 6 }}>
+              <div className="card-title" style={{ fontSize: 26, marginTop: 6 }}>
                 {stats.total_reports}
               </div>
-              <div style={{ fontSize: 12.5, opacity: 0.65 }}>{stats.pending_reports} pending approval</div>
-              <div style={{ fontSize: 11.5, opacity: 0.5, marginTop: 4 }}>{stats.archived_records} archived records</div>
+              <div style={{ fontSize: 15.5, opacity: 0.65 }}>{stats.pending_reports} pending approval</div>
+              <div style={{ fontSize: 14.5, opacity: 0.5, marginTop: 4 }}>{stats.archived_records} archived records</div>
             </>
           )}
         </div>
@@ -226,17 +226,17 @@ export function SystemStatisticsPage() {
                     <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
                     </span>
-                    <span style={{ fontSize: 11.5, opacity: 0.55 }}>{r.reported_date}</span>
+                    <span style={{ fontSize: 14.5, opacity: 0.55 }}>{r.reported_date}</span>
                   </div>
-                  {r.injury_type && <div style={{ fontSize: 13.5, fontWeight: 600 }}>{r.injury_type}</div>}
-                  {r.notes && <div style={{ fontSize: 13, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}
+                  {r.injury_type && <div style={{ fontSize: 15, fontWeight: 600 }}>{r.injury_type}</div>}
+                  {r.notes && <div style={{ fontSize: 14.5, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}
                   {r.expected_return_date && (
-                    <div style={{ fontSize: 11.5, opacity: 0.55, marginTop: 4 }}>Expected return: {r.expected_return_date}</div>
+                    <div style={{ fontSize: 14.5, opacity: 0.55, marginTop: 4 }}>Expected return: {r.expected_return_date}</div>
                   )}
-                  <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4 }}>Logged by {r.coach_name || '—'}</div>
+                  <div style={{ fontSize: 12.5, opacity: 0.5, marginTop: 4 }}>Logged by {r.coach_name || '—'}</div>
                 </div>
               ))}
-              {history.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No health records yet.</div>}
+              {history.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No health records yet.</div>}
             </div>
           )}
         </DialogShell>

@@ -143,7 +143,7 @@ export function PerformanceFeedbackPage({ showToast }) {
                   <button
                     type="button"
                     className="btn btn-ghost"
-                    style={{ fontSize: 12, padding: '2px 0' }}
+                    style={{ fontSize: 13.5, padding: '2px 0' }}
                     onClick={() => setAddingCategory(true)}
                   >
                     + New category
@@ -209,7 +209,7 @@ export function PerformanceFeedbackPage({ showToast }) {
                             <>
                               <input
                                 className="input"
-                                style={{ flex: 1, minHeight: 30, fontSize: 13 }}
+                                style={{ flex: 1, minHeight: 30, fontSize: 14.5 }}
                                 value={editingCategoryName}
                                 onChange={(e) => setEditingCategoryName(e.target.value)}
                                 onKeyDown={(e) => {
@@ -221,7 +221,7 @@ export function PerformanceFeedbackPage({ showToast }) {
                               <button
                                 type="button"
                                 className="btn btn-ghost"
-                                style={{ fontSize: 12, padding: '2px 6px' }}
+                                style={{ fontSize: 13.5, padding: '2px 6px' }}
                                 onClick={saveEditCategory}
                                 disabled={savingCategory || !editingCategoryName.trim()}
                               >
@@ -230,7 +230,7 @@ export function PerformanceFeedbackPage({ showToast }) {
                               <button
                                 type="button"
                                 className="btn btn-ghost"
-                                style={{ fontSize: 12, padding: '2px 6px' }}
+                                style={{ fontSize: 13.5, padding: '2px 6px' }}
                                 onClick={cancelEditCategory}
                               >
                                 Cancel
@@ -238,7 +238,7 @@ export function PerformanceFeedbackPage({ showToast }) {
                             </>
                           ) : (
                             <>
-                              <span style={{ flex: 1, fontSize: 13 }}>{c.name}</span>
+                              <span style={{ flex: 1, fontSize: 14.5 }}>{c.name}</span>
                               <button
                                 type="button"
                                 className="btn btn-ghost btn-icon"
@@ -328,14 +328,14 @@ export function PerformanceFeedbackPage({ showToast }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4, flex: 1 }}>
             {historyFilter === '' ? (
-              <div style={{ opacity: 0.6, fontSize: 13.5 }}>Select a player to view their feedback history.</div>
+              <div style={{ opacity: 0.6, fontSize: 15 }}>Select a player to view their feedback history.</div>
             ) : (
               <>
                 {historyFeedback.map((f) => (
                   <div key={f.feedback_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+                        <div style={{ fontWeight: 600, fontSize: 15.5 }}>{f.player_name}</div>
                         {f.category && <span className="tag tag-info">{f.category}</span>}
                       </div>
                       <Rating value={f.rating} />
@@ -343,12 +343,12 @@ export function PerformanceFeedbackPage({ showToast }) {
                     <p className="card-body" style={{ marginBottom: 4 }}>
                       {f.comments}
                     </p>
-                    <div style={{ fontSize: 11.5, opacity: 0.55 }}>
+                    <div style={{ fontSize: 14.5, opacity: 0.55 }}>
                       {f.feedback_date} · {f.coach_name}
                     </div>
                   </div>
                 ))}
-                {historyFeedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No feedback for this player yet.</div>}
+                {historyFeedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No feedback for this player yet.</div>}
               </>
             )}
           </div>
@@ -363,7 +363,7 @@ export function PerformanceFeedbackPage({ showToast }) {
           <div key={f.feedback_id} className="card elev-sm" style={{ padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ fontWeight: 600, fontSize: 14 }}>{f.player_name}</div>
+                <div style={{ fontWeight: 600, fontSize: 15.5 }}>{f.player_name}</div>
                 {f.category && <span className="tag tag-info">{f.category}</span>}
               </div>
               <Rating value={f.rating} />
@@ -371,12 +371,12 @@ export function PerformanceFeedbackPage({ showToast }) {
             <p className="card-body" style={{ marginBottom: 4 }}>
               {f.comments}
             </p>
-            <div style={{ fontSize: 11.5, opacity: 0.55 }}>
+            <div style={{ fontSize: 14.5, opacity: 0.55 }}>
               {f.feedback_date} · {f.coach_name}
             </div>
           </div>
         ))}
-        {feedback && feedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 13.5 }}>No feedback submitted yet.</div>}
+        {feedback && feedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No feedback submitted yet.</div>}
       </div>
     </>
   );

@@ -252,7 +252,7 @@ export function UsersPage({ showToast }) {
                   placeholder="No sports set up yet"
                   options={(sports || []).map((s) => ({ value: s.name, label: s.name }))}
                 />
-                <p style={{ fontSize: 11.5, opacity: 0.6, marginTop: 4 }}>
+                <p style={{ fontSize: 14.5, opacity: 0.6, marginTop: 4 }}>
                   {form.role === 'coach' ? 'This coach will only see and manage players on this team.' : ''} Don't see the right sport? Add
                   it from Settings → Manage Sports.
                 </p>
@@ -299,7 +299,7 @@ export function UsersPage({ showToast }) {
                   justifyContent: 'space-between',
                   padding: '8px 0',
                   borderBottom: '1px solid var(--color-divider)',
-                  fontSize: 13.5,
+                  fontSize: 15,
                 }}
               >
                 <span style={{ opacity: 0.6 }}>{k}</span>
@@ -344,7 +344,7 @@ export function UsersPage({ showToast }) {
           {tempPassword ? (
             <div className="dialog-body">
               Temporary password: <strong style={{ fontFamily: 'monospace' }}>{tempPassword}</strong>
-              <p style={{ marginTop: 8, fontSize: 12.5, opacity: 0.7 }}>
+              <p style={{ marginTop: 8, fontSize: 15.5, opacity: 0.7 }}>
                 Share this with {resetTarget.display_name}. They should log in and change it from their own profile as soon as possible.
               </p>
             </div>
