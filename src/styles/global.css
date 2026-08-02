@@ -24,6 +24,7 @@ a:hover { color: var(--color-link-hover); }
 .stat-grid-3 { grid-template-columns: repeat(3, 1fr); }
 .stat-grid-2 { grid-template-columns: repeat(2, 1fr); }
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
 @media (max-width: 860px) {
   .app-sidebar {
@@ -48,8 +49,9 @@ a:hover { color: var(--color-link-hover); }
   .app-topbar { padding: 14px 16px; gap: 10px; }
   .app-main { padding: 16px 16px 40px; }
   .stat-grid-4, .stat-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .form-grid-3 { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
-  .stat-grid-4, .stat-grid-3, .stat-grid-2, .form-grid-2 { grid-template-columns: 1fr; }
+  .stat-grid-4, .stat-grid-3, .stat-grid-2, .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
 }

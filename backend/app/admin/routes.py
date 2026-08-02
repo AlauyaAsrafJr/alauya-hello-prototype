@@ -93,6 +93,7 @@ def create_user():
     profile_kwargs = dict(
         user_id=user.user_id,
         first_name=data["first_name"],
+        middle_name=data.get("middle_name") or None,
         last_name=data["last_name"],
         email=data["email"],
     )

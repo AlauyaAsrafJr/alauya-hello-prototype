@@ -11,6 +11,7 @@ const EMPTY_FORM = {
   password: '',
   role: 'coach',
   first_name: '',
+  middle_name: '',
   last_name: '',
   email: '',
   team: '',
@@ -68,7 +69,8 @@ export function UsersPage({ showToast }) {
     });
     setAddOpen(false);
     setForm(EMPTY_FORM);
-    showToast(`${form.first_name} ${form.last_name} added as ${form.role}`);
+    const fullName = [form.first_name, form.middle_name, form.last_name].filter(Boolean).join(' ');
+    showToast(`${fullName} added as ${form.role}`);
     load();
   }
 
@@ -202,10 +204,14 @@ export function UsersPage({ showToast }) {
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div className="form-grid-2">
+            <div className="form-grid-3">
               <div className="field">
                 <label>First name</label>
                 <input className="input" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Middle name</label>
+                <input className="input" value={form.middle_name} onChange={(e) => setForm({ ...form, middle_name: e.target.value })} />
               </div>
               <div className="field">
                 <label>Last name</label>

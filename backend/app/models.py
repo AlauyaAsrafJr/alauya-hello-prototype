@@ -24,7 +24,9 @@ class SystemUser(db.Model):
 
     def display_name(self):
         p = self.profile()
-        return f"{p.first_name} {p.last_name}" if p else self.username
+        if not p:
+            return self.username
+        return " ".join(part for part in (p.first_name, p.middle_name, p.last_name) if part)
 
 
 class Player(db.Model):
@@ -33,6 +35,7 @@ class Player(db.Model):
     player_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("system_users.user_id"), unique=True, nullable=False)
     first_name = db.Column(db.String(80), nullable=False)
+    middle_name = db.Column(db.String(80), nullable=True)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     contact_number = db.Column(db.String(30))
@@ -64,6 +67,7 @@ class Player(db.Model):
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
             "first_name": self.first_name,
+            "middle_name": self.middle_name,
             "last_name": self.last_name,
             "email": self.email,
             "contact_number": self.contact_number,
@@ -83,6 +87,7 @@ class Coach(db.Model):
     coach_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("system_users.user_id"), unique=True, nullable=False)
     first_name = db.Column(db.String(80), nullable=False)
+    middle_name = db.Column(db.String(80), nullable=True)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     contact_number = db.Column(db.String(30))
@@ -101,6 +106,7 @@ class Coach(db.Model):
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
             "first_name": self.first_name,
+            "middle_name": self.middle_name,
             "last_name": self.last_name,
             "email": self.email,
             "contact_number": self.contact_number,
@@ -116,6 +122,7 @@ class Admin(db.Model):
     admin_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("system_users.user_id"), unique=True, nullable=False)
     first_name = db.Column(db.String(80), nullable=False)
+    middle_name = db.Column(db.String(80), nullable=True)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
 
@@ -127,6 +134,7 @@ class Admin(db.Model):
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
             "first_name": self.first_name,
+            "middle_name": self.middle_name,
             "last_name": self.last_name,
             "email": self.email,
             "is_active": self.user.is_active if self.user else True,
