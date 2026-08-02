@@ -3,7 +3,6 @@ import { useAuth } from './AuthContext';
 import { ApiError } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
 import { MoonIcon, SunIcon } from '../icons';
-import { SarimanokLogo } from '../components/SarimanokLogo';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -64,7 +63,7 @@ export function LoginPage() {
               flex: 'none',
             }}
           >
-            <SarimanokLogo size={22} />
+            <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 22, height: 22, objectFit: 'contain' }} />
           </div>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18 }}>ACTIBASE</div>
         </div>

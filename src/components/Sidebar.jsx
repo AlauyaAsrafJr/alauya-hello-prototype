@@ -1,5 +1,4 @@
 import { LogoutIcon } from '../icons';
-import { SarimanokLogo } from './SarimanokLogo';
 
 function initialsOf(name) {
   const parts = name.trim().split(/\s+/);
@@ -48,7 +47,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
             flex: 'none',
           }}
         >
-          <SarimanokLogo size={22} />
+          <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 22, height: 22, objectFit: 'contain' }} />
         </div>
         <div>
           <div
