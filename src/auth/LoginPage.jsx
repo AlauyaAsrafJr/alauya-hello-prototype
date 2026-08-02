@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import { ApiError } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
 import { MoonIcon, SunIcon } from '../icons';
+import { SarimanokLogo } from '../components/SarimanokLogo';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -55,17 +56,15 @@ export function LoginPage() {
             style={{
               width: 34,
               height: 34,
-              background: 'var(--color-accent)',
+              background: '#fff',
+              borderRadius: 'var(--radius-sm)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 800,
-              fontSize: 16,
-              color: '#fff',
+              flex: 'none',
             }}
           >
-            A
+            <SarimanokLogo size={22} />
           </div>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18 }}>ACTIBASE</div>
         </div>

@@ -1,4 +1,5 @@
 import { LogoutIcon } from '../icons';
+import { SarimanokLogo } from './SarimanokLogo';
 
 function initialsOf(name) {
   const parts = name.trim().split(/\s+/);
@@ -39,19 +40,15 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
           style={{
             width: 34,
             height: 34,
-            background: 'var(--color-accent)',
+            background: '#fff',
             borderRadius: 'var(--radius-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 800,
-            fontSize: 16,
-            color: '#fff',
             flex: 'none',
           }}
         >
-          A
+          <SarimanokLogo size={22} />
         </div>
         <div>
           <div
