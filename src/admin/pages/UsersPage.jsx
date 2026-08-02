@@ -204,7 +204,11 @@ export function UsersPage({ showToast }) {
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div className="form-grid-3" style={{ gridTemplateColumns: '2fr 1fr 2fr' }}>
+            <div className="form-grid-3" style={{ gridTemplateColumns: '2fr 2fr 1fr' }}>
+              <div className="field">
+                <label>Last name</label>
+                <input className="input" value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })} />
+              </div>
               <div className="field">
                 <label>First name</label>
                 <input className="input" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} />
@@ -218,10 +222,6 @@ export function UsersPage({ showToast }) {
                   value={form.middle_name}
                   onChange={(e) => setForm({ ...form, middle_name: e.target.value.slice(0, 1).toUpperCase() })}
                 />
-              </div>
-              <div className="field">
-                <label>Last name</label>
-                <input className="input" value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })} />
               </div>
             </div>
             <div className="field">
