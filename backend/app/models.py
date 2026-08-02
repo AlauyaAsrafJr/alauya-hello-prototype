@@ -26,7 +26,8 @@ class SystemUser(db.Model):
         p = self.profile()
         if not p:
             return self.username
-        return " ".join(part for part in (p.first_name, p.middle_name, p.last_name) if part)
+        middle = f"{p.middle_name}." if p.middle_name else None
+        return " ".join(part for part in (p.first_name, middle, p.last_name) if part)
 
 
 class Player(db.Model):

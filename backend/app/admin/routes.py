@@ -90,10 +90,11 @@ def create_user():
     db.session.add(user)
     db.session.flush()
 
+    middle_initial = (data.get("middle_name") or "").strip()[:1].upper() or None
     profile_kwargs = dict(
         user_id=user.user_id,
         first_name=data["first_name"],
-        middle_name=data.get("middle_name") or None,
+        middle_name=middle_initial,
         last_name=data["last_name"],
         email=data["email"],
     )
