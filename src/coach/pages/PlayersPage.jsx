@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
+import { api, ApiError } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
 import { EyeIcon, HeartPulseIcon, PlusIcon } from '../../icons';
@@ -78,6 +78,8 @@ export function PlayersPage({ showToast }) {
       setAddForm(EMPTY_REQUEST_FORM);
       showToast(`Request for ${addForm.first_name} ${addForm.last_name} sent to admin for approval`);
       loadRequests();
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to send this request');
     } finally {
       setSubmittingRequest(false);
     }

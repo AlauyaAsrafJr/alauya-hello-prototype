@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
+import { api, ApiError } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import { CheckIcon, XIcon } from '../../icons';
@@ -29,18 +29,26 @@ export function PlayerRequestsPage({ showToast, onCountChange }) {
   }, [statusFilter]);
 
   async function approve(req) {
-    await api.post(`/admin/player-requests/${req.request_id}/approve`);
-    showToast(`${req.first_name} ${req.last_name} approved and added as a player`);
-    setApproveTarget(null);
-    load();
+    try {
+      await api.post(`/admin/player-requests/${req.request_id}/approve`);
+      showToast(`${req.first_name} ${req.last_name} approved and added as a player`);
+      setApproveTarget(null);
+      load();
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to approve this request');
+    }
   }
 
   async function reject(req) {
-    await api.post(`/admin/player-requests/${req.request_id}/reject`, { reason: rejectReason || undefined });
-    showToast(`Request for ${req.first_name} ${req.last_name} rejected`);
-    setRejectTarget(null);
-    setRejectReason('');
-    load();
+    try {
+      await api.post(`/admin/player-requests/${req.request_id}/reject`, { reason: rejectReason || undefined });
+      showToast(`Request for ${req.first_name} ${req.last_name} rejected`);
+      setRejectTarget(null);
+      setRejectReason('');
+      load();
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to reject this request');
+    }
   }
 
   return (
