@@ -13,6 +13,8 @@ export function AppShell({
   pageSubtitle,
   notifCount,
   notifMessage,
+  notifActionLabel,
+  onNotifAction,
   onAccountSettings,
   children,
 }) {
@@ -66,6 +68,11 @@ export function AppShell({
           profileOpen={profileOpen}
           notifCount={notifCount}
           notifMessage={notifMessage}
+          notifActionLabel={notifActionLabel}
+          onNotifAction={() => {
+            setNotifOpen(false);
+            onNotifAction?.();
+          }}
           onMenuClick={() => setSidebarOpen(true)}
           onToggleNotif={(e) => {
             e.stopPropagation();

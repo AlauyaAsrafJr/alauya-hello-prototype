@@ -19,6 +19,8 @@ export function Topbar({
   profileOpen,
   notifCount = 0,
   notifMessage,
+  notifActionLabel,
+  onNotifAction,
   onMenuClick,
   onToggleNotif,
   onToggleProfile,
@@ -114,6 +116,28 @@ export function Topbar({
             <div style={{ padding: '12px 14px', fontSize: 14.5, color: 'var(--color-neutral-300)', opacity: notifCount > 0 ? 1 : 0.7 }}>
               {notifMessage || "You're all caught up."}
             </div>
+            {notifCount > 0 && onNotifAction && (
+              <button
+                type="button"
+                onClick={onNotifAction}
+                className="menu-item"
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '10px 14px',
+                  background: 'transparent',
+                  border: 0,
+                  borderTop: '1px solid var(--color-divider)',
+                  fontSize: 14.5,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  color: 'var(--color-accent-400)',
+                  fontFamily: 'var(--font-body)',
+                }}
+              >
+                {notifActionLabel || 'View'}
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -21,6 +21,7 @@ from app.models import (
     Sport,
     FeedbackCategory,
     ActivityType,
+    PlayerRequest,
 )
 
 admin_bp = Blueprint("admin", __name__)
@@ -123,6 +124,80 @@ def create_user():
 
     db.session.commit()
     return jsonify({"message": "User created", "user_id": user.user_id}), 201
+
+
+# ---- Player Requests (submitted by coaches, need admin approval) ----
+
+
+@admin_bp.get("/player-requests")
+@roles_required("admin")
+def list_player_requests():
+    status = request.args.get("status", "pending")
+    query = PlayerRequest.query
+    if status and status != "all":
+        query = query.filter_by(status=status)
+    requests_ = query.order_by(PlayerRequest.requested_at.desc()).all()
+    return jsonify([r.to_dict() for r in requests_])
+
+
+@admin_bp.post("/player-requests/<int:request_id>/approve")
+@roles_required("admin")
+def approve_player_request(request_id):
+    admin_user_id = int(get_jwt_identity())
+    pr = PlayerRequest.query.get_or_404(request_id)
+    if pr.status != "pending":
+        return jsonify({"error": "This request has already been reviewed"}), 400
+    if SystemUser.query.filter_by(username=pr.username).first():
+        return jsonify({"error": "That username was taken in the meantime; ask the coach to resubmit"}), 409
+
+    user = SystemUser(username=pr.username, password_hash=pr.password_hash, role="player")
+    db.session.add(user)
+    db.session.flush()
+
+    player = Player(
+        user_id=user.user_id,
+        first_name=pr.first_name,
+        middle_name=pr.middle_name,
+        last_name=pr.last_name,
+        email=pr.email,
+        contact_number=pr.contact_number,
+        date_of_birth=pr.date_of_birth,
+        team=pr.team,
+        year_level=pr.year_level,
+    )
+    db.session.add(player)
+    db.session.flush()
+
+    db.session.add(
+        PlayerHealthRecord(
+            player_id=player.player_id,
+            status="healthy",
+            notes="Baseline record created when the player account was set up.",
+        )
+    )
+
+    pr.status = "approved"
+    pr.reviewed_at = datetime.utcnow()
+    pr.reviewed_by = admin_user_id
+    pr.created_player_id = player.player_id
+    db.session.commit()
+    return jsonify(pr.to_dict())
+
+
+@admin_bp.post("/player-requests/<int:request_id>/reject")
+@roles_required("admin")
+def reject_player_request(request_id):
+    admin_user_id = int(get_jwt_identity())
+    pr = PlayerRequest.query.get_or_404(request_id)
+    if pr.status != "pending":
+        return jsonify({"error": "This request has already been reviewed"}), 400
+    data = request.get_json(force=True) or {}
+    pr.status = "rejected"
+    pr.reviewed_at = datetime.utcnow()
+    pr.reviewed_by = admin_user_id
+    pr.rejection_reason = (data.get("reason") or "").strip() or None
+    db.session.commit()
+    return jsonify(pr.to_dict())
 
 
 @admin_bp.post("/users/<int:user_id>/deactivate")
