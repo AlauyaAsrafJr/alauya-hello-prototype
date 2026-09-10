@@ -47,6 +47,7 @@ export function PlayersPage({ showToast }) {
   const [healthHistory, setHealthHistory] = useState(null);
   const [savingHealth, setSavingHealth] = useState(false);
   const [requests, setRequests] = useState(null);
+  const [requestsOpen, setRequestsOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [addForm, setAddForm] = useState(EMPTY_REQUEST_FORM);
   const [submittingRequest, setSubmittingRequest] = useState(false);
@@ -66,6 +67,8 @@ export function PlayersPage({ showToast }) {
     loadRequests();
     api.get('/coach/profile').then(setCoach);
   }, []);
+
+  const pendingRequestCount = (requests || []).filter((r) => r.status === 'pending').length;
 
   async function submitAddPlayer() {
     setSubmittingRequest(true);
@@ -153,6 +156,29 @@ export function PlayersPage({ showToast }) {
           }}
         />
         <div style={{ flex: 1 }} />
+        <button type="button" className="btn btn-secondary" onClick={() => setRequestsOpen(true)} style={{ position: 'relative' }}>
+          My requests
+          {pendingRequestCount > 0 && (
+            <span
+              style={{
+                marginLeft: 8,
+                minWidth: 20,
+                height: 20,
+                padding: '0 6px',
+                borderRadius: 10,
+                background: 'var(--color-accent)',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {pendingRequestCount}
+            </span>
+          )}
+        </button>
         <button
           type="button"
           className="btn btn-primary"
@@ -231,40 +257,52 @@ export function PlayersPage({ showToast }) {
         </div>
       </div>
 
-      {requests && requests.length > 0 && (
-        <div className="card elev-sm" style={{ padding: 16, marginTop: 16 }}>
-          <div className="card-kicker" style={{ marginBottom: 10 }}>
-            Player requests you've submitted
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {requests.map((r) => (
-              <div
-                key={r.request_id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 12,
-                  paddingBottom: 10,
-                  borderBottom: '1px solid var(--color-divider)',
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 600 }}>
-                    {r.first_name} {r.last_name}
+      {requestsOpen && (
+        <DialogShell
+          title="Player requests you've submitted"
+          onClose={() => setRequestsOpen(false)}
+          actions={
+            <button type="button" className="btn btn-secondary" onClick={() => setRequestsOpen(false)}>
+              Close
+            </button>
+          }
+        >
+          {requests && requests.length === 0 && (
+            <div style={{ opacity: 0.6, fontSize: 14.5, textAlign: 'center', padding: '24px 0' }}>
+              You haven't submitted any player requests yet.
+            </div>
+          )}
+          {requests && requests.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 360, overflowY: 'auto' }}>
+              {requests.map((r) => (
+                <div
+                  key={r.request_id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    paddingBottom: 10,
+                    borderBottom: '1px solid var(--color-divider)',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 600 }}>
+                      {r.first_name} {r.last_name}
+                    </div>
+                    <div style={{ fontSize: 14.5, opacity: 0.6 }}>
+                      Requested {r.requested_at ? new Date(r.requested_at).toLocaleDateString() : ''}
+                      {r.status === 'rejected' && r.rejection_reason ? ` — ${r.rejection_reason}` : ''}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 14.5, opacity: 0.6 }}>
-                    Requested {r.requested_at ? new Date(r.requested_at).toLocaleDateString() : ''}
-                    {r.status === 'rejected' && r.rejection_reason ? ` — ${r.rejection_reason}` : ''}
-                  </div>
+                  <span className={requestStatusTag(r.status)} style={{ textTransform: 'capitalize' }}>
+                    {r.status}
+                  </span>
                 </div>
-                <span className={requestStatusTag(r.status)} style={{ textTransform: 'capitalize' }}>
-                  {r.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          )}
+        </DialogShell>
       )}
 
       {addOpen && (
