@@ -92,7 +92,7 @@ export function AttendancePage({ showToast }) {
   const [editStatuses, setEditStatuses] = useState({});
   const [savingEdit, setSavingEdit] = useState(false);
   const [viewMode, setViewMode] = useState('session');
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const [tab, setTab] = useState('record');
   const [historyDate, setHistoryDate] = useState('');
 
   async function loadPlayers() {
@@ -150,11 +150,6 @@ export function AttendancePage({ showToast }) {
     }
   }
 
-  function closeHistory() {
-    setHistoryOpen(false);
-    setHistoryDate('');
-  }
-
   const historyFiltered = history ? (historyDate ? history.filter((r) => r.date === historyDate) : history) : null;
   const sessions = historyFiltered ? groupByDate(historyFiltered) : null;
   const playerSummaries = historyFiltered ? groupByPlayer(historyFiltered) : null;
@@ -163,6 +158,25 @@ export function AttendancePage({ showToast }) {
 
   return (
     <>
+      <div className="seg" style={{ marginBottom: 16 }}>
+        <label className="seg-opt">
+          <input
+            type="radio"
+            checked={tab === 'record'}
+            onChange={() => {
+              setTab('record');
+              setHistoryDate('');
+            }}
+          />
+          Record attendance
+        </label>
+        <label className="seg-opt">
+          <input type="radio" checked={tab === 'history'} onChange={() => setTab('history')} />
+          Attendance history{sessions ? ` (${sessions.length})` : ''}
+        </label>
+      </div>
+
+      {tab === 'record' && (
       <div className="card elev-sm" style={{ padding: 20, marginBottom: 24 }}>
         <div className="card-kicker">Record attendance</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 16px', flexWrap: 'wrap' }}>
@@ -219,24 +233,11 @@ export function AttendancePage({ showToast }) {
           {submitting ? 'Saving…' : `Save attendance for all ${players?.length ?? 0} players`}
         </button>
       </div>
+      )}
 
-      <button type="button" className="btn btn-secondary" onClick={() => setHistoryOpen(true)}>
-        Attendance history
-        {sessions && <span style={{ marginLeft: 8, opacity: 0.6 }}>({sessions.length} sessions)</span>}
-      </button>
-
-      {historyOpen && (
-        <DialogShell
-          title="Attendance history"
-          wide
-          onClose={closeHistory}
-          actions={
-            <button type="button" className="btn btn-secondary" onClick={closeHistory}>
-              Close
-            </button>
-          }
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+      {tab === 'history' && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
             <input
               type="date"
               className="input"
@@ -262,8 +263,7 @@ export function AttendancePage({ showToast }) {
             </div>
           </div>
 
-          <div style={{ maxHeight: '55vh', overflowY: 'auto' }}>
-            {viewMode === 'session' ? (
+          {viewMode === 'session' ? (
         <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
           <div className="table-wrap">
             <table className="table">
@@ -395,8 +395,7 @@ export function AttendancePage({ showToast }) {
           </div>
         </div>
       )}
-          </div>
-        </DialogShell>
+        </>
       )}
 
       {viewingSession && (
