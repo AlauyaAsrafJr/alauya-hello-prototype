@@ -58,6 +58,7 @@ function groupByPlayer(records) {
 export function AttendancePage() {
   const [records, setRecords] = useState(null);
   const [dateFilter, setDateFilter] = useState('all');
+  const [customDate, setCustomDate] = useState('');
   const [teamFilter, setTeamFilter] = useState('all');
   const [viewingSession, setViewingSession] = useState(null);
   const [viewMode, setViewMode] = useState('session');
@@ -69,7 +70,11 @@ export function AttendancePage() {
   const teams = Array.from(new Set((records || []).map((r) => r.team).filter((t) => !!t))).sort();
 
   const filtered = (records || []).filter(
-    (r) => (dateFilter === 'all' || isWithinLastWeek(r.date)) && (teamFilter === 'all' || r.team === teamFilter),
+    (r) =>
+      (dateFilter === 'all' ||
+        (dateFilter === 'week' && isWithinLastWeek(r.date)) ||
+        (dateFilter === 'custom' && r.date === customDate)) &&
+      (teamFilter === 'all' || r.team === teamFilter),
   );
   const total = filtered.length;
   const present = filtered.filter((r) => r.status === 'present').length;
@@ -82,14 +87,38 @@ export function AttendancePage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
         <div className="seg">
           <label className="seg-opt">
-            <input type="radio" checked={dateFilter === 'all'} onChange={() => setDateFilter('all')} />
+            <input
+              type="radio"
+              checked={dateFilter === 'all'}
+              onChange={() => {
+                setDateFilter('all');
+                setCustomDate('');
+              }}
+            />
             All dates
           </label>
           <label className="seg-opt">
-            <input type="radio" checked={dateFilter === 'week'} onChange={() => setDateFilter('week')} />
+            <input
+              type="radio"
+              checked={dateFilter === 'week'}
+              onChange={() => {
+                setDateFilter('week');
+                setCustomDate('');
+              }}
+            />
             This week
           </label>
         </div>
+        <input
+          type="date"
+          className="input"
+          style={{ maxWidth: 170 }}
+          value={customDate}
+          onChange={(e) => {
+            setCustomDate(e.target.value);
+            setDateFilter(e.target.value ? 'custom' : 'all');
+          }}
+        />
         <Select
           style={{ minWidth: 200 }}
           value={teamFilter}
