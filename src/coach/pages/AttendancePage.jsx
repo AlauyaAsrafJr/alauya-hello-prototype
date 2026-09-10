@@ -92,6 +92,7 @@ export function AttendancePage({ showToast }) {
   const [editStatuses, setEditStatuses] = useState({});
   const [savingEdit, setSavingEdit] = useState(false);
   const [viewMode, setViewMode] = useState('session');
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   async function loadPlayers() {
     const data = await api.get('/coach/players');
@@ -212,21 +213,37 @@ export function AttendancePage({ showToast }) {
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 12 }}>
-        <div className="card-title">Attendance history</div>
-        <div className="seg">
-          <label className="seg-opt">
-            <input type="radio" checked={viewMode === 'session'} onChange={() => setViewMode('session')} />
-            By session
-          </label>
-          <label className="seg-opt">
-            <input type="radio" checked={viewMode === 'player'} onChange={() => setViewMode('player')} />
-            By player
-          </label>
-        </div>
-      </div>
+      <button type="button" className="btn btn-secondary" onClick={() => setHistoryOpen(true)}>
+        Attendance history
+        {sessions && <span style={{ marginLeft: 8, opacity: 0.6 }}>({sessions.length} sessions)</span>}
+      </button>
 
-      {viewMode === 'session' ? (
+      {historyOpen && (
+        <DialogShell
+          title="Attendance history"
+          wide
+          onClose={() => setHistoryOpen(false)}
+          actions={
+            <button type="button" className="btn btn-secondary" onClick={() => setHistoryOpen(false)}>
+              Close
+            </button>
+          }
+        >
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+            <div className="seg">
+              <label className="seg-opt">
+                <input type="radio" checked={viewMode === 'session'} onChange={() => setViewMode('session')} />
+                By session
+              </label>
+              <label className="seg-opt">
+                <input type="radio" checked={viewMode === 'player'} onChange={() => setViewMode('player')} />
+                By player
+              </label>
+            </div>
+          </div>
+
+          <div style={{ maxHeight: '55vh', overflowY: 'auto' }}>
+            {viewMode === 'session' ? (
         <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
           <div className="table-wrap">
             <table className="table">
@@ -357,6 +374,9 @@ export function AttendancePage({ showToast }) {
             </table>
           </div>
         </div>
+      )}
+          </div>
+        </DialogShell>
       )}
 
       {viewingSession && (
