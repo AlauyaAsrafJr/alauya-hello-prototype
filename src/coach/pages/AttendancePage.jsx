@@ -93,6 +93,7 @@ export function AttendancePage({ showToast }) {
   const [savingEdit, setSavingEdit] = useState(false);
   const [viewMode, setViewMode] = useState('session');
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyDate, setHistoryDate] = useState('');
 
   async function loadPlayers() {
     const data = await api.get('/coach/players');
@@ -149,8 +150,14 @@ export function AttendancePage({ showToast }) {
     }
   }
 
-  const sessions = history ? groupByDate(history) : null;
-  const playerSummaries = history ? groupByPlayer(history) : null;
+  function closeHistory() {
+    setHistoryOpen(false);
+    setHistoryDate('');
+  }
+
+  const historyFiltered = history ? (historyDate ? history.filter((r) => r.date === historyDate) : history) : null;
+  const sessions = historyFiltered ? groupByDate(historyFiltered) : null;
+  const playerSummaries = historyFiltered ? groupByPlayer(historyFiltered) : null;
   const sessionsByMonth = sessions ? groupSessionsByMonth(sessions) : null;
   const playersByYear = playerSummaries ? groupPlayersByYear(playerSummaries, players) : null;
 
@@ -222,14 +229,27 @@ export function AttendancePage({ showToast }) {
         <DialogShell
           title="Attendance history"
           wide
-          onClose={() => setHistoryOpen(false)}
+          onClose={closeHistory}
           actions={
-            <button type="button" className="btn btn-secondary" onClick={() => setHistoryOpen(false)}>
+            <button type="button" className="btn btn-secondary" onClick={closeHistory}>
               Close
             </button>
           }
         >
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+            <input
+              type="date"
+              className="input"
+              style={{ maxWidth: 170 }}
+              value={historyDate}
+              onChange={(e) => setHistoryDate(e.target.value)}
+            />
+            {historyDate && (
+              <button type="button" className="btn btn-ghost" onClick={() => setHistoryDate('')}>
+                Clear date
+              </button>
+            )}
+            <div style={{ flex: 1 }} />
             <div className="seg">
               <label className="seg-opt">
                 <input type="radio" checked={viewMode === 'session'} onChange={() => setViewMode('session')} />
