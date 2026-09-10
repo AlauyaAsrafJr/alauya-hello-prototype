@@ -20,6 +20,7 @@ from app.models import (
     Report,
     PlayerRequest,
     SystemUser,
+    PlayerNote,
 )
 
 coach_bp = Blueprint("coach", __name__)
@@ -637,6 +638,37 @@ def submit_performance_feedback():
     db.session.add(feedback)
     db.session.commit()
     return jsonify(feedback.to_dict()), 201
+
+
+# ---- Player Notes ----
+
+
+@coach_bp.get("/notes")
+@roles_required("coach")
+def list_player_notes():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    notes = (
+        PlayerNote.query.filter(PlayerNote.player_id.in_(_team_player_ids(coach)))
+        .order_by(PlayerNote.note_date.desc())
+        .all()
+    )
+    return jsonify([n.to_dict() for n in notes])
+
+
+@coach_bp.post("/notes/<int:note_id>/read")
+@roles_required("coach")
+def mark_note_read(note_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    note = PlayerNote.query.get_or_404(note_id)
+    if note.player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Note not found"}), 404
+    note.is_read = True
+    db.session.commit()
+    return jsonify(note.to_dict())
 
 
 # ---- Analytics & Reports ----

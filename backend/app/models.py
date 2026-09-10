@@ -257,6 +257,7 @@ class PlayerNote(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey("players.player_id"), nullable=False)
     note_date = db.Column(db.DateTime, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
 
     player = db.relationship("Player", back_populates="notes")
 
@@ -264,8 +265,10 @@ class PlayerNote(db.Model):
         return {
             "note_id": self.note_id,
             "player_id": self.player_id,
+            "player_name": f"{self.player.first_name} {self.player.last_name}" if self.player else None,
             "note_date": self.note_date.isoformat() if self.note_date else None,
             "content": self.content,
+            "is_read": self.is_read,
         }
 
 
