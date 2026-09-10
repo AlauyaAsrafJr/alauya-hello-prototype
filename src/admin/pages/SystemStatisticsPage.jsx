@@ -11,7 +11,6 @@ function healthTag(status) {
 }
 
 export function SystemStatisticsPage() {
-  const [stats, setStats] = useState(null);
   const [logins, setLogins] = useState(null);
   const [playerHealth, setPlayerHealth] = useState(null);
   const [historyFor, setHistoryFor] = useState(null);
@@ -20,7 +19,6 @@ export function SystemStatisticsPage() {
   const [healthSearch, setHealthSearch] = useState('');
 
   useEffect(() => {
-    api.get('/admin/statistics').then(setStats);
     api.get('/admin/login-history').then(setLogins);
     api.get('/admin/players/health-overview').then(setPlayerHealth);
   }, []);
@@ -40,36 +38,6 @@ export function SystemStatisticsPage() {
 
   return (
     <>
-      <div className="stat-grid-2" style={{ marginBottom: 24 }}>
-        <div className="card elev-sm" style={{ padding: 18 }}>
-          <div className="card-kicker">Accounts</div>
-          {stats && (
-            <>
-              <div className="card-title" style={{ fontSize: 26, marginTop: 6 }}>
-                {stats.total_users}
-              </div>
-              <div style={{ fontSize: 15.5, opacity: 0.65 }}>total users · {stats.active_users} active</div>
-              <div style={{ fontSize: 14.5, opacity: 0.5, marginTop: 4 }}>
-                {stats.total_players} players · {stats.total_coaches} coaches · {stats.total_admins} admins
-              </div>
-            </>
-          )}
-        </div>
-
-        <div className="card elev-sm" style={{ padding: 18 }}>
-          <div className="card-kicker">Reports</div>
-          {stats && (
-            <>
-              <div className="card-title" style={{ fontSize: 26, marginTop: 6 }}>
-                {stats.total_reports}
-              </div>
-              <div style={{ fontSize: 15.5, opacity: 0.65 }}>{stats.pending_reports} pending approval</div>
-              <div style={{ fontSize: 14.5, opacity: 0.5, marginTop: 4 }}>{stats.archived_records} archived records</div>
-            </>
-          )}
-        </div>
-      </div>
-
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
         <div className="seg">
           <label className="seg-opt">

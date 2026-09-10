@@ -6,7 +6,7 @@ from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 
 from app.decorators import roles_required
-from app.extensions import db
+from app.extensions import db, bcrypt
 from app.models import (
     Coach,
     Player,
@@ -18,6 +18,9 @@ from app.models import (
     FeedbackCategory,
     ActivityType,
     Report,
+    PlayerRequest,
+    SystemUser,
+    PlayerNote,
 )
 
 coach_bp = Blueprint("coach", __name__)
@@ -150,6 +153,62 @@ def edit_player_profile(player_id):
         player.date_of_birth = date.fromisoformat(data["date_of_birth"])
     db.session.commit()
     return jsonify(player.to_dict())
+
+
+# ---- Add Player (requires admin approval) ----
+
+
+@coach_bp.get("/player-requests")
+@roles_required("coach")
+def list_player_requests():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    requests_ = (
+        PlayerRequest.query.filter_by(coach_id=coach.coach_id)
+        .order_by(PlayerRequest.requested_at.desc())
+        .all()
+    )
+    return jsonify([r.to_dict() for r in requests_])
+
+
+@coach_bp.post("/player-requests")
+@roles_required("coach")
+def create_player_request():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    if not coach.specialization:
+        return jsonify({"error": "You don't have a team assigned yet"}), 400
+    data = request.get_json(force=True) or {}
+    required = ["username", "password", "first_name", "last_name", "email"]
+    missing = [f for f in required if not data.get(f)]
+    if missing:
+        return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
+    if data.get("year_level") not in (None, "") and not 1 <= int(data["year_level"]) <= 4:
+        return jsonify({"error": "year_level must be between 1 and 4"}), 400
+    if SystemUser.query.filter_by(username=data["username"]).first():
+        return jsonify({"error": "Username already taken"}), 409
+    if PlayerRequest.query.filter_by(username=data["username"], status="pending").first():
+        return jsonify({"error": "A pending request already uses that username"}), 409
+
+    middle_initial = (data.get("middle_name") or "").strip()[:1].upper() or None
+    player_request = PlayerRequest(
+        coach_id=coach.coach_id,
+        first_name=data["first_name"],
+        middle_name=middle_initial,
+        last_name=data["last_name"],
+        email=data["email"],
+        contact_number=data.get("contact_number"),
+        date_of_birth=(date.fromisoformat(data["date_of_birth"]) if data.get("date_of_birth") else None),
+        year_level=data.get("year_level") or None,
+        team=coach.specialization,
+        username=data["username"],
+        password_hash=bcrypt.generate_password_hash(data["password"]).decode("utf-8"),
+    )
+    db.session.add(player_request)
+    db.session.commit()
+    return jsonify(player_request.to_dict()), 201
 
 
 # ---- Player Health / Injury Monitoring ----
@@ -579,6 +638,37 @@ def submit_performance_feedback():
     db.session.add(feedback)
     db.session.commit()
     return jsonify(feedback.to_dict()), 201
+
+
+# ---- Player Notes ----
+
+
+@coach_bp.get("/notes")
+@roles_required("coach")
+def list_player_notes():
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    notes = (
+        PlayerNote.query.filter(PlayerNote.player_id.in_(_team_player_ids(coach)))
+        .order_by(PlayerNote.note_date.desc())
+        .all()
+    )
+    return jsonify([n.to_dict() for n in notes])
+
+
+@coach_bp.post("/notes/<int:note_id>/read")
+@roles_required("coach")
+def mark_note_read(note_id):
+    coach = _current_coach()
+    if not coach:
+        return jsonify({"error": "Coach profile not found"}), 404
+    note = PlayerNote.query.get_or_404(note_id)
+    if note.player_id not in _team_player_ids(coach):
+        return jsonify({"error": "Note not found"}), 404
+    note.is_read = True
+    db.session.commit()
+    return jsonify(note.to_dict())
 
 
 # ---- Analytics & Reports ----

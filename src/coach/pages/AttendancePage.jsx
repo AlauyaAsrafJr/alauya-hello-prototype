@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
+import { formatYearLevel } from '../../utils/yearLevel';
 
 function statusTag(status) {
   if (status === 'present') return 'tag tag-success';
@@ -24,6 +25,40 @@ function groupByDate(records) {
       records: recs,
     }))
     .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function monthLabel(yearMonth) {
+  const [year, month] = yearMonth.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+}
+
+function groupSessionsByMonth(sessions) {
+  const byMonth = new Map();
+  for (const s of sessions) {
+    const key = s.date.slice(0, 7);
+    if (!byMonth.has(key)) byMonth.set(key, []);
+    byMonth.get(key).push(s);
+  }
+  return Array.from(byMonth.entries())
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([key, secs]) => ({ key, label: monthLabel(key), sessions: secs }));
+}
+
+function groupPlayersByYear(playerSummaries, players) {
+  const yearById = new Map((players || []).map((p) => [p.player_id, p.year_level || null]));
+  const byYear = new Map();
+  for (const p of playerSummaries) {
+    const year = yearById.get(p.player_id) ?? null;
+    if (!byYear.has(year)) byYear.set(year, []);
+    byYear.get(year).push(p);
+  }
+  return Array.from(byYear.entries())
+    .sort((a, b) => {
+      if (a[0] == null) return 1;
+      if (b[0] == null) return -1;
+      return a[0] - b[0];
+    })
+    .map(([year, ps]) => ({ year, label: year ? formatYearLevel(year) : 'No year level set', players: ps }));
 }
 
 function groupByPlayer(records) {
@@ -57,6 +92,8 @@ export function AttendancePage({ showToast }) {
   const [editStatuses, setEditStatuses] = useState({});
   const [savingEdit, setSavingEdit] = useState(false);
   const [viewMode, setViewMode] = useState('session');
+  const [tab, setTab] = useState('record');
+  const [historyDate, setHistoryDate] = useState('');
 
   async function loadPlayers() {
     const data = await api.get('/coach/players');
@@ -113,11 +150,33 @@ export function AttendancePage({ showToast }) {
     }
   }
 
-  const sessions = history ? groupByDate(history) : null;
-  const playerSummaries = history ? groupByPlayer(history) : null;
+  const historyFiltered = history ? (historyDate ? history.filter((r) => r.date === historyDate) : history) : null;
+  const sessions = historyFiltered ? groupByDate(historyFiltered) : null;
+  const playerSummaries = historyFiltered ? groupByPlayer(historyFiltered) : null;
+  const sessionsByMonth = sessions ? groupSessionsByMonth(sessions) : null;
+  const playersByYear = playerSummaries ? groupPlayersByYear(playerSummaries, players) : null;
 
   return (
     <>
+      <div className="seg" style={{ marginBottom: 16 }}>
+        <label className="seg-opt">
+          <input
+            type="radio"
+            checked={tab === 'record'}
+            onChange={() => {
+              setTab('record');
+              setHistoryDate('');
+            }}
+          />
+          Record attendance
+        </label>
+        <label className="seg-opt">
+          <input type="radio" checked={tab === 'history'} onChange={() => setTab('history')} />
+          Attendance history{sessions ? ` (${sessions.length})` : ''}
+        </label>
+      </div>
+
+      {tab === 'record' && (
       <div className="card elev-sm" style={{ padding: 20, marginBottom: 24 }}>
         <div className="card-kicker">Record attendance</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 16px', flexWrap: 'wrap' }}>
@@ -174,22 +233,37 @@ export function AttendancePage({ showToast }) {
           {submitting ? 'Saving…' : `Save attendance for all ${players?.length ?? 0} players`}
         </button>
       </div>
+      )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 12 }}>
-        <div className="card-title">Attendance history</div>
-        <div className="seg">
-          <label className="seg-opt">
-            <input type="radio" checked={viewMode === 'session'} onChange={() => setViewMode('session')} />
-            By session
-          </label>
-          <label className="seg-opt">
-            <input type="radio" checked={viewMode === 'player'} onChange={() => setViewMode('player')} />
-            By player
-          </label>
-        </div>
-      </div>
+      {tab === 'history' && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+            <input
+              type="date"
+              className="input"
+              style={{ maxWidth: 170 }}
+              value={historyDate}
+              onChange={(e) => setHistoryDate(e.target.value)}
+            />
+            {historyDate && (
+              <button type="button" className="btn btn-ghost" onClick={() => setHistoryDate('')}>
+                Clear date
+              </button>
+            )}
+            <div style={{ flex: 1 }} />
+            <div className="seg">
+              <label className="seg-opt">
+                <input type="radio" checked={viewMode === 'session'} onChange={() => setViewMode('session')} />
+                By session
+              </label>
+              <label className="seg-opt">
+                <input type="radio" checked={viewMode === 'player'} onChange={() => setViewMode('player')} />
+                By player
+              </label>
+            </div>
+          </div>
 
-      {viewMode === 'session' ? (
+          {viewMode === 'session' ? (
         <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
           <div className="table-wrap">
             <table className="table">
@@ -205,32 +279,50 @@ export function AttendancePage({ showToast }) {
                 </tr>
               </thead>
               <tbody>
-                {sessions?.map((s) => (
-                  <tr key={s.date}>
-                    <td style={{ fontWeight: 600 }}>{s.date}</td>
-                    <td>
-                      <span className="tag tag-success">{s.present}</span>
+                {sessionsByMonth?.flatMap((group) => [
+                  <tr key={`month-${group.key}`}>
+                    <td
+                      colSpan={7}
+                      style={{
+                        background: 'var(--color-surface-2)',
+                        fontSize: 13.5,
+                        fontWeight: 700,
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase',
+                        color: 'var(--color-neutral-400)',
+                        padding: '8px 16px',
+                      }}
+                    >
+                      {group.label}
                     </td>
-                    <td>
-                      <span className="tag tag-warning">{s.late}</span>
-                    </td>
-                    <td>
-                      <span className="tag tag-danger">{s.absent}</span>
-                    </td>
-                    <td style={{ opacity: 0.75 }}>{s.total}</td>
-                    <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
-                    <td>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>
-                          View
-                        </button>
-                        <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>
-                          Edit
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                  </tr>,
+                  ...group.sessions.map((s) => (
+                    <tr key={s.date}>
+                      <td style={{ fontWeight: 600 }}>{s.date}</td>
+                      <td>
+                        <span className="tag tag-success">{s.present}</span>
+                      </td>
+                      <td>
+                        <span className="tag tag-warning">{s.late}</span>
+                      </td>
+                      <td>
+                        <span className="tag tag-danger">{s.absent}</span>
+                      </td>
+                      <td style={{ opacity: 0.75 }}>{s.total}</td>
+                      <td style={{ opacity: 0.75 }}>{Math.round(((s.present + s.late) / s.total) * 100)}%</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(s)}>
+                            View
+                          </button>
+                          <button type="button" className="btn btn-ghost" onClick={() => openEdit(s)}>
+                            Edit
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )),
+                ])}
                 {sessions && sessions.length === 0 && (
                   <tr>
                     <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
@@ -257,22 +349,40 @@ export function AttendancePage({ showToast }) {
                 </tr>
               </thead>
               <tbody>
-                {playerSummaries?.map((p) => (
-                  <tr key={p.player_id}>
-                    <td style={{ fontWeight: 600 }}>{p.player_name}</td>
-                    <td>
-                      <span className="tag tag-success">{p.present}</span>
+                {playersByYear?.flatMap((group) => [
+                  <tr key={`year-${group.year ?? 'none'}`}>
+                    <td
+                      colSpan={6}
+                      style={{
+                        background: 'var(--color-surface-2)',
+                        fontSize: 13.5,
+                        fontWeight: 700,
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase',
+                        color: 'var(--color-neutral-400)',
+                        padding: '8px 16px',
+                      }}
+                    >
+                      {group.label}
                     </td>
-                    <td>
-                      <span className="tag tag-warning">{p.late}</span>
-                    </td>
-                    <td>
-                      <span className="tag tag-danger">{p.absent}</span>
-                    </td>
-                    <td style={{ opacity: 0.75 }}>{p.total}</td>
-                    <td style={{ opacity: 0.75 }}>{p.total ? Math.round(((p.present + p.late) / p.total) * 100) : 0}%</td>
-                  </tr>
-                ))}
+                  </tr>,
+                  ...group.players.map((p) => (
+                    <tr key={p.player_id}>
+                      <td style={{ fontWeight: 600 }}>{p.player_name}</td>
+                      <td>
+                        <span className="tag tag-success">{p.present}</span>
+                      </td>
+                      <td>
+                        <span className="tag tag-warning">{p.late}</span>
+                      </td>
+                      <td>
+                        <span className="tag tag-danger">{p.absent}</span>
+                      </td>
+                      <td style={{ opacity: 0.75 }}>{p.total}</td>
+                      <td style={{ opacity: 0.75 }}>{p.total ? Math.round(((p.present + p.late) / p.total) * 100) : 0}%</td>
+                    </tr>
+                  )),
+                ])}
                 {playerSummaries && playerSummaries.length === 0 && (
                   <tr>
                     <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
@@ -284,6 +394,8 @@ export function AttendancePage({ showToast }) {
             </table>
           </div>
         </div>
+      )}
+        </>
       )}
 
       {viewingSession && (

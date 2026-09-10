@@ -66,7 +66,7 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
       </div>
 
       <nav style={{ flex: 1, padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto' }}>
-        {items.map(({ key, label, icon: Icon, group }) => {
+        {items.map(({ key, label, icon: Icon, group, badge }) => {
           const isActive = active === key;
           const showGroupHeader = group && group !== lastGroup;
           lastGroup = group;
@@ -108,7 +108,26 @@ export function Sidebar({ items, active, onNavigate, onLogout, roleLabel, displa
                 }}
               >
                 <Icon />
-                {label}
+                <span style={{ flex: 1 }}>{label}</span>
+                {badge > 0 && (
+                  <span
+                    style={{
+                      minWidth: 20,
+                      height: 20,
+                      padding: '0 6px',
+                      borderRadius: 10,
+                      background: isActive ? 'var(--color-accent-400)' : 'var(--color-accent)',
+                      color: '#fff',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {badge}
+                  </span>
+                )}
               </button>
             </div>
           );

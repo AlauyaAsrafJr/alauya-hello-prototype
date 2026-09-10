@@ -1,9 +1,25 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
+import { api, ApiError } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
-import { EyeIcon, HeartPulseIcon } from '../../icons';
+import { EyeIcon, HeartPulseIcon, PlusIcon } from '../../icons';
 import { formatYearLevel, YEAR_LEVEL_OPTIONS } from '../../utils/yearLevel';
+
+function requestStatusTag(status) {
+  if (status === 'approved') return 'tag tag-success';
+  if (status === 'rejected') return 'tag tag-danger';
+  return 'tag tag-warning';
+}
+
+const EMPTY_REQUEST_FORM = {
+  first_name: '',
+  middle_name: '',
+  last_name: '',
+  email: '',
+  username: '',
+  password: '',
+  year_level: '',
+};
 
 function membershipTag(status) {
   if (status === 'active') return 'tag tag-success';
@@ -30,16 +46,47 @@ export function PlayersPage({ showToast }) {
   const [healthForm, setHealthForm] = useState(EMPTY_HEALTH_FORM);
   const [healthHistory, setHealthHistory] = useState(null);
   const [savingHealth, setSavingHealth] = useState(false);
+  const [requests, setRequests] = useState(null);
+  const [requestsOpen, setRequestsOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addForm, setAddForm] = useState(EMPTY_REQUEST_FORM);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
 
   async function load(q = '') {
     const data = await api.get(`/coach/players${q ? `?q=${encodeURIComponent(q)}` : ''}`);
     setPlayers(data);
   }
 
+  async function loadRequests() {
+    const data = await api.get('/coach/player-requests');
+    setRequests(data);
+  }
+
   useEffect(() => {
     load();
+    loadRequests();
     api.get('/coach/profile').then(setCoach);
   }, []);
+
+  const pendingRequestCount = (requests || []).filter((r) => r.status === 'pending').length;
+
+  async function submitAddPlayer() {
+    setSubmittingRequest(true);
+    try {
+      await api.post('/coach/player-requests', {
+        ...addForm,
+        year_level: addForm.year_level ? Number(addForm.year_level) : undefined,
+      });
+      setAddOpen(false);
+      setAddForm(EMPTY_REQUEST_FORM);
+      showToast(`Request for ${addForm.first_name} ${addForm.last_name} sent to admin for approval`);
+      loadRequests();
+    } catch (err) {
+      showToast(err instanceof ApiError ? err.message : 'Unable to send this request');
+    } finally {
+      setSubmittingRequest(false);
+    }
+  }
 
   function openEdit(p) {
     setEditing(p);
@@ -108,6 +155,39 @@ export function PlayersPage({ showToast }) {
             load(e.target.value);
           }}
         />
+        <div style={{ flex: 1 }} />
+        <button type="button" className="btn btn-secondary" onClick={() => setRequestsOpen(true)} style={{ position: 'relative' }}>
+          My requests
+          {pendingRequestCount > 0 && (
+            <span
+              style={{
+                marginLeft: 8,
+                minWidth: 20,
+                height: 20,
+                padding: '0 6px',
+                borderRadius: 10,
+                background: 'var(--color-accent)',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {pendingRequestCount}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={!coach?.specialization}
+          onClick={() => setAddOpen(true)}
+        >
+          <PlusIcon />
+          Add player
+        </button>
       </div>
 
       {coach && !coach.specialization && (
@@ -176,6 +256,141 @@ export function PlayersPage({ showToast }) {
           </table>
         </div>
       </div>
+
+      {requestsOpen && (
+        <DialogShell
+          title="Player requests you've submitted"
+          onClose={() => setRequestsOpen(false)}
+          actions={
+            <button type="button" className="btn btn-secondary" onClick={() => setRequestsOpen(false)}>
+              Close
+            </button>
+          }
+        >
+          {requests && requests.length === 0 && (
+            <div style={{ opacity: 0.6, fontSize: 14.5, textAlign: 'center', padding: '24px 0' }}>
+              You haven't submitted any player requests yet.
+            </div>
+          )}
+          {requests && requests.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 360, overflowY: 'auto' }}>
+              {requests.map((r) => (
+                <div
+                  key={r.request_id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    paddingBottom: 10,
+                    borderBottom: '1px solid var(--color-divider)',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 600 }}>
+                      {r.first_name} {r.last_name}
+                    </div>
+                    <div style={{ fontSize: 14.5, opacity: 0.6 }}>
+                      Requested {r.requested_at ? new Date(r.requested_at).toLocaleDateString() : ''}
+                      {r.status === 'rejected' && r.rejection_reason ? ` — ${r.rejection_reason}` : ''}
+                    </div>
+                  </div>
+                  <span className={requestStatusTag(r.status)} style={{ textTransform: 'capitalize' }}>
+                    {r.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogShell>
+      )}
+
+      {addOpen && (
+        <DialogShell
+          title="Add a player"
+          onClose={() => setAddOpen(false)}
+          actions={
+            <>
+              <button type="button" className="btn btn-secondary" onClick={() => setAddOpen(false)}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-primary" onClick={submitAddPlayer} disabled={submittingRequest}>
+                {submittingRequest ? 'Sending…' : 'Send for approval'}
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <p style={{ fontSize: 14.5, opacity: 0.7, margin: 0 }}>
+              This sends a request to an administrator. The player account is only created once they approve it.
+            </p>
+            <div className="form-grid-3" style={{ gridTemplateColumns: '2fr 2fr 1fr' }}>
+              <div className="field">
+                <label>Last name</label>
+                <input
+                  className="input"
+                  value={addForm.last_name}
+                  onChange={(e) => setAddForm({ ...addForm, last_name: e.target.value })}
+                />
+              </div>
+              <div className="field">
+                <label>First name</label>
+                <input
+                  className="input"
+                  value={addForm.first_name}
+                  onChange={(e) => setAddForm({ ...addForm, first_name: e.target.value })}
+                />
+              </div>
+              <div className="field">
+                <label>M.I.</label>
+                <input
+                  className="input"
+                  maxLength={1}
+                  style={{ textAlign: 'center' }}
+                  value={addForm.middle_name}
+                  onChange={(e) => setAddForm({ ...addForm, middle_name: e.target.value.slice(0, 1).toUpperCase() })}
+                />
+              </div>
+            </div>
+            <div className="field">
+              <label>Email</label>
+              <input className="input" value={addForm.email} onChange={(e) => setAddForm({ ...addForm, email: e.target.value })} />
+            </div>
+            <div className="form-grid-2">
+              <div className="field">
+                <label>Username</label>
+                <input
+                  className="input"
+                  value={addForm.username}
+                  onChange={(e) => setAddForm({ ...addForm, username: e.target.value })}
+                />
+              </div>
+              <div className="field">
+                <label>Temporary password</label>
+                <input
+                  className="input"
+                  type="password"
+                  value={addForm.password}
+                  onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="field">
+              <label>Team</label>
+              <input className="input" value={coach?.specialization || '—'} disabled />
+            </div>
+            <div className="field">
+              <label>Year level</label>
+              <Select
+                value={addForm.year_level}
+                onChange={(v) => setAddForm({ ...addForm, year_level: v })}
+                placeholder="Not set"
+                options={YEAR_LEVEL_OPTIONS}
+              />
+            </div>
+          </div>
+        </DialogShell>
+      )}
 
       {viewing && (
         <DialogShell

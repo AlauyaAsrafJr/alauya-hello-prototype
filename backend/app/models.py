@@ -257,6 +257,8 @@ class PlayerNote(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey("players.player_id"), nullable=False)
     note_date = db.Column(db.DateTime, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
+    photo_url = db.Column(db.String(255), nullable=True)
 
     player = db.relationship("Player", back_populates="notes")
 
@@ -264,8 +266,11 @@ class PlayerNote(db.Model):
         return {
             "note_id": self.note_id,
             "player_id": self.player_id,
+            "player_name": f"{self.player.first_name} {self.player.last_name}" if self.player else None,
             "note_date": self.note_date.isoformat() if self.note_date else None,
             "content": self.content,
+            "is_read": self.is_read,
+            "photo_url": self.photo_url,
         }
 
 
@@ -300,6 +305,61 @@ class PlayerHealthRecord(db.Model):
             "notes": self.notes,
             "reported_date": self.reported_date.isoformat() if self.reported_date else None,
             "expected_return_date": self.expected_return_date.isoformat() if self.expected_return_date else None,
+        }
+
+
+class PlayerRequest(db.Model):
+    """A player account a coach wants added to their roster, pending admin approval."""
+
+    __tablename__ = "player_requests"
+
+    request_id = db.Column(db.Integer, primary_key=True)
+    coach_id = db.Column(db.Integer, db.ForeignKey("coaches.coach_id"), nullable=False)
+    first_name = db.Column(db.String(80), nullable=False)
+    middle_name = db.Column(db.String(80), nullable=True)
+    last_name = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    contact_number = db.Column(db.String(30))
+    date_of_birth = db.Column(db.Date, nullable=True)
+    year_level = db.Column(db.Integer, nullable=True)
+    team = db.Column(db.String(80), nullable=True)
+    username = db.Column(db.String(80), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    status = db.Column(
+        db.Enum("pending", "approved", "rejected", name="player_request_status"),
+        default="pending",
+        nullable=False,
+    )
+    requested_at = db.Column(db.DateTime, default=datetime.utcnow)
+    reviewed_at = db.Column(db.DateTime, nullable=True)
+    reviewed_by = db.Column(db.Integer, db.ForeignKey("system_users.user_id"), nullable=True)
+    rejection_reason = db.Column(db.Text, nullable=True)
+    created_player_id = db.Column(db.Integer, db.ForeignKey("players.player_id"), nullable=True)
+
+    coach = db.relationship("Coach")
+    reviewer = db.relationship("SystemUser")
+
+    def to_dict(self):
+        return {
+            "request_id": self.request_id,
+            "coach_id": self.coach_id,
+            "coach_name": f"{self.coach.first_name} {self.coach.last_name}" if self.coach else None,
+            "first_name": self.first_name,
+            "middle_name": self.middle_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "contact_number": self.contact_number,
+            "date_of_birth": self.date_of_birth.isoformat() if self.date_of_birth else None,
+            "year_level": self.year_level,
+            "team": self.team,
+            "username": self.username,
+            "status": self.status,
+            "requested_at": self.requested_at.isoformat() if self.requested_at else None,
+            "reviewed_at": self.reviewed_at.isoformat() if self.reviewed_at else None,
+            "reviewed_by": self.reviewed_by,
+            "reviewed_by_name": self.reviewer.display_name() if self.reviewer else None,
+            "rejection_reason": self.rejection_reason,
+            "created_player_id": self.created_player_id,
         }
 
 

@@ -28,6 +28,17 @@ export function UsersIcon({ size = 18 }) {
   );
 }
 
+export function UserPlusIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <path d="M20 8v6" />
+      <path d="M23 11h-6" />
+    </svg>
+  );
+}
+
 export function PlayersIcon({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
@@ -131,6 +142,23 @@ export function EyeIcon({ size = 15 }) {
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
       <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+export function CheckIcon({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+export function XIcon({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+      <path d="M18 6 6 18" />
+      <path d="M6 6l12 12" />
     </svg>
   );
 }
