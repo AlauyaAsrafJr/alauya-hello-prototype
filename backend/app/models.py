@@ -258,6 +258,7 @@ class PlayerNote(db.Model):
     note_date = db.Column(db.DateTime, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
+    photo_url = db.Column(db.String(255), nullable=True)
 
     player = db.relationship("Player", back_populates="notes")
 
@@ -269,6 +270,7 @@ class PlayerNote(db.Model):
             "note_date": self.note_date.isoformat() if self.note_date else None,
             "content": self.content,
             "is_read": self.is_read,
+            "photo_url": self.photo_url,
         }
 
 

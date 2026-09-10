@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../api/client';
+import { api, mediaUrl } from '../../api/client';
 
 export function PlayerNotesPage({ onCountChange }) {
   const [notes, setNotes] = useState(null);
@@ -46,7 +46,16 @@ export function PlayerNotesPage({ onCountChange }) {
               </button>
             )}
           </div>
-          <p style={{ fontSize: 15.5, marginTop: 10, marginBottom: 0, opacity: 0.9 }}>{n.content}</p>
+          <p style={{ fontSize: 15.5, marginTop: 10, marginBottom: n.photo_url ? 10 : 0, opacity: 0.9 }}>{n.content}</p>
+          {n.photo_url && (
+            <a href={mediaUrl(n.photo_url)} target="_blank" rel="noreferrer">
+              <img
+                src={mediaUrl(n.photo_url)}
+                alt="Proof attached by player"
+                style={{ maxHeight: 200, borderRadius: 8, display: 'block' }}
+              />
+            </a>
+          )}
         </div>
       ))}
       {notes && notes.length === 0 && (
