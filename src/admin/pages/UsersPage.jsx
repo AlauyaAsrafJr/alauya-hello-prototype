@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
@@ -56,6 +56,15 @@ export function UsersPage({ showToast }) {
       (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
       u.username.toLowerCase().includes(search.toLowerCase()),
   );
+
+  // Group by team so each sport's roster reads as its own section instead of one
+  // long list with teams interleaved; users with no team sort last.
+  const sorted = [...filtered].sort((a, b) => {
+    if (!!a.team !== !!b.team) return a.team ? -1 : 1;
+    const teamCompare = (a.team || '').localeCompare(b.team || '');
+    return teamCompare !== 0 ? teamCompare : a.display_name.localeCompare(b.display_name);
+  });
+  let lastTeam;
 
   async function submitAdd() {
     const needsTeam = form.role === 'coach' || form.role === 'player';
@@ -137,9 +146,32 @@ export function UsersPage({ showToast }) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u) => (
-                <tr key={u.user_id}>
-                  <td style={{ fontWeight: 600 }}>{u.display_name}</td>
+              {sorted.map((u) => {
+                const teamLabel = u.team || 'No team';
+                const showTeamHeader = teamLabel !== lastTeam;
+                lastTeam = teamLabel;
+                return (
+                  <Fragment key={u.user_id}>
+                    {showTeamHeader && (
+                      <tr key={`team-${teamLabel}`}>
+                        <td
+                          colSpan={8}
+                          style={{
+                            background: 'var(--color-surface-2)',
+                            fontSize: 13.5,
+                            fontWeight: 700,
+                            letterSpacing: '0.04em',
+                            textTransform: 'uppercase',
+                            color: 'var(--color-neutral-400)',
+                            padding: '8px 16px',
+                          }}
+                        >
+                          {teamLabel}
+                        </td>
+                      </tr>
+                    )}
+                    <tr key={u.user_id}>
+                      <td style={{ fontWeight: 600 }}>{u.display_name}</td>
                   <td style={{ opacity: 0.75 }}>{u.username}</td>
                   <td style={{ opacity: 0.75 }}>{u.email || '—'}</td>
                   <td>
@@ -174,8 +206,10 @@ export function UsersPage({ showToast }) {
                       </button>
                     </div>
                   </td>
-                </tr>
-              ))}
+                    </tr>
+                  </Fragment>
+                );
+              })}
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
