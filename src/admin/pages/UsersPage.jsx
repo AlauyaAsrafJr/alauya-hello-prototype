@@ -23,6 +23,7 @@ export function UsersPage({ showToast }) {
   const [sports, setSports] = useState(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [teamFilter, setTeamFilter] = useState('all');
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [viewing, setViewing] = useState(null);
@@ -52,9 +53,10 @@ export function UsersPage({ showToast }) {
 
   const filtered = (users || []).filter(
     (u) =>
-      u.display_name.toLowerCase().includes(search.toLowerCase()) ||
-      (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
-      u.username.toLowerCase().includes(search.toLowerCase()),
+      (teamFilter === 'all' || u.team === teamFilter) &&
+      (u.display_name.toLowerCase().includes(search.toLowerCase()) ||
+        (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
+        u.username.toLowerCase().includes(search.toLowerCase())),
   );
 
   // Group by team so each sport's roster reads as its own section instead of one
@@ -122,6 +124,12 @@ export function UsersPage({ showToast }) {
             { value: 'coach', label: 'Coach' },
             { value: 'admin', label: 'Admin' },
           ]}
+        />
+        <Select
+          style={{ maxWidth: 190 }}
+          value={teamFilter}
+          onChange={(v) => setTeamFilter(v)}
+          options={[{ value: 'all', label: 'All teams' }, ...(sports || []).map((s) => ({ value: s.name, label: s.name }))]}
         />
         <div style={{ flex: 1 }} />
         <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>
