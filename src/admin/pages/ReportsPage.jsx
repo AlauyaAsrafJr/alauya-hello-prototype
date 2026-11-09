@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
-import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
-import { PlusIcon } from '../../icons';
 
 export function ReportsPage({ showToast }) {
   const [reports, setReports] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [open, setOpen] = useState(false);
-  const [reportType, setReportType] = useState('attendance');
-  const [customType, setCustomType] = useState('');
-  const [details, setDetails] = useState('');
 
   async function load() {
     const query = statusFilter === 'all' ? '' : `?status=${statusFilter}`;
@@ -21,19 +15,6 @@ export function ReportsPage({ showToast }) {
   useEffect(() => {
     load();
   }, [statusFilter]);
-
-  async function submitGenerate() {
-    await api.post('/admin/reports', {
-      report_type: reportType,
-      custom_type: reportType === 'other' ? customType : undefined,
-      details: details || undefined,
-    });
-    setOpen(false);
-    setCustomType('');
-    setDetails('');
-    showToast('Report generated');
-    load();
-  }
 
   async function approve(r) {
     await api.post(`/admin/reports/${r.report_id}/approve`);
@@ -54,11 +35,6 @@ export function ReportsPage({ showToast }) {
             { value: 'approved', label: 'Approved' },
           ]}
         />
-        <div style={{ flex: 1 }} />
-        <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
-          <PlusIcon />
-          Generate report
-        </button>
       </div>
 
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
@@ -104,59 +80,6 @@ export function ReportsPage({ showToast }) {
           </table>
         </div>
       </div>
-
-      {open && (
-        <DialogShell
-          title="Generate report"
-          onClose={() => setOpen(false)}
-          actions={
-            <>
-              <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={submitGenerate}
-                disabled={reportType === 'other' && !customType.trim()}
-              >
-                Generate
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div className="field">
-              <label>Report type</label>
-              <Select
-                value={reportType}
-                onChange={(v) => setReportType(v)}
-                options={[
-                  { value: 'attendance', label: 'Attendance' },
-                  { value: 'performance', label: 'Performance' },
-                  { value: 'training', label: 'Training' },
-                  { value: 'other', label: 'Other (specify)' },
-                ]}
-              />
-            </div>
-            {reportType === 'other' && (
-              <div className="field">
-                <label>Custom report type</label>
-                <input
-                  className="input"
-                  placeholder="e.g. Equipment inventory"
-                  value={customType}
-                  onChange={(e) => setCustomType(e.target.value)}
-                />
-              </div>
-            )}
-            <div className="field">
-              <label>Details (optional)</label>
-              <textarea className="input" style={{ minHeight: 70 }} value={details} onChange={(e) => setDetails(e.target.value)} />
-            </div>
-          </div>
-        </DialogShell>
-      )}
     </>
   );
 }
