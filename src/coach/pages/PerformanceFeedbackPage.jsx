@@ -326,7 +326,7 @@ export function PerformanceFeedbackPage({ showToast }) {
               options={(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` }))}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4, flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4, flex: 1, maxHeight: 520 }}>
             {historyFilter === '' ? (
               <div style={{ opacity: 0.6, fontSize: 15 }}>Select a player to view their feedback history.</div>
             ) : (
