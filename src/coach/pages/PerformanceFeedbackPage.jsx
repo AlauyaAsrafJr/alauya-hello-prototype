@@ -65,6 +65,7 @@ export function PerformanceFeedbackPage({ showToast }) {
   }
 
   const historyFeedback = (feedback || []).filter((f) => f.player_id === historyFilter);
+  const recentFeedback = (feedback || []).slice(0, 8);
 
   async function createCategory() {
     const name = newCategoryName.trim();
@@ -362,7 +363,7 @@ export function PerformanceFeedbackPage({ showToast }) {
         Recent feedback
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {feedback?.map((f) => (
+        {recentFeedback.map((f) => (
           <div key={f.feedback_id} className="card elev-sm" style={{ padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
