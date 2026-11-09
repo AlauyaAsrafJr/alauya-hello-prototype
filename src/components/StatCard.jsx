@@ -1,15 +1,13 @@
 export function StatCard({ label, value, icon: Icon, variant = 'accent', onView }) {
   return (
-    <div className="card elev-sm" style={{ padding: 18 }}>
-      <div className={`icon-chip icon-chip-${variant}`}>
+    <div className="card elev-sm stat-card">
+      <div className={`icon-chip icon-chip-${variant} stat-card-icon`}>
         <Icon />
       </div>
-      <div className="card-title" style={{ fontSize: 30, marginTop: 10 }}>
-        {value}
-      </div>
-      <div style={{ fontSize: 15.5, opacity: 0.65, fontWeight: 600 }}>{label}</div>
+      <div className="card-title stat-card-value">{value}</div>
+      <div className="stat-card-label">{label}</div>
       {onView && (
-        <button type="button" onClick={onView} className="btn btn-ghost" style={{ paddingInline: 0, marginTop: 2, fontSize: 15.5 }}>
+        <button type="button" onClick={onView} className="btn btn-ghost stat-card-link">
           Quick view →
         </button>
       )}
