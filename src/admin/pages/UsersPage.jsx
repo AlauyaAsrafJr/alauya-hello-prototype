@@ -2,8 +2,9 @@ import { Fragment, useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
-import { ArchiveIcon, EyeIcon, PlusIcon } from '../../icons';
+import { PlusIcon } from '../../icons';
 import { Select } from '../../components/Select';
+import { RowActionsMenu } from '../../components/RowActionsMenu';
 import { YEAR_LEVEL_OPTIONS } from '../../utils/yearLevel';
 
 const EMPTY_FORM = {
@@ -150,7 +151,7 @@ export function UsersPage({ showToast }) {
                 <th>Team</th>
                 <th>Status</th>
                 <th>Last login</th>
-                <th style={{ width: 250 }}>Actions</th>
+                <th style={{ width: 70 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -193,26 +194,15 @@ export function UsersPage({ showToast }) {
                   </td>
                   <td style={{ opacity: 0.65 }}>{u.last_login ? new Date(u.last_login).toLocaleString() : 'Never'}</td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
-                      <button type="button" className="btn btn-ghost btn-icon" aria-label="View" onClick={() => setViewing(u)}>
-                        <EyeIcon />
-                      </button>
-                      <button type="button" className="btn btn-ghost" style={{ whiteSpace: 'nowrap' }} onClick={() => setResetTarget(u)}>
-                        Reset PW
-                      </button>
-                      <button type="button" className="btn btn-secondary" style={{ whiteSpace: 'nowrap' }} onClick={() => toggleActive(u)}>
-                        {u.is_active ? 'Deactivate' : 'Activate'}
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-icon"
-                        aria-label="Archive"
-                        style={{ marginLeft: 'auto' }}
-                        onClick={() => setArchiveTarget(u)}
-                      >
-                        <ArchiveIcon size={15} />
-                      </button>
-                    </div>
+                    <RowActionsMenu
+                      ariaLabel={`Actions for ${u.display_name}`}
+                      actions={[
+                        { label: 'View details', onClick: () => setViewing(u) },
+                        { label: 'Reset password', onClick: () => setResetTarget(u) },
+                        { label: u.is_active ? 'Deactivate' : 'Activate', onClick: () => toggleActive(u) },
+                        { label: 'Archive', onClick: () => setArchiveTarget(u), danger: true },
+                      ]}
+                    />
                   </td>
                     </tr>
                   </Fragment>

@@ -111,6 +111,16 @@ export function MenuIcon({ size = 18 }) {
   );
 }
 
+export function KebabIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+      <circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function BellIcon({ size = 17 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
