@@ -25,6 +25,10 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
     app.register_blueprint(common_bp, url_prefix="/api")
 
+    from app.db_migrate import sync_schema
+
+    sync_schema(app, db)
+
     @app.before_request
     def recover_overdue_players():
         from app.health_utils import auto_recover_players
