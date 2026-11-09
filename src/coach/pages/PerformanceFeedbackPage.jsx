@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
 import { PencilIcon, StarIcon, TrashIcon } from '../../icons';
 import { Select } from '../../components/Select';
+import { CustomScrollbar } from '../../components/CustomScrollbar';
 
 function Rating({ value }) {
   return (
@@ -326,32 +327,34 @@ export function PerformanceFeedbackPage({ showToast }) {
               options={(players || []).map((p) => ({ value: String(p.player_id), label: `${p.first_name} ${p.last_name}` }))}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4, flex: 1, maxHeight: 520 }}>
-            {historyFilter === '' ? (
-              <div style={{ opacity: 0.6, fontSize: 15 }}>Select a player to view their feedback history.</div>
-            ) : (
-              <>
-                {historyFeedback.map((f) => (
-                  <div key={f.feedback_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ fontWeight: 600, fontSize: 15.5 }}>{f.player_name}</div>
-                        {f.category && <span className="tag tag-info">{f.category}</span>}
+          <CustomScrollbar maxHeight={520} style={{ flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {historyFilter === '' ? (
+                <div style={{ opacity: 0.6, fontSize: 15 }}>Select a player to view their feedback history.</div>
+              ) : (
+                <>
+                  {historyFeedback.map((f) => (
+                    <div key={f.feedback_id} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-divider)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ fontWeight: 600, fontSize: 15.5 }}>{f.player_name}</div>
+                          {f.category && <span className="tag tag-info">{f.category}</span>}
+                        </div>
+                        <Rating value={f.rating} />
                       </div>
-                      <Rating value={f.rating} />
+                      <p className="card-body" style={{ marginBottom: 4 }}>
+                        {f.comments}
+                      </p>
+                      <div style={{ fontSize: 14.5, opacity: 0.55 }}>
+                        {f.feedback_date} · {f.coach_name}
+                      </div>
                     </div>
-                    <p className="card-body" style={{ marginBottom: 4 }}>
-                      {f.comments}
-                    </p>
-                    <div style={{ fontSize: 14.5, opacity: 0.55 }}>
-                      {f.feedback_date} · {f.coach_name}
-                    </div>
-                  </div>
-                ))}
-                {historyFeedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No feedback for this player yet.</div>}
-              </>
-            )}
-          </div>
+                  ))}
+                  {historyFeedback.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No feedback for this player yet.</div>}
+                </>
+              )}
+            </div>
+          </CustomScrollbar>
         </div>
       </div>
 

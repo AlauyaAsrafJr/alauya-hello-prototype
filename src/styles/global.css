@@ -19,6 +19,9 @@ a:hover { color: var(--color-link-hover); }
 
 .table-wrap { overflow-x: auto; }
 
+.custom-scrollbar-content { scrollbar-width: none; -ms-overflow-style: none; }
+.custom-scrollbar-content::-webkit-scrollbar { display: none; }
+
 .stat-grid-4, .stat-grid-3, .stat-grid-2 { display: grid; gap: 16px; }
 .stat-grid-4 { grid-template-columns: repeat(4, 1fr); }
 .stat-grid-3 { grid-template-columns: repeat(3, 1fr); }
