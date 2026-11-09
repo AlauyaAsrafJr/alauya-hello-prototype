@@ -21,7 +21,7 @@ const PAGE_TITLES = {
   activities: ['Training Activities', 'Log and edit training sessions and participation'],
   feedback: ['Performance Feedback', 'Submit and review player performance evaluations'],
   notes: ['Player Notes', 'Personal notes and concerns submitted by your players'],
-  reports: ['Analytics & Reports', 'Team analytics and generated reports'],
+  reports: ['Reports', 'Generated reports for your team'],
   profile: ['My Profile', 'View your coach information and update your password'],
 };
 
@@ -48,7 +48,7 @@ export function CoachApp() {
     { key: 'activities', label: 'Training Activities', icon: ActivitiesIcon, group: 'Operations' },
     { key: 'feedback', label: 'Performance Feedback', icon: StarIcon, group: 'Operations' },
     { key: 'notes', label: 'Player Notes', icon: NoteIcon, group: 'Operations', badge: unreadNoteCount },
-    { key: 'reports', label: 'Analytics & Reports', icon: ReportsIcon, group: 'Insights' },
+    { key: 'reports', label: 'Reports', icon: ReportsIcon, group: 'Insights' },
     { key: 'profile', label: 'My Profile', icon: ProfileIcon, group: 'Account' },
   ];
 
