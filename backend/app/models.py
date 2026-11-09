@@ -417,8 +417,9 @@ class Report(db.Model):
 
     report_id = db.Column(db.Integer, primary_key=True)
     report_type = db.Column(
-        db.Enum("attendance", "performance", "training", name="report_type"), nullable=False
+        db.Enum("attendance", "performance", "training", "other", name="report_type"), nullable=False
     )
+    custom_type = db.Column(db.String(120), nullable=True)
     generated_by = db.Column(db.Integer, db.ForeignKey("system_users.user_id"), nullable=False)
     generated_date = db.Column(db.DateTime, default=datetime.utcnow)
     details = db.Column(db.Text)
@@ -433,6 +434,8 @@ class Report(db.Model):
         return {
             "report_id": self.report_id,
             "report_type": self.report_type,
+            "custom_type": self.custom_type,
+            "display_type": self.custom_type if self.report_type == "other" and self.custom_type else self.report_type,
             "generated_by": self.generated_by,
             "generated_by_name": self.generator.display_name() if self.generator else None,
             "generated_date": self.generated_date.isoformat() if self.generated_date else None,

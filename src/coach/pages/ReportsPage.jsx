@@ -8,6 +8,7 @@ export function ReportsPage({ showToast }) {
   const [reports, setReports] = useState(null);
   const [open, setOpen] = useState(false);
   const [reportType, setReportType] = useState('attendance');
+  const [customType, setCustomType] = useState('');
   const [details, setDetails] = useState('');
 
   async function load() {
@@ -20,8 +21,13 @@ export function ReportsPage({ showToast }) {
   }, []);
 
   async function submit() {
-    await api.post('/coach/reports', { report_type: reportType, details: details || undefined });
+    await api.post('/coach/reports', {
+      report_type: reportType,
+      custom_type: reportType === 'other' ? customType : undefined,
+      details: details || undefined,
+    });
     setOpen(false);
+    setCustomType('');
     setDetails('');
     showToast('Report generated');
     load();
@@ -50,7 +56,7 @@ export function ReportsPage({ showToast }) {
             <tbody>
               {reports?.map((r) => (
                 <tr key={r.report_id}>
-                  <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type}</td>
+                  <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.display_type || r.report_type}</td>
                   <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '—'}</td>
                   <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
                   <td>
@@ -79,7 +85,12 @@ export function ReportsPage({ showToast }) {
               <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>
                 Cancel
               </button>
-              <button type="button" className="btn btn-primary" onClick={submit}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={submit}
+                disabled={reportType === 'other' && !customType.trim()}
+              >
                 Generate
               </button>
             </>
@@ -95,9 +106,21 @@ export function ReportsPage({ showToast }) {
                   { value: 'attendance', label: 'Attendance' },
                   { value: 'performance', label: 'Performance' },
                   { value: 'training', label: 'Training' },
+                  { value: 'other', label: 'Other (specify)' },
                 ]}
               />
             </div>
+            {reportType === 'other' && (
+              <div className="field">
+                <label>Custom report type</label>
+                <input
+                  className="input"
+                  placeholder="e.g. Equipment inventory"
+                  value={customType}
+                  onChange={(e) => setCustomType(e.target.value)}
+                />
+              </div>
+            )}
             <div className="field">
               <label>Details (optional)</label>
               <textarea className="input" style={{ minHeight: 70 }} value={details} onChange={(e) => setDetails(e.target.value)} />
