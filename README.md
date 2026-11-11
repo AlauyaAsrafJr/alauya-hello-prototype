@@ -32,6 +32,14 @@ src/                 React frontend
   components/         Shared UI (Sidebar, Topbar, modals, design tokens)
 ```
 
+## Quick start (Windows, after the one-time setup below)
+
+Once `backend/venv` and `node_modules` exist (first-time setup only — see
+below), double-click **`run.bat`** at the project root. It starts the
+backend and frontend each in their own window and opens the app in your
+browser. No need to open two terminals and run everything by hand every
+time.
+
 ## Backend setup
 
 ```bash
