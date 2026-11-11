@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
+import { Select } from '../../components/Select';
 import { RestoreIcon, TrashIcon } from '../../icons';
 
 function recordLabel(record) {
@@ -19,7 +20,9 @@ function recordTeam(record) {
 
 export function ArchivePage({ showToast }) {
   const [records, setRecords] = useState(null);
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [teamFilter, setTeamFilter] = useState('all');
 
   async function load() {
     const data = await api.get('/admin/archive');
@@ -30,8 +33,15 @@ export function ArchivePage({ showToast }) {
     load();
   }, []);
 
-  const types = Array.from(new Set((records || []).map((r) => r.record_type)));
-  const filtered = (records || []).filter((r) => typeFilter === 'all' || r.record_type === typeFilter);
+  const roles = Array.from(new Set((records || []).map((r) => recordRole(r)))).sort();
+  const teams = Array.from(new Set((records || []).map((r) => recordTeam(r)).filter((t) => t !== '—'))).sort();
+
+  const filtered = (records || []).filter(
+    (r) =>
+      (roleFilter === 'all' || recordRole(r) === roleFilter) &&
+      (teamFilter === 'all' || recordTeam(r) === teamFilter) &&
+      recordLabel(r).toLowerCase().includes(search.toLowerCase()),
+  );
 
   async function restore(r) {
     await api.post(`/admin/archive/${r.archive_id}/restore`);
@@ -47,19 +57,29 @@ export function ArchivePage({ showToast }) {
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-        <div className="seg">
-          <label className="seg-opt">
-            <input type="radio" checked={typeFilter === 'all'} onChange={() => setTypeFilter('all')} />
-            All
-          </label>
-          {types.map((t) => (
-            <label key={t} className="seg-opt" style={{ textTransform: 'capitalize' }}>
-              <input type="radio" checked={typeFilter === t} onChange={() => setTypeFilter(t)} />
-              {t}s
-            </label>
-          ))}
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+        <input
+          className="input"
+          style={{ maxWidth: 280 }}
+          placeholder="Search archived records"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Select
+          style={{ maxWidth: 170 }}
+          value={roleFilter}
+          onChange={(v) => setRoleFilter(v)}
+          options={[
+            { value: 'all', label: 'All roles' },
+            ...roles.map((r) => ({ value: r, label: r.charAt(0).toUpperCase() + r.slice(1) })),
+          ]}
+        />
+        <Select
+          style={{ maxWidth: 190 }}
+          value={teamFilter}
+          onChange={(v) => setTeamFilter(v)}
+          options={[{ value: 'all', label: 'All teams' }, ...teams.map((t) => ({ value: t, label: t }))]}
+        />
       </div>
       <div className="card elev-sm" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-wrap">
