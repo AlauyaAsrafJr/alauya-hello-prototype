@@ -1,0 +1,71 @@
+html, body, #root { height: 100%; }
+body { margin: 0; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-neutral-700); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-track { background: transparent; }
+a { color: var(--color-accent-400); }
+a:hover { color: var(--color-link-hover); }
+
+.sidebar-nav-btn:hover { background: var(--color-overlay-hover) !important; }
+.sidebar-logout-btn:hover { background: var(--color-overlay-hover) !important; }
+.menu-item:hover { background: var(--color-surface-3); }
+
+/* — responsive app shell — */
+.app-sidebar { width: 250px; }
+.app-topbar { padding: 18px 32px; }
+.app-main { padding: 28px 32px 60px; }
+.menu-btn { display: none; }
+.sidebar-backdrop { display: none; }
+
+.table-wrap { overflow-x: auto; }
+
+.custom-scrollbar-content { scrollbar-width: none; -ms-overflow-style: none; }
+.custom-scrollbar-content::-webkit-scrollbar { display: none; }
+
+.stat-grid-4, .stat-grid-3, .stat-grid-2 { display: grid; gap: 16px; }
+.stat-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.stat-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.stat-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.stat-card { padding: 18px; }
+.stat-card-icon { margin-bottom: 0; }
+.stat-card-value { font-size: 30px; margin-top: 10px; }
+.stat-card-label { font-size: 15.5px; opacity: 0.65; font-weight: 600; }
+.stat-card-link { padding-inline: 0; margin-top: 2px; font-size: 15.5px; }
+
+@media (max-width: 860px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-lg);
+  }
+  .app-sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    background: var(--color-backdrop);
+  }
+  .menu-btn { display: inline-flex; }
+  .app-topbar { padding: 14px 16px; gap: 10px; }
+  .app-main { padding: 16px 16px 40px; }
+  .stat-grid-4, .stat-grid-3, .stat-grid-2 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .form-grid-3 { grid-template-columns: 1fr 1fr; }
+  .stat-card { padding: 12px; gap: 6px; }
+  .stat-card-icon { width: 28px; height: 28px; }
+  .stat-card-value { font-size: 20px; margin-top: 2px; }
+  .stat-card-label { font-size: 12.5px; }
+  .stat-card-link { font-size: 12.5px; }
+}
+
+@media (max-width: 480px) {
+  .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+}
