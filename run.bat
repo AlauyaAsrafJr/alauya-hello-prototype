@@ -4,7 +4,7 @@ cd /d "%~dp0"
 echo Starting ACTIBASE backend and frontend...
 
 start "ACTIBASE Backend" cmd /k call "%~dp0backend\start-backend.bat"
-start "ACTIBASE Frontend" cmd /k call "%~dp0start-frontend.bat"
+start "ACTIBASE Frontend" cmd /k call "%~dp0frontend\start-frontend.bat"
 
 timeout /t 4 /nobreak >nul
 start http://localhost:5173
