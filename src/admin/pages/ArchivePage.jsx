@@ -8,6 +8,15 @@ function recordLabel(record) {
   return `${record.record_type} #${record.record_id}`;
 }
 
+function recordRole(record) {
+  return record.archive_data?.role ?? record.record_type;
+}
+
+function recordTeam(record) {
+  const profile = record.archive_data?.profile;
+  return profile?.team ?? profile?.specialization ?? '—';
+}
+
 export function ArchivePage({ showToast }) {
   const [records, setRecords] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
@@ -58,7 +67,8 @@ export function ArchivePage({ showToast }) {
             <thead>
               <tr>
                 <th>Record</th>
-                <th>Type</th>
+                <th>Role</th>
+                <th>Team</th>
                 <th>Archived on</th>
                 <th>Archived by</th>
                 <th style={{ width: 150 }}>Actions</th>
@@ -70,9 +80,10 @@ export function ArchivePage({ showToast }) {
                   <td style={{ fontWeight: 600 }}>{recordLabel(r)}</td>
                   <td>
                     <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
-                      {r.record_type}
+                      {recordRole(r)}
                     </span>
                   </td>
+                  <td style={{ opacity: 0.75 }}>{recordTeam(r)}</td>
                   <td style={{ opacity: 0.65 }}>{new Date(r.archived_at).toLocaleString()}</td>
                   <td style={{ opacity: 0.65 }}>{r.archived_by_name}</td>
                   <td>
@@ -95,7 +106,7 @@ export function ArchivePage({ showToast }) {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                  <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
                     No archived records.
                   </td>
                 </tr>
