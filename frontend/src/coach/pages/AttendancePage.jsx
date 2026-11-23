@@ -75,6 +75,7 @@ function groupByPlayer(records) {
       present: recs.filter((r) => r.status === 'present').length,
       late: recs.filter((r) => r.status === 'late').length,
       absent: recs.filter((r) => r.status === 'absent').length,
+      records: [...recs].sort((a, b) => b.date.localeCompare(a.date)),
     }))
     .sort((a, b) => a.player_name.localeCompare(b.player_name));
 }
@@ -88,6 +89,7 @@ export function AttendancePage({ showToast }) {
   const [submitting, setSubmitting] = useState(false);
   const [history, setHistory] = useState(null);
   const [viewingSession, setViewingSession] = useState(null);
+  const [viewingPlayer, setViewingPlayer] = useState(null);
   const [editingSession, setEditingSession] = useState(null);
   const [editStatuses, setEditStatuses] = useState({});
   const [savingEdit, setSavingEdit] = useState(false);
@@ -346,13 +348,14 @@ export function AttendancePage({ showToast }) {
                   <th>Absent</th>
                   <th>Total sessions</th>
                   <th>Rate</th>
+                  <th style={{ width: 100 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {playersByYear?.flatMap((group) => [
                   <tr key={`year-${group.year ?? 'none'}`}>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       style={{
                         background: 'var(--color-surface-2)',
                         fontSize: 13.5,
@@ -380,12 +383,17 @@ export function AttendancePage({ showToast }) {
                       </td>
                       <td style={{ opacity: 0.75 }}>{p.total}</td>
                       <td style={{ opacity: 0.75 }}>{p.total ? Math.round(((p.present + p.late) / p.total) * 100) : 0}%</td>
+                      <td>
+                        <button type="button" className="btn btn-secondary" onClick={() => setViewingPlayer(p)}>
+                          View
+                        </button>
+                      </td>
                     </tr>
                   )),
                 ])}
                 {playerSummaries && playerSummaries.length === 0 && (
                   <tr>
-                    <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                    <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
                       No attendance recorded yet.
                     </td>
                   </tr>
@@ -424,6 +432,37 @@ export function AttendancePage({ showToast }) {
                 <span className={statusTag(r.status)}>{r.status}</span>
               </div>
             ))}
+          </div>
+        </DialogShell>
+      )}
+
+      {viewingPlayer && (
+        <DialogShell
+          title={`Attendance — ${viewingPlayer.player_name}`}
+          onClose={() => setViewingPlayer(null)}
+          actions={
+            <button type="button" className="btn btn-secondary" onClick={() => setViewingPlayer(null)}>
+              Close
+            </button>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {viewingPlayer.records.map((r) => (
+              <div
+                key={r.attendance_id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '8px 0',
+                  borderBottom: '1px solid var(--color-divider)',
+                  fontSize: 15,
+                }}
+              >
+                <span>{r.date}</span>
+                <span className={statusTag(r.status)}>{r.status}</span>
+              </div>
+            ))}
+            {viewingPlayer.records.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No attendance recorded yet.</div>}
           </div>
         </DialogShell>
       )}
