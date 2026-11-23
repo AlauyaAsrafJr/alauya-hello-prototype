@@ -6,12 +6,6 @@ import { EyeIcon } from '../../icons';
 import { formatYearLevel } from '../../utils/yearLevel';
 import { formatLongDate } from '../../utils/date';
 
-function membershipTag(status) {
-  if (status === 'active') return 'tag tag-success';
-  if (status === 'suspended') return 'tag tag-danger';
-  return 'tag tag-neutral';
-}
-
 function healthTag(status) {
   if (status === 'healthy') return 'tag tag-success';
   if (status === 'recovering') return 'tag tag-warning';
@@ -75,7 +69,6 @@ export function PlayersPage() {
                 <th>Team</th>
                 <th>Year</th>
                 <th>Email</th>
-                <th>Membership</th>
                 <th>Health</th>
                 <th>Account status</th>
                 <th style={{ width: 80 }}>Actions</th>
@@ -90,9 +83,6 @@ export function PlayersPage() {
                   <td style={{ opacity: 0.75 }}>{p.team || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
                   <td style={{ opacity: 0.75 }}>{p.email}</td>
-                  <td>
-                    <span className={membershipTag(p.membership_status)}>{p.membership_status}</span>
-                  </td>
                   <td>
                     <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
                       {p.health_status}
@@ -110,7 +100,7 @@ export function PlayersPage() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                  <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
                     No players found.
                   </td>
                 </tr>
