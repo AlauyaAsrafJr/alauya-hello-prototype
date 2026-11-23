@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
-import { CopyIcon, PencilIcon, PlusIcon, TrashIcon } from '../../icons';
+import { CopyIcon, NoteIcon, PencilIcon, PlusIcon, TrashIcon } from '../../icons';
 
 function participationTag(status) {
   if (status === 'joined') return 'tag tag-success';
@@ -19,6 +19,7 @@ export function TrainingActivitiesPage({ showToast }) {
   const [logOpen, setLogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [viewing, setViewing] = useState(null);
+  const [noteView, setNoteView] = useState(null);
 
   const [name, setName] = useState('');
   const [date, setDate] = useState(today());
@@ -346,7 +347,7 @@ export function TrainingActivitiesPage({ showToast }) {
                 <th>Date</th>
                 <th>Location</th>
                 <th>Duration</th>
-                <th>Notes</th>
+                <th style={{ width: 70 }}>Notes</th>
                 <th style={{ width: 210 }}>Actions</th>
               </tr>
             </thead>
@@ -360,7 +361,21 @@ export function TrainingActivitiesPage({ showToast }) {
                   <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
                   <td style={{ opacity: 0.75 }}>{a.location || '—'}</td>
                   <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '—'}</td>
-                  <td style={{ opacity: 0.65, maxWidth: 220 }}>{a.notes || '—'}</td>
+                  <td>
+                    {a.notes ? (
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-icon"
+                        aria-label={`View note for ${a.activity_name}`}
+                        title="View note"
+                        onClick={() => setNoteView(a)}
+                      >
+                        <NoteIcon size={16} />
+                      </button>
+                    ) : (
+                      <span style={{ opacity: 0.5 }}>—</span>
+                    )}
+                  </td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button type="button" className="btn btn-secondary" onClick={() => openView(a)}>
@@ -555,6 +570,20 @@ export function TrainingActivitiesPage({ showToast }) {
             ))}
             {viewing.participants.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No participants recorded.</div>}
           </div>
+        </DialogShell>
+      )}
+
+      {noteView && (
+        <DialogShell
+          title={`Notes — ${noteView.activity_name}`}
+          onClose={() => setNoteView(null)}
+          actions={
+            <button type="button" className="btn btn-secondary" onClick={() => setNoteView(null)}>
+              Close
+            </button>
+          }
+        >
+          <div style={{ whiteSpace: 'pre-wrap', fontSize: 15, lineHeight: 1.5 }}>{noteView.notes}</div>
         </DialogShell>
       )}
     </>
