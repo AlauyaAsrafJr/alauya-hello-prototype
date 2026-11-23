@@ -2,13 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { ApiError } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { MoonIcon, SunIcon, AttendanceIcon, ActivitiesIcon, StarIcon } from '../icons';
-
-const FEATURES = [
-  { Icon: AttendanceIcon, text: 'Track attendance for every training session' },
-  { Icon: ActivitiesIcon, text: 'Log training activities and participation' },
-  { Icon: StarIcon, text: 'Give players structured performance feedback' },
-];
+import { MoonIcon, SunIcon } from '../icons';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -65,21 +59,10 @@ export function LoginPage() {
         </div>
 
         <div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 36, lineHeight: 1.1 }}>ACTIBASE</div>
-          <p style={{ fontSize: 17, maxWidth: 420, marginTop: 10, opacity: 0.92 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 64, lineHeight: 1.05 }}>ACTIBASE</div>
+          <p style={{ fontSize: 17, maxWidth: 420, marginTop: 14, opacity: 0.92 }}>
             Varsity Player Engagement and Activity Tracking System for Mindanao State University - Main Campus.
           </p>
-        </div>
-
-        <div className="login-hero-features" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {FEATURES.map(({ Icon, text }) => (
-            <div key={text} className="login-hero-feature">
-              <span className="login-hero-feature-icon">
-                <Icon size={18} />
-              </span>
-              <span style={{ marginTop: 7 }}>{text}</span>
-            </div>
-          ))}
         </div>
       </div>
 

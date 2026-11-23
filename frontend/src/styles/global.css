@@ -94,22 +94,6 @@ a:hover { color: var(--color-link-hover); }
   opacity: 0.16;
   pointer-events: none;
 }
-.login-hero-feature {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-size: 15.5px;
-}
-.login-hero-feature-icon {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.16);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .login-form-panel {
   flex: 1 1 54%;
   display: flex;
