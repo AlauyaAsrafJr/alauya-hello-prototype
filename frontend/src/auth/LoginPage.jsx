@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { ApiError } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { MoonIcon, SunIcon } from '../icons';
+import { MoonIcon, SunIcon, AttendanceIcon, ActivitiesIcon, StarIcon } from '../icons';
+
+const FEATURES = [
+  { Icon: AttendanceIcon, text: 'Track attendance for every training session' },
+  { Icon: ActivitiesIcon, text: 'Log training activities and participation' },
+  { Icon: StarIcon, text: 'Give players structured performance feedback' },
+];
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -26,50 +32,25 @@ export function LoginPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--color-bg)',
-        fontFamily: 'var(--font-body)',
-        color: 'var(--color-text)',
-        position: 'relative',
-        padding: 16,
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/phoenix-watermark.png)',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundSize: 'min(58vw, 700px)',
-          opacity: 0.07,
-          pointerEvents: 'none',
-        }}
-      />
-
+    <div className="login-shell" style={{ fontFamily: 'var(--font-body)', color: 'var(--color-text)' }}>
       <button
         type="button"
         onClick={toggleTheme}
         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         className="btn btn-secondary btn-icon"
-        style={{ position: 'absolute', top: 16, right: 16 }}
+        style={{ position: 'fixed', top: 16, right: 16, zIndex: 1 }}
       >
         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
       </button>
 
-      <div className="card elev-md" style={{ width: 'min(380px, 100%)', padding: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+      <div className="login-hero">
+        <div className="login-hero-watermark" aria-hidden="true" />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div
             style={{
-              width: 48,
-              height: 48,
+              width: 52,
+              height: 52,
               background: '#fff',
               borderRadius: 'var(--radius-sm)',
               display: 'flex',
@@ -78,64 +59,79 @@ export function LoginPage() {
               flex: 'none',
             }}
           >
-            <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+            <img src="/sarimanok-logo.png" alt="" style={{ width: 40, height: 40, objectFit: 'contain' }} />
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 19.5 }}>ACTIBASE</div>
-          <div style={{ flex: 1 }} />
-          <img
-            src="/msu-seal.png"
-            alt="Mindanao State University"
-            title="Mindanao State University"
-            style={{ height: 44, width: 'auto', flex: 'none' }}
-          />
+          <img src="/msu-seal.png" alt="Mindanao State University" title="Mindanao State University" style={{ height: 50, width: 'auto' }} />
         </div>
 
-        <div className="card-title" style={{ marginBottom: 4 }}>
-          Sign in
+        <div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 36, lineHeight: 1.1 }}>ACTIBASE</div>
+          <p style={{ fontSize: 17, maxWidth: 420, marginTop: 10, opacity: 0.92 }}>
+            Varsity Player Engagement and Activity Tracking System for Mindanao State University - Main Campus.
+          </p>
         </div>
-        <p className="card-body" style={{ marginBottom: 20 }}>
-          Varsity Player Engagement and Activity Tracking System - MSU Main Campus
-        </p>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div className="field">
-            <label>Username</label>
-            <input
-              className="input"
-              autoComplete="username"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+        <div className="login-hero-features" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {FEATURES.map(({ Icon, text }) => (
+            <div key={text} className="login-hero-feature">
+              <span className="login-hero-feature-icon">
+                <Icon size={18} />
+              </span>
+              <span style={{ marginTop: 7 }}>{text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="login-form-panel">
+        <div className="card elev-md" style={{ width: 'min(380px, 100%)', padding: 32 }}>
+          <div className="card-title" style={{ marginBottom: 4 }}>
+            Sign in
           </div>
-          <div className="field">
-            <label>Password</label>
-            <input
-              className="input"
-              type="password"
-              autoComplete="current-password"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <p className="card-body" style={{ marginBottom: 20 }}>
+            Use the account your coach or the sports office administrator created for you.
+          </p>
 
-          {error && <div style={{ fontSize: 14.5, color: 'var(--color-accent-700)' }}>{error}</div>}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="field">
+              <label>Username</label>
+              <input
+                className="input"
+                autoComplete="username"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="field">
+              <label>Password</label>
+              <input
+                className="input"
+                type="password"
+                autoComplete="current-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-          <button type="submit" className="btn btn-primary" disabled={submitting} style={{ marginTop: 4 }}>
-            {submitting ? 'Signing in…' : 'Sign in'}
-          </button>
-        </form>
+            {error && <div style={{ fontSize: 14.5, color: 'var(--color-accent-700)' }}>{error}</div>}
 
-        <p style={{ marginTop: 18, fontSize: 15.5, textAlign: 'center', opacity: 0.6 }}>
-          Accounts are created by the sports office administrator. Contact your coach or the admin office if you need access.
-        </p>
+            <button type="submit" className="btn btn-primary" disabled={submitting} style={{ marginTop: 4 }}>
+              {submitting ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+
+          <p style={{ marginTop: 18, fontSize: 15.5, textAlign: 'center', opacity: 0.6 }}>
+            Accounts are created by the sports office administrator. Contact your coach or the admin office if you need access.
+          </p>
+        </div>
       </div>
     </div>
   );
