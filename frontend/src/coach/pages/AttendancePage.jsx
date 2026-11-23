@@ -408,7 +408,7 @@ export function AttendancePage({ showToast }) {
 
       {viewingSession && (
         <DialogShell
-          title={`Attendance — ${viewingSession.date}`}
+          title={`Attendance - ${viewingSession.date}`}
           onClose={() => setViewingSession(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(null)}>
@@ -438,7 +438,7 @@ export function AttendancePage({ showToast }) {
 
       {viewingPlayer && (
         <DialogShell
-          title={`Attendance — ${viewingPlayer.player_name}`}
+          title={`Attendance - ${viewingPlayer.player_name}`}
           onClose={() => setViewingPlayer(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setViewingPlayer(null)}>
@@ -469,7 +469,7 @@ export function AttendancePage({ showToast }) {
 
       {editingSession && (
         <DialogShell
-          title={`Edit attendance — ${editingSession.date}`}
+          title={`Edit attendance - ${editingSession.date}`}
           onClose={() => setEditingSession(null)}
           actions={
             <>
