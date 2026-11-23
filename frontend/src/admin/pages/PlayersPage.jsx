@@ -4,6 +4,7 @@ import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
 import { EyeIcon } from '../../icons';
 import { formatYearLevel } from '../../utils/yearLevel';
+import { formatLongDate } from '../../utils/date';
 
 function membershipTag(status) {
   if (status === 'active') return 'tag tag-success';
@@ -136,7 +137,7 @@ export function PlayersPage() {
               ['Contact number', viewing.contact_number || '-'],
               ['Team', viewing.team || '-'],
               ['Year level', formatYearLevel(viewing.year_level)],
-              ['Date of birth', viewing.date_of_birth || '-'],
+              ['Date of birth', viewing.date_of_birth ? formatLongDate(viewing.date_of_birth) : '-'],
               ['Membership status', viewing.membership_status],
               ['Health status', viewing.health_status],
               ['Account status', viewing.is_active ? 'Active' : 'Inactive'],

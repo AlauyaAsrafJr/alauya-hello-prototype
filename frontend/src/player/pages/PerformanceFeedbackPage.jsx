@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { StarIcon } from '../../icons';
+import { formatLongDate } from '../../utils/date';
 
 function Rating({ value }) {
   return (
@@ -45,7 +46,7 @@ export function PerformanceFeedbackPage() {
           <p className="card-body" style={{ marginBottom: 6 }}>
             {f.comments}
           </p>
-          <div style={{ fontSize: 14.5, opacity: 0.55 }}>{f.feedback_date}</div>
+          <div style={{ fontSize: 14.5, opacity: 0.55 }}>{formatLongDate(f.feedback_date)}</div>
         </div>
       ))}
     </div>

@@ -5,6 +5,7 @@ import { StatCard } from '../../components/StatCard';
 import { PasswordRow } from '../../components/PasswordRow';
 import { AttendanceIcon, SessionsIcon, ActivitiesIcon, StarIcon } from '../../icons';
 import { formatYearLevel } from '../../utils/yearLevel';
+import { formatLongDate } from '../../utils/date';
 
 function healthTag(status) {
   if (status === 'healthy') return 'tag tag-success';
@@ -149,7 +150,7 @@ export function ProfilePage({ showToast }) {
               ['Email', profile.email],
               ['Team', profile.team || '-'],
               ['Year level', formatYearLevel(profile.year_level)],
-              ['Date of birth', profile.date_of_birth || '-'],
+              ['Date of birth', profile.date_of_birth ? formatLongDate(profile.date_of_birth) : '-'],
               ['Membership status', profile.membership_status],
             ].map(([k, v]) => (
               <div
@@ -240,7 +241,7 @@ export function ProfilePage({ showToast }) {
                     <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
                     </span>
-                    <span style={{ fontSize: 14.5, opacity: 0.55 }}>{r.reported_date}</span>
+                    <span style={{ fontSize: 14.5, opacity: 0.55 }}>{formatLongDate(r.reported_date)}</span>
                   </div>
                   {r.injury_type && <div style={{ fontSize: 15, fontWeight: 600 }}>{r.injury_type}</div>}
                   {r.notes && <div style={{ fontSize: 14.5, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}

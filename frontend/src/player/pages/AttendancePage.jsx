@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { StatCard } from '../../components/StatCard';
 import { AttendanceIcon } from '../../icons';
+import { formatLongDate } from '../../utils/date';
 
 function statusTag(status) {
   if (status === 'present') return 'tag tag-success';
@@ -43,7 +44,7 @@ export function AttendancePage() {
             <tbody>
               {records.map((r) => (
                 <tr key={r.attendance_id}>
-                  <td>{r.date}</td>
+                  <td>{formatLongDate(r.date)}</td>
                   <td style={{ opacity: 0.75 }}>{r.coach_name}</td>
                   <td>
                     <span className={statusTag(r.status)}>{r.status}</span>

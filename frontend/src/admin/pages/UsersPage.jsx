@@ -6,6 +6,7 @@ import { PlusIcon } from '../../icons';
 import { Select } from '../../components/Select';
 import { RowActionsMenu } from '../../components/RowActionsMenu';
 import { YEAR_LEVEL_OPTIONS } from '../../utils/yearLevel';
+import { formatLongDateTime } from '../../utils/date';
 
 const EMPTY_FORM = {
   username: '',
@@ -192,7 +193,7 @@ export function UsersPage({ showToast }) {
                   <td>
                     <span className={u.is_active ? 'tag tag-success' : 'tag tag-danger'}>{u.is_active ? 'Active' : 'Inactive'}</span>
                   </td>
-                  <td style={{ opacity: 0.65 }}>{u.last_login ? new Date(u.last_login).toLocaleString() : 'Never'}</td>
+                  <td style={{ opacity: 0.65 }}>{u.last_login ? formatLongDateTime(u.last_login) : 'Never'}</td>
                   <td>
                     <RowActionsMenu
                       ariaLabel={`Actions for ${u.display_name}`}
@@ -334,7 +335,7 @@ export function UsersPage({ showToast }) {
               ['Role', viewing.role],
               ['Team', viewing.team || '-'],
               ['Status', viewing.is_active ? 'Active' : 'Inactive'],
-              ['Last login', viewing.last_login ? new Date(viewing.last_login).toLocaleString() : 'Never'],
+              ['Last login', viewing.last_login ? formatLongDateTime(viewing.last_login) : 'Never'],
             ].map(([k, v]) => (
               <div
                 key={k}

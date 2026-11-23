@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, mediaUrl } from '../../api/client';
+import { formatLongDateTime } from '../../utils/date';
 
 export function PlayerNotesPage({ onCountChange }) {
   const [notes, setNotes] = useState(null);
@@ -37,7 +38,7 @@ export function PlayerNotesPage({ onCountChange }) {
                 {!n.is_read && <span className="tag tag-info">New</span>}
               </div>
               <div style={{ fontSize: 14.5, opacity: 0.55, marginTop: 2 }}>
-                {n.note_date ? new Date(n.note_date).toLocaleString() : ''}
+                {n.note_date ? formatLongDateTime(n.note_date) : ''}
               </div>
             </div>
             {!n.is_read && (

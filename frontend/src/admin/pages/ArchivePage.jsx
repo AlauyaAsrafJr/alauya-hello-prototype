@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { Select } from '../../components/Select';
 import { RestoreIcon, TrashIcon } from '../../icons';
+import { formatLongDateTime } from '../../utils/date';
 
 function recordLabel(record) {
   const data = record.archive_data;
@@ -104,7 +105,7 @@ export function ArchivePage({ showToast }) {
                     </span>
                   </td>
                   <td style={{ opacity: 0.75 }}>{recordTeam(r)}</td>
-                  <td style={{ opacity: 0.65 }}>{new Date(r.archived_at).toLocaleString()}</td>
+                  <td style={{ opacity: 0.65 }}>{formatLongDateTime(r.archived_at)}</td>
                   <td style={{ opacity: 0.65 }}>{r.archived_by_name}</td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>

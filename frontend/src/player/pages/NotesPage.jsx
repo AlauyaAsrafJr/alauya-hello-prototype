@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api, ApiError, mediaUrl } from '../../api/client';
+import { formatLongDateTime } from '../../utils/date';
 
 export function NotesPage({ showToast }) {
   const [notes, setNotes] = useState(null);
@@ -123,7 +124,7 @@ export function NotesPage({ showToast }) {
                   />
                 </a>
               )}
-              <div style={{ fontSize: 14.5, opacity: 0.55 }}>{new Date(n.note_date).toLocaleString()}</div>
+              <div style={{ fontSize: 14.5, opacity: 0.55 }}>{formatLongDateTime(n.note_date)}</div>
             </div>
           ))}
           {notes.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>You haven't submitted any notes yet.</div>}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { Select } from '../../components/Select';
+import { formatLongDateTime } from '../../utils/date';
 
 export function ReportsPage({ showToast }) {
   const [reports, setReports] = useState(null);
@@ -56,7 +57,7 @@ export function ReportsPage({ showToast }) {
                   <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.display_type || r.report_type}</td>
                   <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{r.generated_by_name}</td>
-                  <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
+                  <td style={{ opacity: 0.65 }}>{formatLongDateTime(r.generated_date)}</td>
                   <td>
                     <span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span>
                   </td>

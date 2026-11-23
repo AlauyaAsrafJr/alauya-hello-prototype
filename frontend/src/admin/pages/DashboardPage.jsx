@@ -4,6 +4,7 @@ import { PlayersIcon, CoachesIcon, ActivitiesIcon, AttendanceIcon, ArchiveIcon, 
 import { StatCard } from '../../components/StatCard';
 import { LineTrendChart } from '../../components/charts/LineTrendChart';
 import { RankedBarChart } from '../../components/charts/RankedBarChart';
+import { formatLongDate } from '../../utils/date';
 
 function computeAttendanceTrend(records) {
   const byDate = new Map();
@@ -138,7 +139,7 @@ export function DashboardPage({ onNavigate }) {
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, textTransform: 'capitalize' }}>{r.report_type} report</div>
                 <div style={{ fontSize: 14.5, opacity: 0.55 }}>
-                  {new Date(r.generated_date).toLocaleDateString()} · {r.generated_by_name}
+                  {formatLongDate(r.generated_date)} · {r.generated_by_name}
                 </div>
               </div>
               <span className={r.status === 'approved' ? 'tag tag-success' : 'tag tag-warning'}>{r.status}</span>

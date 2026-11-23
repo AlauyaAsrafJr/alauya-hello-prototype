@@ -4,6 +4,7 @@ import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
 import { EyeIcon, HeartPulseIcon, PlusIcon } from '../../icons';
 import { formatYearLevel, YEAR_LEVEL_OPTIONS } from '../../utils/yearLevel';
+import { formatLongDate } from '../../utils/date';
 
 function requestStatusTag(status) {
   if (status === 'approved') return 'tag tag-success';
@@ -291,7 +292,7 @@ export function PlayersPage({ showToast }) {
                       {r.first_name} {r.last_name}
                     </div>
                     <div style={{ fontSize: 14.5, opacity: 0.6 }}>
-                      Requested {r.requested_at ? new Date(r.requested_at).toLocaleDateString() : ''}
+                      Requested {r.requested_at ? formatLongDate(r.requested_at) : ''}
                       {r.status === 'rejected' && r.rejection_reason ? ` - ${r.rejection_reason}` : ''}
                     </div>
                   </div>
@@ -408,7 +409,7 @@ export function PlayersPage({ showToast }) {
               ['Contact number', viewing.contact_number || '-'],
               ['Team', viewing.team || '-'],
               ['Year level', formatYearLevel(viewing.year_level)],
-              ['Date of birth', viewing.date_of_birth || '-'],
+              ['Date of birth', viewing.date_of_birth ? formatLongDate(viewing.date_of_birth) : '-'],
               ['Membership status', viewing.membership_status],
               ['Health status', viewing.health_status],
             ].map(([k, v]) => (
@@ -570,7 +571,7 @@ export function PlayersPage({ showToast }) {
                     <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
                     </span>
-                    <span style={{ fontSize: 12.5, opacity: 0.55 }}>{r.reported_date}</span>
+                    <span style={{ fontSize: 12.5, opacity: 0.55 }}>{formatLongDate(r.reported_date)}</span>
                   </div>
                   {r.injury_type && <div style={{ fontSize: 14.5, fontWeight: 600, marginTop: 2 }}>{r.injury_type}</div>}
                   {r.notes && <div style={{ fontSize: 15.5, opacity: 0.8 }}>{r.notes}</div>}

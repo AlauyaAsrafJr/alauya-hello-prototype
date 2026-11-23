@@ -2,16 +2,12 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { formatYearLevel } from '../../utils/yearLevel';
+import { formatLongDate } from '../../utils/date';
 
 function statusTag(status) {
   if (status === 'present') return 'tag tag-success';
   if (status === 'late') return 'tag tag-warning';
   return 'tag tag-danger';
-}
-
-function formatLongDate(isoDate) {
-  const [year, month, day] = isoDate.split('-').map(Number);
-  return new Date(year, month - 1, day).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 function groupByDate(records) {
@@ -149,7 +145,7 @@ export function AttendancePage({ showToast }) {
     try {
       const changed = editingSession.records.filter((r) => editStatuses[r.attendance_id] !== r.status);
       await Promise.all(changed.map((r) => api.patch(`/coach/attendance/${r.attendance_id}`, { status: editStatuses[r.attendance_id] })));
-      showToast(`Attendance for ${editingSession.date} updated`);
+      showToast(`Attendance for ${formatLongDate(editingSession.date)} updated`);
       setEditingSession(null);
       loadHistory();
     } finally {
@@ -305,7 +301,7 @@ export function AttendancePage({ showToast }) {
                   </tr>,
                   ...group.sessions.map((s) => (
                     <tr key={s.date}>
-                      <td style={{ fontWeight: 600 }}>{s.date}</td>
+                      <td style={{ fontWeight: 600 }}>{formatLongDate(s.date)}</td>
                       <td>
                         <span className="tag tag-success">{s.present}</span>
                       </td>
@@ -413,7 +409,7 @@ export function AttendancePage({ showToast }) {
 
       {viewingSession && (
         <DialogShell
-          title={`Attendance - ${viewingSession.date}`}
+          title={`Attendance - ${formatLongDate(viewingSession.date)}`}
           onClose={() => setViewingSession(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(null)}>
@@ -474,7 +470,7 @@ export function AttendancePage({ showToast }) {
 
       {editingSession && (
         <DialogShell
-          title={`Edit attendance - ${editingSession.date}`}
+          title={`Edit attendance - ${formatLongDate(editingSession.date)}`}
           onClose={() => setEditingSession(null)}
           actions={
             <>

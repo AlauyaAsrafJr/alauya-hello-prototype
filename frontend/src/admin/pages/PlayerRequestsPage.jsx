@@ -4,6 +4,7 @@ import { DialogShell } from '../../components/modals/DialogShell';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import { CheckIcon, XIcon } from '../../icons';
 import { Select } from '../../components/Select';
+import { formatLongDateTime } from '../../utils/date';
 
 function statusTag(status) {
   if (status === 'approved') return 'tag tag-success';
@@ -91,7 +92,7 @@ export function PlayerRequestsPage({ showToast, onCountChange }) {
                   <td style={{ opacity: 0.75 }}>{r.email}</td>
                   <td style={{ opacity: 0.75 }}>{r.team || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{r.coach_name || '-'}</td>
-                  <td style={{ opacity: 0.65 }}>{r.requested_at ? new Date(r.requested_at).toLocaleString() : '-'}</td>
+                  <td style={{ opacity: 0.65 }}>{r.requested_at ? formatLongDateTime(r.requested_at) : '-'}</td>
                   <td>
                     <span className={statusTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}

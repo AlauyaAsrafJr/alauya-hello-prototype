@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
+import { formatLongDate } from '../../utils/date';
 
 function statusTag(status) {
   if (status === 'joined') return 'tag tag-success';
@@ -31,7 +32,7 @@ export function ParticipationPage() {
             {records.map((r) => (
               <tr key={r.participation_id}>
                 <td style={{ fontWeight: 600 }}>{r.activity_name}</td>
-                <td style={{ opacity: 0.75 }}>{r.activity_date}</td>
+                <td style={{ opacity: 0.75 }}>{formatLongDate(r.activity_date)}</td>
                 <td>
                   <span className={statusTag(r.participation_status)}>{r.participation_status.replace('_', ' ')}</span>
                 </td>

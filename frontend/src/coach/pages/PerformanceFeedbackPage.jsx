@@ -3,6 +3,7 @@ import { api, ApiError } from '../../api/client';
 import { PencilIcon, StarIcon, TrashIcon } from '../../icons';
 import { Select } from '../../components/Select';
 import { CustomScrollbar } from '../../components/CustomScrollbar';
+import { formatLongDate } from '../../utils/date';
 
 function Rating({ value }) {
   return (
@@ -347,7 +348,7 @@ export function PerformanceFeedbackPage({ showToast }) {
                         {f.comments}
                       </p>
                       <div style={{ fontSize: 14.5, opacity: 0.55 }}>
-                        {f.feedback_date} · {f.coach_name}
+                        {formatLongDate(f.feedback_date)} · {f.coach_name}
                       </div>
                     </div>
                   ))}
@@ -376,7 +377,7 @@ export function PerformanceFeedbackPage({ showToast }) {
               {f.comments}
             </p>
             <div style={{ fontSize: 14.5, opacity: 0.55 }}>
-              {f.feedback_date} · {f.coach_name}
+              {formatLongDate(f.feedback_date)} · {f.coach_name}
             </div>
           </div>
         ))}

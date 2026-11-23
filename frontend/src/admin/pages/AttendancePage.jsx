@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
+import { formatLongDate } from '../../utils/date';
 
 function statusTag(status) {
   if (status === 'present') return 'tag tag-success';
@@ -163,7 +164,7 @@ export function AttendancePage() {
               <tbody>
                 {sessions.map((s) => (
                   <tr key={`${s.date}__${s.team}`}>
-                    <td style={{ fontWeight: 600 }}>{s.date}</td>
+                    <td style={{ fontWeight: 600 }}>{formatLongDate(s.date)}</td>
                     <td>
                       <span className="tag tag-neutral">{s.team}</span>
                     </td>
@@ -244,7 +245,7 @@ export function AttendancePage() {
 
       {viewingSession && (
         <DialogShell
-          title={`Attendance - ${viewingSession.team} · ${viewingSession.date}`}
+          title={`Attendance - ${viewingSession.team} · ${formatLongDate(viewingSession.date)}`}
           onClose={() => setViewingSession(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(null)}>

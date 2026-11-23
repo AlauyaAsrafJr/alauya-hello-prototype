@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { NoteIcon } from '../../icons';
+import { formatLongDate } from '../../utils/date';
 
 export function TrainingActivityPage() {
   const [activities, setActivities] = useState(null);
@@ -36,7 +37,7 @@ export function TrainingActivityPage() {
                   <td>
                     {a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>-</span>}
                   </td>
-                  <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
+                  <td style={{ opacity: 0.75 }}>{formatLongDate(a.activity_date)}</td>
                   <td style={{ opacity: 0.75 }}>{a.location || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '-'}</td>
                   <td style={{ opacity: 0.75 }}>{a.coach_name}</td>

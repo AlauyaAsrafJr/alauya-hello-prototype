@@ -3,6 +3,7 @@ import { api, ApiError } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
 import { CopyIcon, NoteIcon, PencilIcon, PlusIcon, TrashIcon } from '../../icons';
+import { formatLongDate } from '../../utils/date';
 
 function participationTag(status) {
   if (status === 'joined') return 'tag tag-success';
@@ -358,7 +359,7 @@ export function TrainingActivitiesPage({ showToast }) {
                   <td>
                     {a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>-</span>}
                   </td>
-                  <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
+                  <td style={{ opacity: 0.75 }}>{formatLongDate(a.activity_date)}</td>
                   <td style={{ opacity: 0.75 }}>{a.location || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '-'}</td>
                   <td>

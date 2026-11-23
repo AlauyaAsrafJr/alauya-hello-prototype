@@ -3,6 +3,7 @@ import { api } from '../../api/client';
 import { StatCard } from '../../components/StatCard';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { HeartPulseIcon } from '../../icons';
+import { formatLongDate, formatLongDateTime } from '../../utils/date';
 
 function healthTag(status) {
   if (status === 'healthy') return 'tag tag-success';
@@ -98,7 +99,7 @@ export function SystemStatisticsPage() {
                           {p.health_status}
                         </span>
                       </td>
-                      <td style={{ opacity: 0.75 }}>{p.latest_reported_date || '-'}</td>
+                      <td style={{ opacity: 0.75 }}>{p.latest_reported_date ? formatLongDate(p.latest_reported_date) : '-'}</td>
                       <td>
                         <button
                           type="button"
@@ -155,8 +156,8 @@ export function SystemStatisticsPage() {
                           {l.role}
                         </span>
                       </td>
-                      <td style={{ opacity: 0.75 }}>{new Date(l.login_time).toLocaleString()}</td>
-                      <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '-'}</td>
+                      <td style={{ opacity: 0.75 }}>{formatLongDateTime(l.login_time)}</td>
+                      <td style={{ opacity: 0.65 }}>{l.logout_time ? formatLongDateTime(l.logout_time) : '-'}</td>
                       <td style={{ opacity: 0.65 }}>{l.ip_address || '-'}</td>
                     </tr>
                   ))}
@@ -194,7 +195,7 @@ export function SystemStatisticsPage() {
                     <span className={healthTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
                     </span>
-                    <span style={{ fontSize: 14.5, opacity: 0.55 }}>{r.reported_date}</span>
+                    <span style={{ fontSize: 14.5, opacity: 0.55 }}>{formatLongDate(r.reported_date)}</span>
                   </div>
                   {r.injury_type && <div style={{ fontSize: 15, fontWeight: 600 }}>{r.injury_type}</div>}
                   {r.notes && <div style={{ fontSize: 14.5, opacity: 0.8, marginTop: 2 }}>{r.notes}</div>}
