@@ -59,7 +59,7 @@ export function LoginPage() {
         </div>
 
         <div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 64, lineHeight: 1.05 }}>ACTIBASE</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 44, lineHeight: 1.1 }}>ACTIBASE</div>
           <p style={{ fontSize: 17, maxWidth: 420, marginTop: 14, opacity: 0.92 }}>
             Varsity Player Engagement and Activity Tracking System for Mindanao State University - Main Campus.
           </p>
