@@ -37,8 +37,23 @@ export function LoginPage() {
         color: 'var(--color-text)',
         position: 'relative',
         padding: 16,
+        overflow: 'hidden',
       }}
     >
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/msu-seal.png)',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundSize: 'min(62vw, 760px)',
+          opacity: 0.07,
+          pointerEvents: 'none',
+        }}
+      />
+
       <button
         type="button"
         onClick={toggleTheme}
