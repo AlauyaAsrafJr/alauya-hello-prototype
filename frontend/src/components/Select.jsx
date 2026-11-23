@@ -13,11 +13,20 @@ export function Select({ value, options, onChange, placeholder, style, disabled 
     function onKeyDown(e) {
       if (e.key === 'Escape') setOpen(false);
     }
+    function onScroll(e) {
+      // Scrolling inside the open menu's own option list is fine; scrolling
+      // any other ancestor (e.g. a tall dialog) would leave the absolutely
+      // positioned menu floating over content it no longer lines up with, so
+      // close it instead.
+      if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
+    }
     document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('scroll', onScroll, true);
     return () => {
       document.removeEventListener('mousedown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('scroll', onScroll, true);
     };
   }, [open]);
 
