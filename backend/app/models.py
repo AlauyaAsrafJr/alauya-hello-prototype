@@ -152,6 +152,7 @@ class TrainingActivity(db.Model):
     duration = db.Column(db.Integer)  # minutes
     notes = db.Column(db.Text)
     activity_type = db.Column(db.String(80), nullable=True)  # e.g. "Scrimmage", "Conditioning" — sport-specific
+    location = db.Column(db.String(120), nullable=True)  # e.g. "Main Gym", "Field 2"
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     coach = db.relationship("Coach", back_populates="activities")
@@ -167,6 +168,7 @@ class TrainingActivity(db.Model):
             "duration": self.duration,
             "notes": self.notes,
             "activity_type": self.activity_type,
+            "location": self.location,
         }
 
 

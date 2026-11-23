@@ -448,6 +448,7 @@ def log_training_activity():
         duration=data.get("duration"),
         notes=data.get("notes"),
         activity_type=(data.get("activity_type") or "").strip() or None,
+        location=(data.get("location") or "").strip() or None,
     )
     db.session.add(activity)
     db.session.flush()
@@ -470,7 +471,7 @@ def edit_training_activity(activity_id):
     if activity.coach_id != coach.coach_id:
         return jsonify({"error": "Training activity not found"}), 404
     data = request.get_json(force=True) or {}
-    editable_fields = ["activity_name", "duration", "notes", "activity_type"]
+    editable_fields = ["activity_name", "duration", "notes", "activity_type", "location"]
     for field in editable_fields:
         if field in data:
             setattr(activity, field, data[field])

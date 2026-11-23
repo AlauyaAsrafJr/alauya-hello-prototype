@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, ApiError } from '../../api/client';
 import { DialogShell } from '../../components/modals/DialogShell';
 import { Select } from '../../components/Select';
-import { PencilIcon, PlusIcon, TrashIcon } from '../../icons';
+import { CopyIcon, PencilIcon, PlusIcon, TrashIcon } from '../../icons';
 
 function participationTag(status) {
   if (status === 'joined') return 'tag tag-success';
@@ -25,6 +25,7 @@ export function TrainingActivitiesPage({ showToast }) {
   const [duration, setDuration] = useState('120');
   const [notes, setNotes] = useState('');
   const [activityType, setActivityType] = useState('');
+  const [location, setLocation] = useState('');
   const [participantIds, setParticipantIds] = useState([]);
 
   const [addingType, setAddingType] = useState(false);
@@ -56,6 +57,7 @@ export function TrainingActivitiesPage({ showToast }) {
     setDuration('120');
     setNotes('');
     setActivityType('');
+    setLocation('');
     setParticipantIds([]);
     setAddingType(false);
     setNewTypeName('');
@@ -70,6 +72,7 @@ export function TrainingActivitiesPage({ showToast }) {
       duration: Number(duration) || null,
       notes,
       activity_type: activityType || undefined,
+      location: location || undefined,
       participant_ids: participantIds,
     });
     setLogOpen(false);
@@ -85,6 +88,7 @@ export function TrainingActivitiesPage({ showToast }) {
     setDuration(String(a.duration ?? ''));
     setNotes(a.notes || '');
     setActivityType(a.activity_type || '');
+    setLocation(a.location || '');
     setAddingType(false);
     setNewTypeName('');
     setEditingTypeId(null);
@@ -99,6 +103,7 @@ export function TrainingActivitiesPage({ showToast }) {
       duration: Number(duration) || null,
       notes,
       activity_type: activityType || null,
+      location: location || null,
     });
     setEditing(null);
     showToast(`"${name}" updated`);
@@ -108,6 +113,22 @@ export function TrainingActivitiesPage({ showToast }) {
   async function openView(a) {
     const participants = await api.get(`/coach/training-activities/${a.activity_id}/participation`);
     setViewing({ activity: a, participants });
+  }
+
+  async function openDuplicate(a) {
+    resetForm();
+    setName(a.activity_name);
+    setDuration(String(a.duration ?? ''));
+    setNotes(a.notes || '');
+    setActivityType(a.activity_type || '');
+    setLocation(a.location || '');
+    try {
+      const participants = await api.get(`/coach/training-activities/${a.activity_id}/participation`);
+      setParticipantIds(participants.map((p) => p.player_id));
+    } catch {
+      // keep participants empty if lookup fails — coach can still reselect them
+    }
+    setLogOpen(true);
   }
 
   async function createActivityType() {
@@ -323,9 +344,10 @@ export function TrainingActivitiesPage({ showToast }) {
                 <th>Activity</th>
                 <th>Type</th>
                 <th>Date</th>
+                <th>Location</th>
                 <th>Duration</th>
                 <th>Notes</th>
-                <th style={{ width: 160 }}>Actions</th>
+                <th style={{ width: 210 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -336,6 +358,7 @@ export function TrainingActivitiesPage({ showToast }) {
                     {a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>—</span>}
                   </td>
                   <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
+                  <td style={{ opacity: 0.75 }}>{a.location || '—'}</td>
                   <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '—'}</td>
                   <td style={{ opacity: 0.65, maxWidth: 220 }}>{a.notes || '—'}</td>
                   <td>
@@ -346,13 +369,22 @@ export function TrainingActivitiesPage({ showToast }) {
                       <button type="button" className="btn btn-ghost" onClick={() => openEdit(a)}>
                         Edit
                       </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-icon"
+                        aria-label={`Duplicate ${a.activity_name}`}
+                        title="Duplicate as a new session"
+                        onClick={() => openDuplicate(a)}
+                      >
+                        <CopyIcon />
+                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
               {activities && activities.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
+                  <td colSpan={7} style={{ opacity: 0.6, textAlign: 'center', padding: 24 }}>
                     No training activities logged yet.
                   </td>
                 </tr>
@@ -394,11 +426,40 @@ export function TrainingActivitiesPage({ showToast }) {
               </div>
             </div>
             <div className="field">
+              <label>Location / Venue</label>
+              <input
+                className="input"
+                placeholder="e.g. Main Gym, Court 2"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+            <div className="field">
               <label>Notes</label>
               <textarea className="input" style={{ minHeight: 70 }} value={notes} onChange={(e) => setNotes(e.target.value)} />
             </div>
             <div className="field">
-              <label>Participants</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label>Participants</label>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    style={{ fontSize: 13.5, padding: '2px 0' }}
+                    onClick={() => setParticipantIds((players || []).map((p) => p.player_id))}
+                  >
+                    Select all
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    style={{ fontSize: 13.5, padding: '2px 0' }}
+                    onClick={() => setParticipantIds([])}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
               <div style={{ maxHeight: 160, overflowY: 'auto', border: '1px solid var(--color-divider)', padding: 8 }}>
                 {players?.map((p) => (
                   <label key={p.player_id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14.5, padding: '4px 0' }}>
@@ -448,6 +509,15 @@ export function TrainingActivitiesPage({ showToast }) {
                 <label>Duration (minutes)</label>
                 <input className="input" type="number" value={duration} onChange={(e) => setDuration(e.target.value)} />
               </div>
+            </div>
+            <div className="field">
+              <label>Location / Venue</label>
+              <input
+                className="input"
+                placeholder="e.g. Main Gym, Court 2"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
             </div>
             <div className="field">
               <label>Notes</label>
