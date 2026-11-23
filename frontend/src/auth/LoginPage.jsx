@@ -45,10 +45,10 @@ export function LoginPage() {
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: 'url(/msu-seal.png)',
+          backgroundImage: 'url(/phoenix-watermark.png)',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
-          backgroundSize: 'min(62vw, 760px)',
+          backgroundSize: 'min(58vw, 700px)',
           opacity: 0.07,
           pointerEvents: 'none',
         }}
@@ -81,6 +81,13 @@ export function LoginPage() {
             <img src="/sarimanok-logo.png" alt="ACTIBASE" style={{ width: 38, height: 38, objectFit: 'contain' }} />
           </div>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 19.5 }}>ACTIBASE</div>
+          <div style={{ flex: 1 }} />
+          <img
+            src="/msu-seal.png"
+            alt="Mindanao State University"
+            title="Mindanao State University"
+            style={{ height: 44, width: 'auto', flex: 'none' }}
+          />
         </div>
 
         <div className="card-title" style={{ marginBottom: 4 }}>
