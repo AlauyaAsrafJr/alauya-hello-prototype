@@ -94,26 +94,22 @@ a:hover { color: var(--color-link-hover); }
   opacity: 0.16;
   pointer-events: none;
 }
-.login-hero-fade {
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: 220px;
-  background: linear-gradient(to right, transparent, var(--color-bg));
-  pointer-events: none;
-}
 .login-form-panel {
   flex: 1 1 54%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: var(--color-bg);
+  background: radial-gradient(circle at 0% 50%, var(--color-accent-100), transparent 55%), var(--color-bg);
 }
 
 @media (max-width: 900px) {
   .login-shell { flex-direction: column; }
   .login-hero { flex: none; padding: 32px 24px; gap: 18px; }
   .login-hero-watermark { background-size: 360px; background-position: 100% 100%; }
-  .login-hero-fade { inset: auto 0 0 0; width: auto; height: 120px; background: linear-gradient(to bottom, transparent, var(--color-bg)); }
-  .login-form-panel { flex: none; padding: 28px 16px 44px; }
+  .login-form-panel {
+    flex: none;
+    padding: 28px 16px 44px;
+    background: radial-gradient(circle at 50% 0%, var(--color-accent-100), transparent 45%), var(--color-bg);
+  }
 }
