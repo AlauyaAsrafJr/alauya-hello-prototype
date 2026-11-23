@@ -77,7 +77,7 @@ export function ProfilePage({ showToast }) {
         { label: 'Activities joined', value: stats.participation_count, icon: ActivitiesIcon, variant: 'success' },
         {
           label: 'Average rating',
-          value: stats.average_rating != null ? stats.average_rating.toFixed(1) : '—',
+          value: stats.average_rating != null ? stats.average_rating.toFixed(1) : '-',
           icon: StarIcon,
           variant: 'accent',
         },
@@ -145,11 +145,11 @@ export function ProfilePage({ showToast }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
-              ['Username', profile.username || '—'],
+              ['Username', profile.username || '-'],
               ['Email', profile.email],
-              ['Team', profile.team || '—'],
+              ['Team', profile.team || '-'],
               ['Year level', formatYearLevel(profile.year_level)],
-              ['Date of birth', profile.date_of_birth || '—'],
+              ['Date of birth', profile.date_of_birth || '-'],
               ['Membership status', profile.membership_status],
             ].map(([k, v]) => (
               <div
@@ -210,7 +210,7 @@ export function ProfilePage({ showToast }) {
                 </div>
               ) : (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontWeight: 600 }}>{profile.contact_number || '—'}</span>
+                  <span style={{ fontWeight: 600 }}>{profile.contact_number || '-'}</span>
                   <button type="button" className="btn btn-ghost" style={{ fontSize: 13.5 }} onClick={() => setEditing(true)}>
                     Edit
                   </button>

@@ -36,7 +36,7 @@ export function DashboardPage({ onNavigate }) {
     { label: 'Active Users', value: stats.active_users, Icon: UsersIcon, variant: 'info', onView: () => onNavigate('users') },
     {
       label: 'Average Rating',
-      value: analytics.average_rating != null ? analytics.average_rating.toFixed(1) : '—',
+      value: analytics.average_rating != null ? analytics.average_rating.toFixed(1) : '-',
       Icon: StarIcon,
       variant: 'accent',
       onView: () => onNavigate('reports'),

@@ -70,7 +70,7 @@ function groupByPlayer(records) {
   return Array.from(byPlayer.entries())
     .map(([player_id, recs]) => ({
       player_id,
-      player_name: recs[0]?.player_name || '—',
+      player_name: recs[0]?.player_name || '-',
       total: recs.length,
       present: recs.filter((r) => r.status === 'present').length,
       late: recs.filter((r) => r.status === 'late').length,

@@ -19,14 +19,14 @@ function isWithinLastWeek(dateStr) {
 function groupBySession(records) {
   const byKey = new Map();
   for (const r of records) {
-    const key = `${r.date}__${r.team || '—'}`;
+    const key = `${r.date}__${r.team || '-'}`;
     if (!byKey.has(key)) byKey.set(key, []);
     byKey.get(key).push(r);
   }
   return Array.from(byKey.values())
     .map((recs) => ({
       date: recs[0].date,
-      team: recs[0].team || '—',
+      team: recs[0].team || '-',
       total: recs.length,
       present: recs.filter((r) => r.status === 'present').length,
       late: recs.filter((r) => r.status === 'late').length,
@@ -45,8 +45,8 @@ function groupByPlayer(records) {
   return Array.from(byPlayer.entries())
     .map(([player_id, recs]) => ({
       player_id,
-      player_name: recs[0]?.player_name || '—',
-      team: recs[0]?.team || '—',
+      player_name: recs[0]?.player_name || '-',
+      team: recs[0]?.team || '-',
       total: recs.length,
       present: recs.filter((r) => r.status === 'present').length,
       late: recs.filter((r) => r.status === 'late').length,
@@ -244,7 +244,7 @@ export function AttendancePage() {
 
       {viewingSession && (
         <DialogShell
-          title={`Attendance — ${viewingSession.team} · ${viewingSession.date}`}
+          title={`Attendance - ${viewingSession.team} · ${viewingSession.date}`}
           onClose={() => setViewingSession(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setViewingSession(null)}>

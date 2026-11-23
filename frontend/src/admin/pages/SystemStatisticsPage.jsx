@@ -92,13 +92,13 @@ export function SystemStatisticsPage() {
                       <td style={{ fontWeight: 600 }}>
                         {p.first_name} {p.last_name}
                       </td>
-                      <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                      <td style={{ opacity: 0.75 }}>{p.team || '-'}</td>
                       <td>
                         <span className={healthTag(p.health_status)} style={{ textTransform: 'capitalize' }}>
                           {p.health_status}
                         </span>
                       </td>
-                      <td style={{ opacity: 0.75 }}>{p.latest_reported_date || '—'}</td>
+                      <td style={{ opacity: 0.75 }}>{p.latest_reported_date || '-'}</td>
                       <td>
                         <button
                           type="button"
@@ -156,8 +156,8 @@ export function SystemStatisticsPage() {
                         </span>
                       </td>
                       <td style={{ opacity: 0.75 }}>{new Date(l.login_time).toLocaleString()}</td>
-                      <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '—'}</td>
-                      <td style={{ opacity: 0.65 }}>{l.ip_address || '—'}</td>
+                      <td style={{ opacity: 0.65 }}>{l.logout_time ? new Date(l.logout_time).toLocaleString() : '-'}</td>
+                      <td style={{ opacity: 0.65 }}>{l.ip_address || '-'}</td>
                     </tr>
                   ))}
                   {logins && logins.length === 0 && (
@@ -176,7 +176,7 @@ export function SystemStatisticsPage() {
 
       {historyFor && (
         <DialogShell
-          title={`Health history — ${historyFor.name}`}
+          title={`Health history - ${historyFor.name}`}
           onClose={() => setHistoryFor(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setHistoryFor(null)}>
@@ -201,7 +201,7 @@ export function SystemStatisticsPage() {
                   {r.expected_return_date && (
                     <div style={{ fontSize: 14.5, opacity: 0.55, marginTop: 4 }}>Expected return: {r.expected_return_date}</div>
                   )}
-                  <div style={{ fontSize: 12.5, opacity: 0.5, marginTop: 4 }}>Logged by {r.coach_name || '—'}</div>
+                  <div style={{ fontSize: 12.5, opacity: 0.5, marginTop: 4 }}>Logged by {r.coach_name || '-'}</div>
                 </div>
               ))}
               {history.length === 0 && <div style={{ opacity: 0.6, fontSize: 15 }}>No health records yet.</div>}

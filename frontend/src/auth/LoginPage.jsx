@@ -72,7 +72,7 @@ export function LoginPage() {
           Sign in
         </div>
         <p className="card-body" style={{ marginBottom: 20 }}>
-          Varsity Player Engagement and Activity Tracking System — MSU Main Campus
+          Varsity Player Engagement and Activity Tracking System - MSU Main Campus
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

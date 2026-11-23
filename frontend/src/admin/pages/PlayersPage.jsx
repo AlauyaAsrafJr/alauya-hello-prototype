@@ -86,7 +86,7 @@ export function PlayersPage() {
                   <td style={{ fontWeight: 600 }}>
                     {p.first_name} {p.last_name}
                   </td>
-                  <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{p.team || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
                   <td style={{ opacity: 0.75 }}>{p.email}</td>
                   <td>
@@ -131,12 +131,12 @@ export function PlayersPage() {
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
-              ['Username', viewing.username || '—'],
+              ['Username', viewing.username || '-'],
               ['Email', viewing.email],
-              ['Contact number', viewing.contact_number || '—'],
-              ['Team', viewing.team || '—'],
+              ['Contact number', viewing.contact_number || '-'],
+              ['Team', viewing.team || '-'],
               ['Year level', formatYearLevel(viewing.year_level)],
-              ['Date of birth', viewing.date_of_birth || '—'],
+              ['Date of birth', viewing.date_of_birth || '-'],
               ['Membership status', viewing.membership_status],
               ['Health status', viewing.health_status],
               ['Account status', viewing.is_active ? 'Active' : 'Inactive'],

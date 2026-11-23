@@ -15,7 +15,7 @@ function recordRole(record) {
 
 function recordTeam(record) {
   const profile = record.archive_data?.profile;
-  return profile?.team ?? profile?.specialization ?? '—';
+  return profile?.team ?? profile?.specialization ?? '-';
 }
 
 export function ArchivePage({ showToast }) {
@@ -34,7 +34,7 @@ export function ArchivePage({ showToast }) {
   }, []);
 
   const roles = Array.from(new Set((records || []).map((r) => recordRole(r)))).sort();
-  const teams = Array.from(new Set((records || []).map((r) => recordTeam(r)).filter((t) => t !== '—'))).sort();
+  const teams = Array.from(new Set((records || []).map((r) => recordTeam(r)).filter((t) => t !== '-'))).sort();
 
   const filtered = (records || []).filter(
     (r) =>

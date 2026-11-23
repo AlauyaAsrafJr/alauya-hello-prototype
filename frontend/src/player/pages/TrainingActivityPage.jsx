@@ -34,11 +34,11 @@ export function TrainingActivityPage() {
                 <tr key={a.activity_id}>
                   <td style={{ fontWeight: 600 }}>{a.activity_name}</td>
                   <td>
-                    {a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>—</span>}
+                    {a.activity_type ? <span className="tag tag-info">{a.activity_type}</span> : <span style={{ opacity: 0.5 }}>-</span>}
                   </td>
                   <td style={{ opacity: 0.75 }}>{a.activity_date}</td>
-                  <td style={{ opacity: 0.75 }}>{a.location || '—'}</td>
-                  <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{a.location || '-'}</td>
+                  <td style={{ opacity: 0.75 }}>{a.duration ? `${a.duration} min` : '-'}</td>
                   <td style={{ opacity: 0.75 }}>{a.coach_name}</td>
                   <td>
                     {a.notes ? (
@@ -52,7 +52,7 @@ export function TrainingActivityPage() {
                         <NoteIcon size={16} />
                       </button>
                     ) : (
-                      <span style={{ opacity: 0.5 }}>—</span>
+                      <span style={{ opacity: 0.5 }}>-</span>
                     )}
                   </td>
                 </tr>
@@ -71,7 +71,7 @@ export function TrainingActivityPage() {
 
       {noteView && (
         <DialogShell
-          title={`Notes — ${noteView.activity_name}`}
+          title={`Notes - ${noteView.activity_name}`}
           onClose={() => setNoteView(null)}
           actions={
             <button type="button" className="btn btn-secondary" onClick={() => setNoteView(null)}>

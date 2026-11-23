@@ -219,7 +219,7 @@ export function PlayersPage({ showToast }) {
                   <td style={{ fontWeight: 600 }}>
                     {p.first_name} {p.last_name}
                   </td>
-                  <td style={{ opacity: 0.75 }}>{p.team || '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{p.team || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{formatYearLevel(p.year_level)}</td>
                   <td style={{ opacity: 0.75 }}>{p.email}</td>
                   <td>
@@ -292,7 +292,7 @@ export function PlayersPage({ showToast }) {
                     </div>
                     <div style={{ fontSize: 14.5, opacity: 0.6 }}>
                       Requested {r.requested_at ? new Date(r.requested_at).toLocaleDateString() : ''}
-                      {r.status === 'rejected' && r.rejection_reason ? ` — ${r.rejection_reason}` : ''}
+                      {r.status === 'rejected' && r.rejection_reason ? ` - ${r.rejection_reason}` : ''}
                     </div>
                   </div>
                   <span className={requestStatusTag(r.status)} style={{ textTransform: 'capitalize' }}>
@@ -377,7 +377,7 @@ export function PlayersPage({ showToast }) {
             </div>
             <div className="field">
               <label>Team</label>
-              <input className="input" value={coach?.specialization || '—'} disabled />
+              <input className="input" value={coach?.specialization || '-'} disabled />
             </div>
             <div className="field">
               <label>Year level</label>
@@ -405,10 +405,10 @@ export function PlayersPage({ showToast }) {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
               ['Email', viewing.email],
-              ['Contact number', viewing.contact_number || '—'],
-              ['Team', viewing.team || '—'],
+              ['Contact number', viewing.contact_number || '-'],
+              ['Team', viewing.team || '-'],
               ['Year level', formatYearLevel(viewing.year_level)],
-              ['Date of birth', viewing.date_of_birth || '—'],
+              ['Date of birth', viewing.date_of_birth || '-'],
               ['Membership status', viewing.membership_status],
               ['Health status', viewing.health_status],
             ].map(([k, v]) => (
@@ -466,7 +466,7 @@ export function PlayersPage({ showToast }) {
             </div>
             <div className="field">
               <label>Team</label>
-              <input className="input" value={editing.team || '—'} disabled />
+              <input className="input" value={editing.team || '-'} disabled />
               <p style={{ fontSize: 14.5, opacity: 0.6, marginTop: 4 }}>Team assignment is managed by an administrator.</p>
             </div>
             <div className="field">
@@ -496,7 +496,7 @@ export function PlayersPage({ showToast }) {
 
       {healthTarget && (
         <DialogShell
-          title={`Player health — ${healthTarget.first_name} ${healthTarget.last_name}`}
+          title={`Player health - ${healthTarget.first_name} ${healthTarget.last_name}`}
           onClose={() => setHealthTarget(null)}
           actions={
             <>

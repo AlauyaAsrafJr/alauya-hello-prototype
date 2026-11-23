@@ -89,9 +89,9 @@ export function PlayerRequestsPage({ showToast, onCountChange }) {
                     {r.last_name}
                   </td>
                   <td style={{ opacity: 0.75 }}>{r.email}</td>
-                  <td style={{ opacity: 0.75 }}>{r.team || '—'}</td>
-                  <td style={{ opacity: 0.75 }}>{r.coach_name || '—'}</td>
-                  <td style={{ opacity: 0.65 }}>{r.requested_at ? new Date(r.requested_at).toLocaleString() : '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{r.team || '-'}</td>
+                  <td style={{ opacity: 0.75 }}>{r.coach_name || '-'}</td>
+                  <td style={{ opacity: 0.65 }}>{r.requested_at ? new Date(r.requested_at).toLocaleString() : '-'}</td>
                   <td>
                     <span className={statusTag(r.status)} style={{ textTransform: 'capitalize' }}>
                       {r.status}
@@ -119,7 +119,7 @@ export function PlayerRequestsPage({ showToast, onCountChange }) {
                       </div>
                     ) : (
                       <span style={{ fontSize: 14.5, opacity: 0.6 }}>
-                        {r.reviewed_by_name ? `by ${r.reviewed_by_name}` : '—'}
+                        {r.reviewed_by_name ? `by ${r.reviewed_by_name}` : '-'}
                       </span>
                     )}
                   </td>
@@ -152,7 +152,7 @@ export function PlayerRequestsPage({ showToast, onCountChange }) {
 
       {rejectTarget && (
         <DialogShell
-          title={`Reject request — ${rejectTarget.first_name} ${rejectTarget.last_name}`}
+          title={`Reject request - ${rejectTarget.first_name} ${rejectTarget.last_name}`}
           onClose={() => {
             setRejectTarget(null);
             setRejectReason('');

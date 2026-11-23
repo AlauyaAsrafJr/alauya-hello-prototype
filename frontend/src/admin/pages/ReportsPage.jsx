@@ -54,7 +54,7 @@ export function ReportsPage({ showToast }) {
               {reports?.map((r) => (
                 <tr key={r.report_id}>
                   <td style={{ fontWeight: 600, textTransform: 'capitalize' }}>{r.display_type || r.report_type}</td>
-                  <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '—'}</td>
+                  <td style={{ opacity: 0.75, maxWidth: 320 }}>{r.details || '-'}</td>
                   <td style={{ opacity: 0.75 }}>{r.generated_by_name}</td>
                   <td style={{ opacity: 0.65 }}>{new Date(r.generated_date).toLocaleString()}</td>
                   <td>

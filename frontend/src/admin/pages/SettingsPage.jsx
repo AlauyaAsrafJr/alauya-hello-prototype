@@ -52,7 +52,7 @@ export function SettingsPage({ showToast }) {
         </div>
         <p className="card-body" style={{ marginBottom: 16 }}>
           Sports/teams available when creating coach and player accounts. Add a new one here as soon as MSU stands up a new varsity program
-          — no code change needed.
+          - no code change needed.
         </p>
 
         <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>

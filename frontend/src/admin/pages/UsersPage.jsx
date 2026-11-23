@@ -182,13 +182,13 @@ export function UsersPage({ showToast }) {
                     <tr key={u.user_id}>
                       <td style={{ fontWeight: 600 }}>{u.display_name}</td>
                   <td style={{ opacity: 0.75 }}>{u.username}</td>
-                  <td style={{ opacity: 0.75 }}>{u.email || '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{u.email || '-'}</td>
                   <td>
                     <span className="tag tag-neutral" style={{ textTransform: 'capitalize' }}>
                       {u.role}
                     </span>
                   </td>
-                  <td style={{ opacity: 0.75 }}>{u.team || '—'}</td>
+                  <td style={{ opacity: 0.75 }}>{u.team || '-'}</td>
                   <td>
                     <span className={u.is_active ? 'tag tag-success' : 'tag tag-danger'}>{u.is_active ? 'Active' : 'Inactive'}</span>
                   </td>
@@ -330,9 +330,9 @@ export function UsersPage({ showToast }) {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
               ['Username', viewing.username],
-              ['Email', viewing.email || '—'],
+              ['Email', viewing.email || '-'],
               ['Role', viewing.role],
-              ['Team', viewing.team || '—'],
+              ['Team', viewing.team || '-'],
               ['Status', viewing.is_active ? 'Active' : 'Inactive'],
               ['Last login', viewing.last_login ? new Date(viewing.last_login).toLocaleString() : 'Never'],
             ].map(([k, v]) => (
@@ -356,7 +356,7 @@ export function UsersPage({ showToast }) {
 
       {resetTarget && (
         <DialogShell
-          title={`Reset password — ${resetTarget.display_name}`}
+          title={`Reset password - ${resetTarget.display_name}`}
           onClose={() => {
             setResetTarget(null);
             setTempPassword(null);

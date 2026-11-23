@@ -61,7 +61,7 @@ export function ProfilePage({ showToast }) {
         { label: 'Team attendance rate', value: `${analytics.attendance_rate}%`, icon: AttendanceIcon, variant: 'warning' },
         {
           label: 'Average rating given',
-          value: analytics.average_rating != null ? analytics.average_rating.toFixed(1) : '—',
+          value: analytics.average_rating != null ? analytics.average_rating.toFixed(1) : '-',
           icon: StarIcon,
           variant: 'accent',
         },
@@ -130,9 +130,9 @@ export function ProfilePage({ showToast }) {
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {[
-            ['Username', profile.username || '—'],
+            ['Username', profile.username || '-'],
             ['Email', profile.email],
-            ['Team', profile.specialization || '—'],
+            ['Team', profile.specialization || '-'],
           ].map(([k, v]) => (
             <div
               key={k}
@@ -172,7 +172,7 @@ export function ProfilePage({ showToast }) {
               </div>
             ) : (
               <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontWeight: 600 }}>{profile.contact_number || '—'}</span>
+                <span style={{ fontWeight: 600 }}>{profile.contact_number || '-'}</span>
                 <button type="button" className="btn btn-ghost" style={{ fontSize: 13.5 }} onClick={() => setEditing(true)}>
                   Edit
                 </button>

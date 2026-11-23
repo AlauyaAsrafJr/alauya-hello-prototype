@@ -317,7 +317,7 @@ export function PerformanceFeedbackPage({ showToast }) {
             <div className="card-title" style={{ margin: 0 }}>
               {historyFilter === ''
                 ? 'Feedback history'
-                : `Feedback history — ${players?.find((p) => p.player_id === historyFilter)?.first_name || ''} ${players?.find((p) => p.player_id === historyFilter)?.last_name || ''}`}
+                : `Feedback history - ${players?.find((p) => p.player_id === historyFilter)?.first_name || ''} ${players?.find((p) => p.player_id === historyFilter)?.last_name || ''}`}
             </div>
             <div style={{ flex: 1 }} />
             <Select
