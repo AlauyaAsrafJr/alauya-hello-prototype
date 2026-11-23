@@ -125,7 +125,7 @@ export function PerformanceFeedbackPage({ showToast }) {
 
   return (
     <>
-      <div style={{ display: 'flex', gap: 20, alignItems: 'stretch', flexWrap: 'wrap', marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: 24 }}>
         <div className="card elev-sm" style={{ padding: 20, flex: '1 1 480px', maxWidth: 640 }}>
           <div className="card-kicker">Submit performance notes</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
