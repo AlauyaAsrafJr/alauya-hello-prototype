@@ -9,6 +9,11 @@ function statusTag(status) {
   return 'tag tag-danger';
 }
 
+function formatLongDate(isoDate) {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
 function groupByDate(records) {
   const byDate = new Map();
   for (const r of records) {
@@ -458,7 +463,7 @@ export function AttendancePage({ showToast }) {
                   fontSize: 15,
                 }}
               >
-                <span>{r.date}</span>
+                <span>{formatLongDate(r.date)}</span>
                 <span className={statusTag(r.status)}>{r.status}</span>
               </div>
             ))}
