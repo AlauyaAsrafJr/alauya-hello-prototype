@@ -39,6 +39,7 @@ export function LoginPage() {
 
       <div className="login-hero">
         <div className="login-hero-watermark" aria-hidden="true" />
+        <div className="login-hero-fade" aria-hidden="true" />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div
