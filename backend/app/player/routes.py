@@ -162,11 +162,22 @@ def submit_note():
     player = _current_player()
     if not player:
         return jsonify({"error": "Player profile not found"}), 404
-    data = request.get_json(force=True) or {}
-    content = (data.get("content") or "").strip()
+    content = (request.form.get("content") or "").strip()
     if not content:
         return jsonify({"error": "Note content is required"}), 400
     note = PlayerNote(player_id=player.player_id, content=content)
+
+    file = request.files.get("photo")
+    if file and file.filename:
+        ext = os.path.splitext(file.filename)[1].lower()
+        if ext not in ALLOWED_PHOTO_EXTENSIONS:
+            return jsonify({"error": "Unsupported image type. Use JPG, PNG, WEBP, or GIF."}), 400
+        upload_dir = os.path.join(current_app.config["UPLOAD_FOLDER"], "notes")
+        os.makedirs(upload_dir, exist_ok=True)
+        filename = f"note_{player.player_id}_{uuid.uuid4().hex[:8]}{ext}"
+        file.save(os.path.join(upload_dir, filename))
+        note.photo_url = f"/api/uploads/notes/{filename}"
+
     db.session.add(note)
     db.session.commit()
     return jsonify(note.to_dict()), 201

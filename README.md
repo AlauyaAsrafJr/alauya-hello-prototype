@@ -25,12 +25,21 @@ backend/            Flask API (auth, player, coach, admin blueprints)
   seed.py             Creates tables and seeds demo accounts + sample data
   wsgi.py             Dev server entrypoint
 
-src/                 React frontend
-  api/                Fetch client
-  auth/               Auth context, Login page
-  player/ coach/ admin/  Per-role dashboards and pages
-  components/         Shared UI (Sidebar, Topbar, modals, design tokens)
+frontend/            React frontend
+  src/
+    api/                Fetch client
+    auth/               Auth context, Login page
+    player/ coach/ admin/  Per-role dashboards and pages
+    components/         Shared UI (Sidebar, Topbar, modals, design tokens)
 ```
+
+## Quick start (Windows, after the one-time setup below)
+
+Once `backend/venv` and `frontend/node_modules` exist (first-time setup
+only — see below), double-click **`run.bat`** at the project root. It
+starts the backend and frontend each in their own window and opens the
+app in your browser. No need to open two terminals and run everything by
+hand every time.
 
 ## Backend setup
 
@@ -62,6 +71,7 @@ Demo accounts created by `seed.py`:
 ## Frontend setup
 
 ```bash
+cd frontend
 npm install
 cp .env.example .env   # VITE_API_URL defaults to http://localhost:5000/api
 npm run dev             # start dev server
