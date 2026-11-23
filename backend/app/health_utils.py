@@ -24,7 +24,7 @@ def auto_recover_players():
                 player_id=player.player_id,
                 coach_id=latest.coach_id,
                 status="healthy",
-                notes="Automatically marked healthy — expected return date reached.",
+                notes="Automatically marked healthy - expected return date reached.",
                 reported_date=today,
             )
         )

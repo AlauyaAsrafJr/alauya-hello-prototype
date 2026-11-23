@@ -68,7 +68,7 @@ def seed_team(coach, players, activity_prefix):
     for w in range(4):
         act = TrainingActivity(
             coach_id=coach.coach_id,
-            activity_name=f"{activity_prefix} — Week {w + 1} Practice Session",
+            activity_name=f"{activity_prefix} - Week {w + 1} Practice Session",
             activity_date=date.today() - timedelta(days=(4 - w) * 7),
             duration=120,
             notes="Standard conditioning and drills.",
